@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 2.2 Full</title>
+  <title>Viber 2D Desk - Stage 2.5 Full</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -27,6 +27,14 @@
     .board{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.cell{background:#03110a;border:1px solid #14532d;border-radius:10px;padding:6px;text-align:center;min-height:54px}.cell .num{font-weight:900;color:#86efac}.cell .amt{font-size:13px;color:#e5e7eb;margin-top:3px}.cell.over{background:#2a0707;border-color:#ef4444}.cell.over .num{color:#fecaca}.cell.over .amt{color:#fff}.cell.zero{background:#020617;border-color:#1e293b}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:800}.badge.good{background:#052e16}.badge.bad{background:#450a0a}.badge.warn{background:#422006;color:#fde68a}
     .kbd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.key{background:#0b1224;border:1px solid #475569;border-radius:12px;padding:10px 6px;text-align:center;font-weight:900;cursor:pointer}.key:hover{border-color:#22c55e;background:#102a1d}.sharebox{white-space:pre-wrap;background:#020617;border:1px solid #334155;border-radius:12px;padding:12px;min-height:180px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
     .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#052e16;color:#dcfce7;border:1px solid #22c55e;padding:10px 14px;border-radius:999px;display:none;z-index:50;font-weight:800}.toast.show{display:block}
+    .issueBox{margin-top:10px;border:1px solid #7f1d1d;background:#1f0a0a;border-radius:14px;padding:10px}
+    .issueBox h3{margin:0 0 8px;color:#fecaca}
+    .issueHint{color:#fca5a5;font-size:12px;margin-bottom:8px}
+    .issueRow{border:1px solid #7f1d1d;background:#140707;border-radius:12px;padding:8px;margin-top:8px}
+    .issueMsg{color:#fca5a5;font-size:12px;font-weight:700;margin-bottom:6px}
+    .issueInput{width:100%;min-height:56px;background:#2b0b0b !important;color:#fff1f2 !important;border:1px solid #ef4444 !important;border-radius:10px;padding:8px;font-size:15px;line-height:1.45}
+    .entryError{border-color:#ef4444 !important;box-shadow:0 0 0 3px rgba(239,68,68,.18) !important}
+
 
     .desk-layout{display:grid;gap:12px}
     .board-card{padding:12px}
@@ -88,7 +96,7 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 2.4 Full + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 2.5 Full + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary</div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
@@ -109,7 +117,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 2.2 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records page ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 2.5 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records page ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -156,7 +164,16 @@
           <div class="btnrow">
             <button class="btn" onclick="parseInput()" data-i18n="parsePreview">Parse Preview</button>
             <button class="btn secondary" onclick="savePreview()" data-i18n="confirmSave">Confirm Save</button>
-            <button class="btn gray" onclick="document.getElementById('entryText').value=''" data-i18n="clearText">Clear Text</button>
+            <button class="btn gray" onclick="document.getElementById('entryText').value=''; clearIssueEditor()" data-i18n="clearText">Clear Text</button>
+          </div>
+          <div id="issueEditorWrap" class="issueBox" style="display:none">
+            <h3>အနီစာ ပြင်ရန် / Fix Lines</h3>
+            <div class="issueHint">မဖတ်နိုင်တဲ့စာကြောင်းတွေကို ဒီနေရာမှာ အနီနဲ့ပြထားမယ်။ ပြင်ပြီး <b>Replace in Paste Box</b> နှိပ်ပါ။ ပြီးရင် <b>Parse Preview</b> ကို ထပ်နှိပ်ပါ။</div>
+            <div class="btnrow" style="margin-top:0">
+              <button class="btn warn small" onclick="loadIssueLinesToEditor()">Load Red Lines Only</button>
+              <button class="btn gray small" onclick="clearIssueEditor()">Hide</button>
+            </div>
+            <div id="issueEditorList"></div>
           </div>
           <div class="grid3" style="margin-top:12px">
             <div class="stat"><div class="k" data-i18n="previewRows">Preview Rows</div><div class="v" id="pvRows">0</div></div>
@@ -325,7 +342,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 2.2: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 2.5: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -362,7 +379,7 @@ const FIXED = {
 let records = JSON.parse(localStorage.getItem('v2d_records')||'[]');
 let overDeductions = JSON.parse(localStorage.getItem('v2d_over_deductions')||'[]');
 let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
-let preview = {detailRows:[], totals:[], warnings:[]};
+let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
 
 function today(){return new Date().toISOString().slice(0,10)}
 function money(n){return Number(n||0).toLocaleString('en-US')}
@@ -377,7 +394,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 2.2 Full',
+      version:'Stage 2.5 Full',
       records,
       overDeductions,
       settings,
@@ -839,14 +856,21 @@ function parseHeaderLine(line){
   return {rawName:m[1].trim(), content:m[2].trim()};
 }
 function parseMessage(text, defaultName='Default'){
-  const lines=normalize(text).split('\n').map(x=>x.trim()).filter(Boolean); const detailRows=[]; const warnings=[];
+  const lines=normalize(text).split('\n').map(x=>x.trim()).filter(Boolean);
+  const detailRows=[]; const warnings=[]; const issues=[];
   let ctx={mode:null, amount:null}; let currentName=defaultName || 'Default';
-  lines.forEach(rawLine=>{
+
+  lines.forEach((rawLine, idx)=>{
     let l=rawLine;
     const header=parseHeaderLine(l);
     if(header){
       const matched=matchKnownName(header.rawName);
-      if(matched) currentName=matched; else warnings.push('Header name not in Name list: '+header.rawName);
+      if(matched) currentName=matched;
+      else{
+        const msg='Header name not in Name list: '+header.rawName;
+        warnings.push(msg);
+        issues.push({lineNo:idx+1, line:rawLine, edited:rawLine, message:msg});
+      }
       l=header.content;
       if(!l) return;
     }
@@ -873,26 +897,108 @@ function parseMessage(text, defaultName='Default'){
       }
     }
     (r?.rows||[]).forEach(row=>row.name=currentName);
-    detailRows.push(...(r?.rows||[])); warnings.push(...(r?.warnings||[]));
+    detailRows.push(...(r?.rows||[]));
+    warnings.push(...(r?.warnings||[]));
+
+    if(r?.warnings?.length){
+      issues.push({
+        lineNo: idx+1,
+        line: rawLine,
+        edited: rawLine,
+        message: r.warnings.join(' | ')
+      });
+    }
   });
-  const map=new Map(); detailRows.forEach(r=>map.set(r.number,(map.get(r.number)||0)+r.amount));
+
+  const map=new Map();
+  detailRows.forEach(r=>map.set(r.number,(map.get(r.number)||0)+r.amount));
   const totals=[...map.entries()].map(([number,amount])=>({number,amount})).sort((a,b)=>Number(a.number)-Number(b.number));
-  return {detailRows,totals,warnings};
+  return {detailRows, totals, warnings, issues};
 }
 function parseInput(){
   preview=parseMessage(val('entryText'), val('entryName')||'Default'); renderPreview(); showToast('Preview ပြီးပါပြီ');
 }
 function renderPreview(){
-  setText('pvRows',preview.detailRows.length); setText('pvTotal',money(preview.detailRows.reduce((a,b)=>a+b.amount,0))); setText('pvWarnings',preview.warnings.length);
+  setText('pvRows',preview.detailRows.length);
+  setText('pvTotal',money(preview.detailRows.reduce((a,b)=>a+b.amount,0)));
+  setText('pvWarnings',preview.warnings.length);
   document.getElementById('previewRows').innerHTML=preview.detailRows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name||val('entryName')||'Default')}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${r.type}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No preview</td></tr>';
   document.getElementById('previewAgg').innerHTML=preview.totals.map(r=>`<tr><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
   document.getElementById('warnBox').innerHTML=preview.warnings.length? `<div class="bad">${preview.warnings.map(escapeHtml).join('<br>')}</div>` : '<span class="good">Warnings မရှိပါ</span>';
+  renderIssueEditor();
 }
+function renderIssueEditor(){
+  const wrap=document.getElementById('issueEditorWrap');
+  const list=document.getElementById('issueEditorList');
+  const editor=document.getElementById('entryText');
+  if(!wrap || !list || !editor) return;
+
+  if(preview.issues && preview.issues.length){
+    wrap.style.display='block';
+    editor.classList.add('entryError');
+    list.innerHTML = preview.issues.map((it,i)=>`
+      <div class="issueRow">
+        <div class="issueMsg">Line ${it.lineNo}: ${escapeHtml(it.message)}</div>
+        <textarea class="issueInput" id="issueLine_${i}" oninput="updateIssueText(${i}, this.value)">${escapeHtml(it.edited||it.line||'')}</textarea>
+        <div class="btnrow">
+          <button class="btn secondary small" onclick="replaceIssueLineInEditor(${i})">Replace in Paste Box</button>
+          <button class="btn warn small" onclick="appendIssueLineToEditor(${i})">Append Bottom</button>
+        </div>
+      </div>
+    `).join('');
+  }else{
+    wrap.style.display='none';
+    list.innerHTML='';
+    editor.classList.remove('entryError');
+  }
+}
+
+function updateIssueText(i, value){
+  if(!preview.issues || !preview.issues[i]) return;
+  preview.issues[i].edited = value;
+}
+
+function replaceIssueLineInEditor(i){
+  if(!preview.issues || !preview.issues[i]) return;
+  const issue=preview.issues[i];
+  const ta=document.getElementById('entryText');
+  const lines=ta.value.split('\n');
+  const idx = issue.lineNo ? issue.lineNo-1 : lines.findIndex(x=>x.trim()===String(issue.line).trim());
+  if(idx>=0) lines[idx]=issue.edited||issue.line;
+  else lines.push(issue.edited||issue.line);
+  ta.value = lines.join('\n');
+  showToast('Paste Box ထဲ အစားထိုးပြီးပါပြီ — Parse Preview ထပ်နှိပ်ပါ');
+}
+
+function appendIssueLineToEditor(i){
+  if(!preview.issues || !preview.issues[i]) return;
+  const issue=preview.issues[i];
+  const ta=document.getElementById('entryText');
+  ta.value = ta.value.replace(/\s+$/,'') + '\n' + (issue.edited||issue.line);
+  showToast('အောက်ဆုံးမှာ ထည့်ပြီးပါပြီ — Parse Preview ထပ်နှိပ်ပါ');
+}
+
+function loadIssueLinesToEditor(){
+  if(!preview.issues || !preview.issues.length){ showToast('အနီစာ မရှိပါ'); return; }
+  document.getElementById('entryText').value = preview.issues.map(x=>x.edited||x.line).join('\n');
+  showToast('အနီစာကြောင်းတွေကို Paste Box ထဲ တင်ပြီးပါပြီ');
+}
+
+function clearIssueEditor(){
+  const wrap=document.getElementById('issueEditorWrap');
+  const list=document.getElementById('issueEditorList');
+  const editor=document.getElementById('entryText');
+  if(wrap) wrap.style.display='none';
+  if(list) list.innerHTML='';
+  if(editor) editor.classList.remove('entryError');
+  if(preview) preview.issues=[];
+}
+
 function savePreview(){
   if(!preview.detailRows.length){showToast('Save လုပ်ရန် preview မရှိပါ'); return;}
   const date=val('entryDate')||today(); const session=val('entrySession')||'AM'; const name=val('entryName')||'Default'; const ts=Date.now();
   preview.detailRows.forEach(r=>records.push({...r,name:(r.name||name),date,session,ts,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()}));
-  saveRecords(); saveCloudSnapshot(false); preview={detailRows:[],totals:[],warnings:[]}; renderAll(); showToast('Saved + Cloud Sync');
+  saveRecords(); saveCloudSnapshot(false); preview={detailRows:[],totals:[],warnings:[],issues:[]}; renderAll(); showToast('Saved + Cloud Sync');
 }
 function filterRecords(date,session,name='ALL'){
   return records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (name==='ALL' || (r.name||'Default')===name));
