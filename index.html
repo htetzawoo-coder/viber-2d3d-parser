@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Viber 2D Parser v2.1</title>
+<style>
+body { font-family: Arial; padding: 10px; }
+textarea { width: 100%; height: 200px; }
+pre { background:#111; color:#0f0; padding:10px; }
+button { padding:10px; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<h2>Viber 2D Parser v2.1</h2>
+
+<textarea id="input" placeholder="Enter data..."></textarea>
+<br>
+<button onclick="parse()">PARSE</button>
+
+<pre id="output"></pre>
+
+<script>
+function reverse(n){
+  return n.toString().split('').reverse().join('');
+}
+
+function expandA2(digits, amount){
+  let arr = digits.split('');
+  let res = [];
+  for(let i=0;i<arr.length;i++){
+    for(let j=0;j<arr.length;j++){
+      if(i!==j){
+        res.push(arr[i]+arr[j]+"="+amount);
+      }
+    }
+  }
+  return res;
+}
+
+function expandStar(n, amount){
+  let res=[];
+  for(let i=0;i<=9;i++){
+    res.push(n+i+"="+amount);
+    res.push(i+n+"="+amount);
+  }
+  return res;
+}
+
+function parse(){
+  let lines = document.getElementById("input").value.split("\n");
+  let map = {};
+
+  function add(k,v){
+    if(!map[k]) map[k]=0;
+    map[k]+=v;
+  }
+
+  for(let line of lines){
+    line=line.trim();
+    if(!line) continue;
+
+    // R rule
+    if(line.includes("R")){
+      let [a,b]=line.split("R");
+      let num=a.trim();
+      let amt=parseInt(b);
+
+      add(num,amt);
+      add(reverse(num),amt);
+    }
+
+    // A2 rule
+    else if(line.includes("အခွေ")){
+      let parts=line.split(" ");
+      let digits=parts[0];
+      let amt=parseInt(parts[2]||parts[1]);
+      let ex=expandA2(digits,amt);
+      ex.forEach(e=>{
+        let [k,v]=e.split("=");
+        add(k,parseInt(v));
+      });
+    }
+
+    // star rule (1ပါ style)
+    else if(line.includes("ပါ")){
+      let n=line.match(/\d+/)[0];
+      let amt=parseInt(line.match(/\d+$/)[0]);
+      let ex=expandStar(n,amt);
+      ex.forEach(e=>{
+        let [k,v]=e.split("=");
+        add(k,parseInt(v));
+      });
+    }
+  }
+
+  let out=[];
+  let total=0;
+
+  for(let k in map){
+    out.push(k+" = "+map[k]);
+    total+=map[k];
+  }
+
+  out.push("\nTOTAL = "+total);
+  document.getElementById("output").innerText=out.join("\n");
+}
+</script>
+
+</body>
+</html>
