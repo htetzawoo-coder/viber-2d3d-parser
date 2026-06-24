@@ -3,357 +3,472 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Parser v2.1 Firebase</title>
+  <title>Viber 2D Desk - Stage 1 + Firebase</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, "Noto Sans Myanmar", sans-serif;
-      background: #f4f6f8;
-      color: #111827;
-      padding: 12px;
+    :root{
+      --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
+      --primary:#22c55e; --primary2:#16a34a; --danger:#ef4444; --warn:#f59e0b; --line:#334155;
+      --chip:#0b1224; --blue:#38bdf8;
     }
-    h2 { margin: 8px 0 12px; font-size: 20px; }
-    .card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    textarea {
-      width: 100%;
-      height: 190px;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      resize: vertical;
-      background: #fff;
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-    button {
-      padding: 12px 10px;
-      border: 0;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      background: #2563eb;
-      color: white;
-    }
-    button.secondary { background: #374151; }
-    button.danger { background: #dc2626; }
-    button.success { background: #16a34a; }
-    button:disabled { background: #9ca3af; cursor: not-allowed; }
-    .status {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      background: #eff6ff;
-      color: #1e40af;
-      font-size: 14px;
-      white-space: pre-wrap;
-    }
-    pre {
-      width: 100%;
-      min-height: 120px;
-      background: #101010;
-      color: #22ff44;
-      padding: 12px;
-      border-radius: 8px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      font-size: 15px;
-      line-height: 1.45;
-    }
-    .small { font-size: 12px; color: #6b7280; margin-top: 6px; }
-    .history-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 10px;
-      margin-top: 8px;
-      background: #fafafa;
-      font-size: 14px;
-    }
-    .history-title { font-weight: 700; margin-bottom: 4px; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:linear-gradient(135deg,#020617,#0f172a);color:var(--text);}
+    .app{max-width:1250px;margin:0 auto;min-height:100vh;padding:12px;}
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(15,23,42,.95);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:12px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+    .title{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    h1{font-size:22px;margin:0;color:#fff}.sub{color:var(--muted);font-size:13px;margin-top:4px}
+    .tabs{display:flex;gap:8px;overflow:auto;margin-top:12px;padding-bottom:2px}.tab{white-space:nowrap;border:1px solid #475569;background:#111827;color:#e5e7eb;border-radius:13px;padding:10px 12px;font-weight:700;cursor:pointer;box-shadow:0 4px 0 #020617}.tab.active{background:linear-gradient(135deg,#16a34a,#22c55e);color:#03130a;border-color:#86efac}.tab:active{transform:translateY(2px);box-shadow:0 2px 0 #020617}
+    .page{display:none}.page.active{display:block}.grid{display:grid;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{background:rgba(17,24,39,.96);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .card h2{font-size:18px;margin:0 0 10px}.card h3{font-size:15px;margin:0 0 8px;color:#bfdbfe}.muted{color:var(--muted)}
+    label{display:block;font-size:13px;color:#cbd5e1;margin:8px 0 5px}input,select,textarea{width:100%;background:#020617;color:#e5e7eb;border:1px solid #475569;border-radius:12px;padding:10px;font-size:15px;outline:none}textarea{min-height:170px;resize:vertical;line-height:1.5}input:focus,select:focus,textarea:focus{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+    .btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer;color:#03130a;background:#22c55e}.btn.secondary{background:#38bdf8;color:#031018}.btn.warn{background:#f59e0b;color:#120b01}.btn.danger{background:#ef4444;color:#fff}.btn.gray{background:#334155;color:#e5e7eb}.btn.small{padding:7px 9px;font-size:13px;border-radius:10px}.btn:active{transform:scale(.98)}
+    .stat{background:#020617;border:1px solid #334155;border-radius:16px;padding:13px}.stat .k{font-size:12px;color:#94a3b8}.stat .v{font-size:24px;font-weight:900;margin-top:4px}.good{color:#22c55e}.bad{color:#ef4444}.warnText{color:#f59e0b}.blue{color:#38bdf8}
+    table{width:100%;border-collapse:collapse;font-size:13px;background:#020617;border-radius:12px;overflow:hidden}th,td{border-bottom:1px solid #1f2937;padding:8px;text-align:left;vertical-align:top}th{background:#111827;color:#cbd5e1;position:sticky;top:0}tr:hover td{background:#0b1224}.right{text-align:right}.nowrap{white-space:nowrap}.scroll{max-height:430px;overflow:auto;border:1px solid #1f2937;border-radius:12px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:#020617;border:1px solid #334155;color:#e5e7eb;border-radius:999px;padding:7px 9px;font-weight:700;cursor:pointer}.chip:hover{border-color:#22c55e;color:#bbf7d0}
+    .board{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.cell{background:#03110a;border:1px solid #14532d;border-radius:10px;padding:6px;text-align:center;min-height:54px}.cell .num{font-weight:900;color:#86efac}.cell .amt{font-size:13px;color:#e5e7eb;margin-top:3px}.cell.over{background:#2a0707;border-color:#ef4444}.cell.over .num{color:#fecaca}.cell.over .amt{color:#fff}.cell.zero{background:#020617;border-color:#1e293b}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:800}.badge.good{background:#052e16}.badge.bad{background:#450a0a}.badge.warn{background:#422006;color:#fde68a}
+    .kbd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.key{background:#0b1224;border:1px solid #475569;border-radius:12px;padding:10px 6px;text-align:center;font-weight:900;cursor:pointer}.key:hover{border-color:#22c55e;background:#102a1d}.sharebox{white-space:pre-wrap;background:#020617;border:1px solid #334155;border-radius:12px;padding:12px;min-height:180px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+    .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#052e16;color:#dcfce7;border:1px solid #22c55e;padding:10px 14px;border-radius:999px;display:none;z-index:50;font-weight:800}.toast.show{display:block}
+    @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.board{gap:4px}.cell{min-height:48px;padding:4px}.cell .amt{font-size:11px}.kbd{grid-template-columns:repeat(4,1fr)}h1{font-size:18px}.app{padding:8px}.card{padding:10px}.tab{padding:9px 10px}}
   </style>
 </head>
 <body>
-  <h2>Viber 2D Parser v2.1 + Firebase</h2>
-
-  <div class="card">
-    <textarea id="input" placeholder="Example:
-24 R 500
-1ပါ 100
-12345 အခွေ 500"></textarea>
-
-    <div class="buttons">
-      <button onclick="parseInput()">PARSE</button>
-      <button class="success" onclick="saveToFirebase()" id="saveBtn" disabled>SAVE FIREBASE</button>
-      <button class="secondary" onclick="loadRecent()">LOAD RECENT</button>
-      <button class="danger" onclick="clearAll()">CLEAR</button>
+<div class="app">
+  <div class="topbar">
+    <div class="title">
+      <div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 1 + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Viber Paste · Manual Formula Entry · Limit/Over/Reports</div>
+      </div>
+      <div class="btnrow" style="margin-top:0">
+        <button class="btn gray small" onclick="exportJSON()">Backup JSON</button>
+        <button class="btn secondary small" onclick="saveCloudSnapshot()">Cloud Save</button>
+        <button class="btn warn small" onclick="loadLatestCloudSnapshot()">Load Cloud</button>
+        <button class="btn danger small" onclick="clearAllData()">Clear All</button>
+      </div>
     </div>
-
-    <div id="status" class="status">Ready. Paste data → PARSE → SAVE FIREBASE.</div>
+    <div class="tabs" id="tabs"></div>
   </div>
 
-  <div class="card">
-    <h3>Parsed Result</h3>
-    <pre id="output">TOTAL = 0</pre>
-    <div class="small">Collection name: <b>record</b></div>
-  </div>
+  <section id="dashboard" class="page active">
+    <div class="grid3">
+      <div class="stat"><div class="k">Today Total</div><div class="v" id="dashToday">0</div></div>
+      <div class="stat"><div class="k">AM Total</div><div class="v blue" id="dashAM">0</div></div>
+      <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ version က Stage 1 features မဖျက်ဘဲ Firebase Cloud Save/Load ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။ Formula Engine / Viber Parser / Limit Board / Report logic ကို စမ်းရန်ပါ။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
+  </section>
 
-  <div class="card">
-    <h3>Recent Firebase Records</h3>
-    <div id="history">No records loaded.</div>
-  </div>
+  <section id="entry" class="page">
+    <div class="grid2">
+      <div class="card">
+        <h2>Viber Paste / Manual Formula Entry</h2>
+        <div class="grid2">
+          <div><label>Date</label><input id="entryDate" type="date"></div>
+          <div><label>Session</label><select id="entrySession"><option>AM</option><option>PM</option></select></div>
+        </div>
+        <label>စာရင်းထည့်ရန်</label>
+        <textarea id="entryText" placeholder="ဥပမာ
+59 R 250
+86.87.1000R250
+A 100
+//-3355 250
+/9 500"></textarea>
+        <div class="btnrow">
+          <button class="btn" onclick="parseInput()">Parse Preview</button>
+          <button class="btn secondary" onclick="savePreview()">Confirm Save</button>
+          <button class="btn gray" onclick="document.getElementById('entryText').value=''">Clear Text</button>
+        </div>
+        <h3 style="margin-top:14px">Quick Formula Keyboard</h3>
+        <div class="kbd" id="quickKeys"></div>
+      </div>
+      <div class="card">
+        <h2>Preview Summary</h2>
+        <div class="grid3">
+          <div class="stat"><div class="k">Rows</div><div class="v" id="pvRows">0</div></div>
+          <div class="stat"><div class="k">Total</div><div class="v good" id="pvTotal">0</div></div>
+          <div class="stat"><div class="k">Warnings</div><div class="v bad" id="pvWarnings">0</div></div>
+        </div>
+        <h3 style="margin-top:14px">Aggregated by Number</h3>
+        <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="previewAgg"></tbody></table></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h2>Preview Detail</h2>
+      <div id="warnBox" class="muted"></div>
+      <div class="scroll"><table><thead><tr><th>No</th><th>Number</th><th class="right">Amount</th><th>Type</th><th>Source</th></tr></thead><tbody id="previewRows"></tbody></table></div>
+    </div>
+  </section>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <section id="limit" class="page">
+    <div class="card">
+      <h2>Limit Table Board</h2>
+      <div class="grid3">
+        <div><label>Date</label><input id="limitDate" type="date" onchange="renderLimit()"></div>
+        <div><label>Session</label><select id="limitSession" onchange="renderLimit()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>Limit Amount</label><input id="limitAmount" type="number" oninput="saveSettings();renderLimit();" placeholder="10000"></div>
+      </div>
+      <div class="grid3" style="margin-top:12px">
+        <div class="stat"><div class="k">Total</div><div class="v" id="limitTotal">0</div></div>
+        <div class="stat"><div class="k">Over Total</div><div class="v bad" id="limitOverTotal">0</div></div>
+        <div class="stat"><div class="k">Over Count</div><div class="v warnText" id="limitOverCount">0</div></div>
+      </div>
+      <div class="board" id="limitBoard" style="margin-top:12px"></div>
+    </div>
+  </section>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBlii0svzXc6OvL49P06e8TgFF4QrzyXm0",
-      authDomain: "viber2ddesk.firebaseapp.com",
-      projectId: "viber2ddesk",
-      storageBucket: "viber2ddesk.firebasestorage.app",
-      messagingSenderId: "98470658215",
-      appId: "1:98470658215:web:28475a9afc8f1f85695b82"
-    };
+  <section id="over" class="page">
+    <div class="card">
+      <h2>Over Page</h2>
+      <div class="grid3">
+        <div><label>Date</label><input id="overDate" type="date" onchange="renderOver()"></div>
+        <div><label>Session</label><select id="overSession" onchange="renderOver()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>Limit Amount</label><input id="overLimit" type="number" oninput="saveSettings();renderOver();"></div>
+      </div>
+      <div class="btnrow"><button class="btn secondary" onclick="copyOverText()">Copy Over Text</button></div>
+      <div class="scroll" style="margin-top:10px"><table><thead><tr><th>No</th><th>Number</th><th class="right">Amount</th><th class="right">Over</th></tr></thead><tbody id="overRows"></tbody><tfoot><tr><th colspan="2">Total</th><th class="right" id="overSumAmt">0</th><th class="right" id="overSumOver">0</th></tr></tfoot></table></div>
+    </div>
+  </section>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  <section id="reports" class="page">
+    <div class="card">
+      <h2>AM / PM / Daily Report</h2>
+      <div class="grid3">
+        <div><label>Date</label><input id="reportDate" type="date" onchange="renderReports()"></div>
+        <div><label>Session</label><select id="reportSession" onchange="renderReports()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>P Number</label><input id="pNumber" maxlength="2" placeholder="ဥပမာ 59" oninput="renderReports()"></div>
+      </div>
+      <div class="grid3" style="margin-top:12px">
+        <div class="stat"><div class="k">Total Amount</div><div class="v" id="rTotal">0</div></div>
+        <div class="stat"><div class="k">Commission</div><div class="v blue" id="rCom">0</div></div>
+        <div class="stat"><div class="k">Net</div><div class="v good" id="rNet">0</div></div>
+        <div class="stat"><div class="k">P Amount</div><div class="v warnText" id="rPamt">0</div></div>
+        <div class="stat"><div class="k">Payout</div><div class="v bad" id="rPayout">0</div></div>
+        <div class="stat"><div class="k">Final</div><div class="v" id="rFinal">0</div></div>
+      </div>
+      <h3 style="margin-top:14px">Number Summary</h3>
+      <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+    </div>
+  </section>
 
-    let parsedRows = [];
-    let parsedSummary = [];
-    let parsedTotal = 0;
+  <section id="image" class="page">
+    <div class="card">
+      <h2>Image / Share Text Page</h2>
+      <div class="grid3">
+        <div><label>Date</label><input id="imageDate" type="date" onchange="renderImageText()"></div>
+        <div><label>Session</label><select id="imageSession" onchange="renderImageText()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>Title</label><input id="imageTitle" value="2D Report" oninput="renderImageText()"></div>
+      </div>
+      <div class="btnrow"><button class="btn secondary" onclick="copyShareText()">Copy Share Text</button><button class="btn gray" onclick="renderImageText()">Refresh</button></div>
+      <div class="sharebox" id="shareText" style="margin-top:12px"></div>
+    </div>
+  </section>
 
-    function setStatus(msg) {
-      document.getElementById("status").innerText = msg;
+  <section id="settings" class="page">
+    <div class="card">
+      <h2>Settings</h2>
+      <div class="grid3">
+        <div><label>Shop Name</label><input id="shopName" oninput="saveSettings()"></div>
+        <div><label>Commission %</label><input id="commissionRate" type="number" oninput="saveSettings();renderReports();"></div>
+        <div><label>Payout Rate</label><input id="payoutRate" type="number" oninput="saveSettings();renderReports();"></div>
+        <div><label>Default Limit Amount</label><input id="defaultLimit" type="number" oninput="saveSettings();syncLimitInputs();"></div>
+        <div><label>AM Close</label><input id="amClose" type="time" oninput="saveSettings()"></div>
+        <div><label>PM Close</label><input id="pmClose" type="time" oninput="saveSettings()"></div>
+      </div>
+      <div class="muted" style="margin-top:12px">Stage 1 + Firebase: localStorage + Firestore snapshot sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBlii0svzXc6OvL49P06e8TgFF4QrzyXm0",
+  authDomain: "viber2ddesk.firebaseapp.com",
+  projectId: "viber2ddesk",
+  storageBucket: "viber2ddesk.firebasestorage.app",
+  messagingSenderId: "98470658215",
+  appId: "1:98470658215:web:28475a9afc8f1f85695b82"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const pages =  [
+  ['dashboard','Dashboard'],['entry','Entry'],['limit','Limit Board'],['over','Over'],['reports','Reports'],['image','Image'],['settings','Settings']
+];
+const N2 = Array.from({length:100},(_,i)=>String(i).padStart(2,'0'));
+const FIXED = {
+  A:['05','16','27','38','49','50','61','72','83','94'],
+  POWER:['05','16','27','38','49','50','61','72','83','94'],
+  Z:['07','18','24','35','42','53','69','70','81','96'],
+  B:['01','10','12','21','23','32','34','43','45','54','56','65','67','76','78','87','89','98','90','09']
+};
+let records = JSON.parse(localStorage.getItem('v2d_records')||'[]');
+let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
+let preview = {detailRows:[], totals:[], warnings:[]};
+
+function today(){return new Date().toISOString().slice(0,10)}
+function money(n){return Number(n||0).toLocaleString('en-US')}
+function unit(n){let v=Number(n||0)/100; return Number.isInteger(v)? String(v): String(parseFloat(v.toFixed(2)))}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function saveRecords(){localStorage.setItem('v2d_records',JSON.stringify(records));}
+
+async function saveCloudSnapshot(silent=false){
+  try{
+    const totalAmount = records.reduce((sum,r)=>sum+Number(r.amount||0),0);
+    await db.collection('record').add({
+      type:'stage1_snapshot',
+      app:'Viber 2D Desk Stage 1 + Firebase',
+      records,
+      settings,
+      totalRecords: records.length,
+      totalAmount,
+      localCreatedAt: new Date().toISOString(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    if(!silent) showToast('Cloud Save အောင်မြင်ပါပြီ');
+  }catch(err){
+    console.error(err);
+    showToast('Cloud Save မအောင်မြင်ပါ: ' + err.message);
+  }
+}
+
+async function loadLatestCloudSnapshot(){
+  try{
+    showToast('Cloud data ဖတ်နေပါသည်...');
+    const snap = await db.collection('record')
+      .orderBy('localCreatedAt','desc')
+      .limit(20)
+      .get();
+
+    let found = null;
+    snap.forEach(doc=>{
+      const d = doc.data();
+      if(!found && d.type === 'stage1_snapshot') found = d;
+    });
+
+    if(!found){
+      showToast('Cloud snapshot မတွေ့သေးပါ');
+      return;
     }
 
-    function normalizeLine(line) {
-      return line
-        .replace(/\u200B/g, "")
-        .replace(/[၊,]/g, " ")
-        .replace(/[=]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
+    if(!confirm('Cloud မှာသိမ်းထားတဲ့ နောက်ဆုံး Stage 1 data ကို ဒီဖုန်းထဲ ပြန်တင်မလား? လက်ရှိ local data ကိုအစားထိုးပါမယ်။')) return;
 
-    function reverse2(num) {
-      const s = String(num).padStart(2, "0");
-      return s.split("").reverse().join("");
-    }
-
-    function addRow(rows, number, amount, source, raw) {
-      if (!number || isNaN(amount)) return;
-      const n = String(number).padStart(2, "0").slice(-2);
-      rows.push({
-        number: n,
-        amount: Number(amount),
-        source: source || "manual",
-        raw: raw || ""
-      });
-    }
-
-    function expandStarDigit(digit, amount, raw) {
-      const rows = [];
-      const d = String(digit);
-      for (let i = 0; i <= 9; i++) {
-        addRow(rows, d + i, amount, "star_front", raw);
-        addRow(rows, i + d, amount, "star_back", raw);
-      }
-      return rows;
-    }
-
-    function expandAkwe(digits, amount, raw) {
-      const rows = [];
-      const arr = String(digits).split("");
-      for (let i = 0; i < arr.length; i++) {
-        for (let j = 0; j < arr.length; j++) {
-          if (i !== j) addRow(rows, arr[i] + arr[j], amount, "akwe", raw);
-        }
-      }
-      return rows;
-    }
-
-    function parseLine(line) {
-      const raw = line;
-      line = normalizeLine(line);
-      if (!line) return [];
-
-      // Ignore total-only lines
-      if (/^(total|စုစုပေါင်း|ပေါင်း)/i.test(line)) return [];
-
-      // အခွေ rule: 12345 အခွေ 500
-      if (line.includes("အခွေ") || line.toLowerCase().includes("akwe")) {
-        const digitsMatch = line.match(/\d+/);
-        const allNums = line.match(/\d+/g) || [];
-        const digits = digitsMatch ? digitsMatch[0] : "";
-        const amount = Number(allNums[allNums.length - 1]);
-        if (digits && !isNaN(amount)) return expandAkwe(digits, amount, raw);
-      }
-
-      // ပါ / * rule: 1ပါ 100, 1ပါR100, 1* 100
-      if (line.includes("ပါ") || line.includes("*")) {
-        const digitMatch = line.match(/\d/);
-        const allNums = line.match(/\d+/g) || [];
-        const amount = Number(allNums[allNums.length - 1]);
-        if (digitMatch && !isNaN(amount)) {
-          return expandStarDigit(digitMatch[0], amount, raw);
-        }
-      }
-
-      // R rule: 24 R 500, 24R500
-      if (/[Rr]/.test(line)) {
-        const m = line.match(/(\d{1,2})\s*[Rr]\s*(\d+)/);
-        if (m) {
-          const num = m[1].padStart(2, "0");
-          const amount = Number(m[2]);
-          const rows = [];
-          addRow(rows, num, amount, "reverse", raw);
-          addRow(rows, reverse2(num), amount, "reverse", raw);
-          return rows;
-        }
-      }
-
-      // Plain rule: 22 200, 77-2000, 44=1000
-      const nums = line.match(/\d+/g) || [];
-      if (nums.length >= 2) {
-        const num = nums[0].padStart(2, "0");
-        const amount = Number(nums[nums.length - 1]);
-        const rows = [];
-        addRow(rows, num, amount, "plain", raw);
-        return rows;
-      }
-
-      return [];
-    }
-
-    function parseInput() {
-      const text = document.getElementById("input").value || "";
-      const lines = text.split("\n");
-      const rows = [];
-
-      for (const line of lines) {
-        const parsed = parseLine(line);
-        parsed.forEach(r => rows.push(r));
-      }
-
-      const summaryMap = {};
-      rows.forEach(r => {
-        if (!summaryMap[r.number]) summaryMap[r.number] = 0;
-        summaryMap[r.number] += r.amount;
-      });
-
-      parsedSummary = Object.keys(summaryMap)
-        .sort((a, b) => Number(a) - Number(b))
-        .map(number => ({
-          number,
-          amount: summaryMap[number]
-        }));
-
-      parsedRows = rows;
-      parsedTotal = parsedSummary.reduce((sum, r) => sum + r.amount, 0);
-
-      const outputLines = parsedSummary.map(r => `${r.number} = ${r.amount}`);
-      outputLines.push("");
-      outputLines.push(`DETAIL ROWS = ${parsedRows.length}`);
-      outputLines.push(`TOTAL = ${parsedTotal}`);
-
-      document.getElementById("output").innerText = outputLines.join("\n");
-      document.getElementById("saveBtn").disabled = parsedRows.length === 0;
-
-      setStatus(parsedRows.length
-        ? `Parsed OK. ${parsedRows.length} detail rows. Total = ${parsedTotal}. Now press SAVE FIREBASE.`
-        : "No valid entries found.");
-    }
-
-    async function saveToFirebase() {
-      if (!parsedRows.length) {
-        setStatus("Please PARSE first.");
-        return;
-      }
-
-      const inputText = document.getElementById("input").value || "";
-      const saveBtn = document.getElementById("saveBtn");
-      saveBtn.disabled = true;
-      setStatus("Saving to Firebase...");
-
-      try {
-        await db.collection("record").add({
-          inputText,
-          rows: parsedRows,
-          summary: parsedSummary,
-          total: parsedTotal,
-          source: "github-parser-v2.1",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          localCreatedAt: new Date().toISOString()
-        });
-
-        setStatus(`Saved to Firebase ✅\nTotal = ${parsedTotal}\nRows = ${parsedRows.length}`);
-        await loadRecent();
-      } catch (err) {
-        console.error(err);
-        setStatus("Firebase save failed ❌\n" + err.message);
-        saveBtn.disabled = false;
-      }
-    }
-
-    async function loadRecent() {
-      const history = document.getElementById("history");
-      history.innerHTML = "Loading...";
-
-      try {
-        const snap = await db.collection("record")
-          .orderBy("localCreatedAt", "desc")
-          .limit(10)
-          .get();
-
-        if (snap.empty) {
-          history.innerHTML = "No records found.";
-          return;
-        }
-
-        let html = "";
-        snap.forEach(doc => {
-          const d = doc.data();
-          const created = d.localCreatedAt ? new Date(d.localCreatedAt).toLocaleString() : "-";
-          html += `
-            <div class="history-item">
-              <div class="history-title">Total: ${d.total || 0} | Rows: ${(d.rows || []).length}</div>
-              <div>Date: ${created}</div>
-              <div class="small">Doc ID: ${doc.id}</div>
-            </div>
-          `;
-        });
-
-        history.innerHTML = html;
-        setStatus("Recent Firebase records loaded ✅");
-      } catch (err) {
-        console.error(err);
-        history.innerHTML = "Load failed: " + err.message;
-        setStatus("Firebase load failed ❌\n" + err.message);
-      }
-    }
-
-    function clearAll() {
-      document.getElementById("input").value = "";
-      document.getElementById("output").innerText = "TOTAL = 0";
-      parsedRows = [];
-      parsedSummary = [];
-      parsedTotal = 0;
-      document.getElementById("saveBtn").disabled = true;
-      setStatus("Cleared.");
-    }
-  </script>
+    records = Array.isArray(found.records) ? found.records : [];
+    settings = found.settings || settings || {};
+    saveRecords();
+    localStorage.setItem('v2d_settings', JSON.stringify(settings));
+    init();
+    renderAll();
+    showToast('Cloud Load အောင်မြင်ပါပြီ');
+  }catch(err){
+    console.error(err);
+    showToast('Cloud Load မအောင်မြင်ပါ: ' + err.message);
+  }
+}
+function saveSettings(){
+  settings.shopName = val('shopName') || 'Viber 2D Desk';
+  settings.commissionRate = Number(val('commissionRate')||0);
+  settings.payoutRate = Number(val('payoutRate')||80);
+  settings.defaultLimit = Number(val('defaultLimit')||10000);
+  settings.amClose = val('amClose') || '12:00';
+  settings.pmClose = val('pmClose') || '16:30';
+  localStorage.setItem('v2d_settings',JSON.stringify(settings));
+}
+function val(id){const el=document.getElementById(id); return el?el.value:''}
+function setVal(id,v){const el=document.getElementById(id); if(el) el.value=v}
+function uniq(a){return [...new Set(a)]}
+function rev(n){n=String(n).padStart(2,'0'); return n[1]+n[0]}
+function even(d){return Number(d)%2===0}
+function odd(d){return !even(d)}
+function splitPairs(s){const c=String(s).replace(/\D/g,''); const out=[]; for(let i=0;i+1<c.length;i+=2) out.push(c.slice(i,i+2)); return out.filter(x=>/^\d{2}$/.test(x));}
+function normalize(s){return String(s||'').normalize('NFKC').replace(/[Ｒｒ]/g,'R').replace(/[＝]/g,'=').replace(/[–—−]/g,'-').replace(/\r/g,'\n').trim();}
+function numberGroups(s){return [...String(s).matchAll(/\d+/g)].map(m=>m[0]);}
+function breakNums(code){
+  const n=Number(code); if(!Number.isFinite(n)) return [];
+  let sums=[]; if(n>=10 && n<=18) sums=[n-10,n]; else sums=[n];
+  return N2.filter(x=>sums.includes(Number(x[0])+Number(x[1])));
+}
+function containsDigit(d){return N2.filter(x=>x.includes(d));}
+function comboDigits(ds){ds=uniq(ds.filter(x=>/\d/.test(x))); const out=[]; ds.forEach(a=>ds.forEach(b=>out.push(a+b))); return out;}
+function parityNums(a,b){
+  return N2.filter(n=>{
+    const okA = a==='+'?even(n[0]):a==='-'?odd(n[0]):a==='/'?true:n[0]===a;
+    const okB = b==='+'?even(n[1]):b==='-'?odd(n[1]):b==='/'?true:n[1]===b;
+    return okA && okB;
+  });
+}
+function expandToken(token){
+  let t=normalize(token).toUpperCase().replace(/\s+/g,'');
+  if(!t) return [];
+  if(FIXED[t]) return FIXED[t].slice();
+  if(t.includes('-') && !['--','-+','-/'].includes(t) && !/^\d-$/.test(t) && !/^\/-$/.test(t)){
+    const idx=t.indexOf('-'); const base=t.slice(0,idx); const rem=t.slice(idx+1);
+    const baseNums=expandToken(base); const remNums=splitPairs(rem);
+    if(baseNums.length && remNums.length) return baseNums.filter(n=>!remNums.includes(n));
+  }
+  if(t==='//') return N2.filter(n=>n[0]===n[1]);
+  if(t==='++') return parityNums('+','+');
+  if(t==='--') return parityNums('-','-');
+  if(t==='+-') return parityNums('+','-');
+  if(t==='-+') return parityNums('-','+');
+  if(t==='+/') return parityNums('+','/');
+  if(t==='-/') return parityNums('-','/');
+  if(t==='/+') return parityNums('/','+');
+  if(t==='/-') return parityNums('/','-');
+  if(/^\+\d$/.test(t)) return parityNums('+',t[1]);
+  if(/^-\d$/.test(t)) return parityNums('-',t[1]);
+  if(/^\d\+$/.test(t)) return parityNums(t[0],'+');
+  if(/^\d-$/.test(t)) return parityNums(t[0],'-');
+  if(/^\d\/$/.test(t)) return parityNums(t[0],'/');
+  if(/^\/\d$/.test(t)) return parityNums('/',t[1]);
+  if(/^\/\d{2}$/.test(t)) return [t.slice(1)];
+  if(/^\*\d{1,2}$/.test(t)) return breakNums(t.slice(1));
+  if(/^\d\*$/.test(t)) return containsDigit(t[0]);
+  if(/^\d{2}\*$/.test(t)) return uniq([t.slice(0,2),rev(t.slice(0,2))]);
+  if(/^\d{2,}\*\*$/.test(t)) return comboDigits(t.replace(/\*\*/g,'').split(''));
+  if(/^\d{2}$/.test(t)) return [t];
+  if(/^\d{4,}$/.test(t) && t.length%2===0) return splitPairs(t);
+  return [];
+}
+function expandExpression(expr){
+  expr=normalize(expr);
+  const rawTokens=expr.split(/[\s,.]+/).filter(Boolean);
+  const out=[];
+  rawTokens.forEach(tok=>{
+    if(/^\d{2}\/\d{2}(\/\d{2})*$/.test(tok)) tok.split('/').forEach(x=>out.push(x));
+    else expandToken(tok).forEach(x=>out.push(x));
+  });
+  return uniq(out.filter(x=>/^\d{2}$/.test(x)));
+}
+function addRow(rows,warnings,num,amount,source,type){
+  num=String(num).padStart(2,'0'); const amt=Number(String(amount).replace(/[^\d]/g,''));
+  if(!/^\d{2}$/.test(num)){warnings.push('Number မမှန်: '+num+' | '+source);return;}
+  if(!Number.isFinite(amt)||amt<=0){warnings.push('Amount မမှန်: '+amount+' | '+source);return;}
+  rows.push({number:num,amount:amt,type,source});
+}
+function parseReverseLine(line){
+  const source=line; const rows=[]; const warnings=[]; const s=normalize(line); const up=s.toUpperCase(); const rIndex=up.indexOf('R');
+  const before=s.slice(0,rIndex).trim(); const after=s.slice(rIndex+1).trim(); const afterNums=numberGroups(after); const beforeGroups=numberGroups(before);
+  if(!afterNums.length){warnings.push('R နောက် amount မတွေ့: '+source); return {rows,warnings};}
+  let nums=[], normalAmount=afterNums[0], reverseAmount=afterNums[0];
+  const lastBefore=beforeGroups[beforeGroups.length-1];
+  if(beforeGroups.length>=2 && lastBefore && lastBefore.length>2){
+    normalAmount=lastBefore; reverseAmount=afterNums[0]; nums=beforeGroups.slice(0,-1).flatMap(g=>g.length===2?[g]:splitPairs(g));
+  }else{
+    nums=expandExpression(before);
+  }
+  if(!nums.length){warnings.push('R ရှေ့ number မတွေ့: '+source); return {rows,warnings};}
+  nums.forEach(n=>{addRow(rows,warnings,n,normalAmount,source,'normal'); const rn=rev(n); if(rn!==n) addRow(rows,warnings,rn,reverseAmount,source,'reverse');});
+  return {rows,warnings};
+}
+function splitExprAmount(line){
+  let s=normalize(line); const m=s.match(/(\d+)\s*$/); if(!m) return null;
+  const amount=m[1]; let expr=s.slice(0,m.index).trim();
+  expr=expr.replace(/[=,.\s]+$/g,'');
+  if(expr.endsWith('-') && !/^\d-$/.test(expr)) expr=expr.slice(0,-1).trim();
+  return {expr,amount};
+}
+function parseLine(line){
+  line=normalize(line); const rows=[]; const warnings=[]; if(!line) return {rows,warnings};
+  if(/[Rr]/.test(line)) return parseReverseLine(line);
+  const pair=splitExprAmount(line); if(!pair){warnings.push('Amount မတွေ့: '+line); return {rows,warnings};}
+  const nums=expandExpression(pair.expr);
+  if(!nums.length){warnings.push('Formula/Number မဖတ်နိုင်: '+line); return {rows,warnings};}
+  nums.forEach(n=>addRow(rows,warnings,n,pair.amount,line,'normal'));
+  return {rows,warnings};
+}
+function parseMessage(text){
+  const lines=normalize(text).split('\n').map(x=>x.trim()).filter(Boolean); const detailRows=[]; const warnings=[];
+  lines.forEach(l=>{const r=parseLine(l); detailRows.push(...r.rows); warnings.push(...r.warnings);});
+  const map=new Map(); detailRows.forEach(r=>map.set(r.number,(map.get(r.number)||0)+r.amount));
+  const totals=[...map.entries()].map(([number,amount])=>({number,amount})).sort((a,b)=>Number(a.number)-Number(b.number));
+  return {detailRows,totals,warnings};
+}
+function parseInput(){
+  preview=parseMessage(val('entryText')); renderPreview(); showToast('Preview ပြီးပါပြီ');
+}
+function renderPreview(){
+  setText('pvRows',preview.detailRows.length); setText('pvTotal',money(preview.detailRows.reduce((a,b)=>a+b.amount,0))); setText('pvWarnings',preview.warnings.length);
+  document.getElementById('previewRows').innerHTML=preview.detailRows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${r.type}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">No preview</td></tr>';
+  document.getElementById('previewAgg').innerHTML=preview.totals.map(r=>`<tr><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
+  document.getElementById('warnBox').innerHTML=preview.warnings.length? `<div class="bad">${preview.warnings.map(escapeHtml).join('<br>')}</div>` : '<span class="good">Warnings မရှိပါ</span>';
+}
+function savePreview(){
+  if(!preview.detailRows.length){showToast('Save လုပ်ရန် preview မရှိပါ'); return;}
+  const date=val('entryDate')||today(); const session=val('entrySession')||'AM'; const ts=Date.now();
+  preview.detailRows.forEach(r=>records.push({...r,date,session,ts,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()}));
+  saveRecords(); saveCloudSnapshot(true); preview={detailRows:[],totals:[],warnings:[]}; renderAll(); showToast('Saved + Cloud Sync');
+}
+function filterRecords(date,session){
+  return records.filter(r=>r.date===date && (session==='DAILY' || r.session===session));
+}
+function totalsByNumber(date,session){
+  const map=new Map(); filterRecords(date,session).forEach(r=>map.set(r.number,(map.get(r.number)||0)+Number(r.amount||0)));
+  return Object.fromEntries([...map.entries()].sort((a,b)=>Number(a[0])-Number(b[0])));
+}
+function renderLimit(){
+  const date=val('limitDate')||today(); const session=val('limitSession')||'AM'; const limit=Number(val('limitAmount')||settings.defaultLimit||10000); const totals=totalsByNumber(date,session);
+  const board=document.getElementById('limitBoard'); let total=0, overTotal=0, overCount=0;
+  board.innerHTML=N2.map(n=>{const amt=totals[n]||0; total+=amt; const over=amt>limit; if(over){overCount++; overTotal+=amt-limit;} return `<div class="cell ${amt?'' :'zero'} ${over?'over':''}"><div class="num">${n}</div><div class="amt">${amt?unit(amt):'-'}</div></div>`}).join('');
+  setText('limitTotal',money(total)); setText('limitOverTotal',money(overTotal)); setText('limitOverCount',overCount);
+}
+function renderOver(){
+  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const totals=totalsByNumber(date,session);
+  const rows=Object.entries(totals).filter(([n,a])=>a>limit).map(([number,amount])=>({number,amount,over:amount-limit}));
+  document.getElementById('overRows').innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td class="right bad">${money(r.over)}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Over မရှိပါ</td></tr>';
+  setText('overSumAmt',money(rows.reduce((a,b)=>a+b.amount,0))); setText('overSumOver',money(rows.reduce((a,b)=>a+b.over,0)));
+}
+function reportCalc(){
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const totals=totalsByNumber(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const com=total*(Number(settings.commissionRate||0)/100); const net=total-com; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2); const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*(Number(settings.payoutRate||80)); const final=net-payout;
+  return {date,session,totals,total,com,net,p,pamt,payout,final};
+}
+function renderReports(){
+  const r=reportCalc(); setText('rTotal',money(r.total)); setText('rCom',money(Math.round(r.com))); setText('rNet',money(Math.round(r.net))); setText('rPamt',money(r.pamt)); setText('rPayout',money(r.payout)); setText('rFinal',money(Math.round(r.final)));
+  document.getElementById('rFinal').className='v '+(r.final>=0?'good':'bad');
+  document.getElementById('reportRows').innerHTML=Object.entries(r.totals).map(([n,a])=>`<tr><td><b>${n}</b></td><td class="right">${money(a)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
+}
+function renderImageText(){
+  const date=val('imageDate')||today(); const session=val('imageSession')||'AM'; const title=val('imageTitle')||'2D Report'; const totals=totalsByNumber(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const lines=[]; lines.push(`${title}`); lines.push(`${settings.shopName||'Viber 2D Desk'} | ${date} | ${session}`); lines.push('--------------------'); Object.entries(totals).forEach(([n,a])=>lines.push(`${n} = ${money(a)}`)); lines.push('--------------------'); lines.push(`Total = ${money(total)}`);
+  document.getElementById('shareText').textContent=lines.join('\n');
+}
+function renderDashboard(){
+  const t=today(); const am=filterRecords(t,'AM').reduce((a,b)=>a+b.amount,0); const pm=filterRecords(t,'PM').reduce((a,b)=>a+b.amount,0); setText('dashToday',money(am+pm)); setText('dashAM',money(am)); setText('dashPM',money(pm));
+  document.getElementById('latestRows').innerHTML=records.slice(-30).reverse().map(r=>`<tr><td>${r.date}</td><td>${r.session}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">No records</td></tr>';
+}
+function renderAll(){renderDashboard();renderPreview();renderLimit();renderOver();renderReports();renderImageText();}
+function setText(id,v){const el=document.getElementById(id); if(el) el.textContent=v;}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.id===id));renderAll();}
+function insertKey(k){const ta=document.getElementById('entryText'); const add=(ta.value && !ta.value.endsWith('\n')?'\n':'')+k+' '; ta.value+=add; ta.focus();}
+function copyText(text){navigator.clipboard?.writeText(text).then(()=>showToast('Copied')).catch(()=>showToast('Copy မရပါ'));}
+function copyShareText(){copyText(document.getElementById('shareText').textContent)}
+function copyOverText(){
+  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const totals=totalsByNumber(date,session); const rows=Object.entries(totals).filter(([n,a])=>a>limit);
+  const lines=[`OVER ${date} ${session}`,'No | Number | Amount | Over']; rows.forEach(([n,a],i)=>lines.push(`${i+1}. ${n} | ${money(a)} | ${money(a-limit)}`)); lines.push('Total Over: '+money(rows.reduce((s,[n,a])=>s+a-limit,0))); copyText(lines.join('\n'));
+}
+function exportJSON(){const data={settings,records,exportedAt:new Date().toISOString()}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viber-2d-desk-backup.json';a.click();}
+function clearAllData(){if(confirm('Data အကုန်ဖျက်မှာ သေချာလား?')){records=[];saveRecords();renderAll();showToast('Cleared');}}
+function syncLimitInputs(){const v=val('defaultLimit')||settings.defaultLimit||10000; setVal('limitAmount',v); setVal('overLimit',v); renderLimit(); renderOver();}
+function init(){
+  document.getElementById('tabs').innerHTML=pages.map(([id,name])=>`<button class="tab ${id==='dashboard'?'active':''}" data-id="${id}" onclick="go('${id}')">${name}</button>`).join('');
+  ['entryDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>setVal(id,today()));
+  settings={shopName:'Viber 2D Desk',commissionRate:20,payoutRate:80,defaultLimit:10000,amClose:'12:00',pmClose:'16:30',...settings};
+  setVal('shopName',settings.shopName); setVal('commissionRate',settings.commissionRate); setVal('payoutRate',settings.payoutRate); setVal('defaultLimit',settings.defaultLimit); setVal('amClose',settings.amClose); setVal('pmClose',settings.pmClose); syncLimitInputs();
+  const keys=['A','Z','B','//','//-3355','*2','*12','1*','12*','1234**','++','--','+-','-+','/9','9/','+/','-/','/+','/-','+1','-1','1+','1-'];
+  document.getElementById('quickKeys').innerHTML=keys.map(k=>`<div class="key" onclick="insertKey('${k}')">${k}</div>`).join('');
+  document.getElementById('formulaChips').innerHTML=keys.map(k=>`<span class="chip" onclick="go('entry');insertKey('${k}')">${k}</span>`).join('');
+  renderAll();
+}
+init();
+</script>
 </body>
 </html>
