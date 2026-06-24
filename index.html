@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 1 + Firebase</title>
+  <title>Viber 2D Desk - Stage 2.2 Full</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -27,6 +27,59 @@
     .board{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.cell{background:#03110a;border:1px solid #14532d;border-radius:10px;padding:6px;text-align:center;min-height:54px}.cell .num{font-weight:900;color:#86efac}.cell .amt{font-size:13px;color:#e5e7eb;margin-top:3px}.cell.over{background:#2a0707;border-color:#ef4444}.cell.over .num{color:#fecaca}.cell.over .amt{color:#fff}.cell.zero{background:#020617;border-color:#1e293b}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:800}.badge.good{background:#052e16}.badge.bad{background:#450a0a}.badge.warn{background:#422006;color:#fde68a}
     .kbd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.key{background:#0b1224;border:1px solid #475569;border-radius:12px;padding:10px 6px;text-align:center;font-weight:900;cursor:pointer}.key:hover{border-color:#22c55e;background:#102a1d}.sharebox{white-space:pre-wrap;background:#020617;border:1px solid #334155;border-radius:12px;padding:12px;min-height:180px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
     .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#052e16;color:#dcfce7;border:1px solid #22c55e;padding:10px 14px;border-radius:999px;display:none;z-index:50;font-weight:800}.toast.show{display:block}
+
+    .desk-layout{display:grid;gap:12px}
+    .board-card{padding:12px}
+    .board-toolbar{display:grid;grid-template-columns:150px 130px 190px 150px 1fr;gap:10px;align-items:end}
+    .board-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+    .main-board{grid-template-columns:repeat(10,minmax(72px,1fr));gap:5px;margin-top:10px}
+    .main-board .cell{min-height:50px;border-radius:8px;padding:5px;background:#07180f;border-color:#1e6b3a}
+    .main-board .cell .num{font-size:16px;color:#a7f3d0}
+    .main-board .cell .amt{font-size:13px;font-weight:900;color:#f8fafc}
+    .main-board .cell.over{background:#3b0808;border-color:#ef4444;box-shadow:inset 0 0 0 1px rgba(239,68,68,.35)}
+    .desk-columns{display:grid;grid-template-columns:1.05fr 1fr .85fr;gap:12px;align-items:start}
+    .entry-card textarea{min-height:260px;font-family:ui-monospace,Consolas,monospace;font-size:17px;line-height:1.6}
+    .preview-card .scroll,.over-card .scroll{max-height:430px}
+    .langbox{display:flex;align-items:center;gap:8px;background:#020617;border:1px solid #334155;border-radius:12px;padding:8px 10px}
+    .langbox select{width:auto;padding:6px 8px;border-radius:8px}
+
+
+    /* Stage 1.5: Windows-style Limit Board */
+    .app{max-width:100vw;padding:8px 10px;}
+    .topbar{border-radius:20px;padding:10px 14px;margin-bottom:8px;}
+    .topbar h1{font-size:24px}.topbar .sub{font-size:12px;letter-spacing:.2px}.tabs{margin-top:8px}.tab{padding:8px 12px;border-radius:11px}
+    .board-card{background:linear-gradient(180deg,#f8fafc,#eef5f0);color:#0f172a;border-color:#cbd5e1;box-shadow:0 8px 22px rgba(0,0,0,.18);}
+    .board-card h2{color:#0f172a;margin:0}.board-card .muted,.board-card label{color:#475569}.board-card input,.board-card select{background:#fff;color:#0f172a;border-color:#94a3b8}.board-card .stat{background:#e8f7ef;border-color:#a7d9ba;color:#0f172a;padding:8px 10px}.board-card .stat .v{font-size:20px}.board-card .stat .k{color:#475569}
+    .board-toolbar{grid-template-columns:130px 110px 190px 130px 1fr;gap:8px}.board-stats{gap:6px;margin-top:0}.board-card .btn.secondary{background:#0ea5e9;color:white}
+    .board-wrap{width:100%;overflow:auto;border:2px solid #334155;border-radius:14px;background:#dbe7df;padding:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+    .board-table{display:grid;grid-template-columns:repeat(10,56px minmax(48px,1fr));min-width:1180px;border-top:1px solid #94a3b8;border-left:1px solid #94a3b8;background:#f8fafc;}
+    .numCell,.amtCell{height:38px;border-right:1px solid #94a3b8;border-bottom:1px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;}
+    .numCell{background:linear-gradient(180deg,#55b96f,#2e8e4f);color:#082012;font-size:22px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+    .amtCell{background:#f8fafc;color:#0f172a;font-size:17px;letter-spacing:.3px}.amtCell.empty{color:#cbd5e1}.numCell.over{background:linear-gradient(180deg,#f87171,#b91c1c);color:#fff}.amtCell.over{background:#fee2e2;color:#991b1b}.numCell.hot{background:linear-gradient(180deg,#22c55e,#15803d)}.amtCell.hot{background:#ecfdf5;color:#065f46}
+    .desk-columns{grid-template-columns:minmax(360px,.95fr) minmax(390px,1.05fr) minmax(300px,.8fr);gap:10px}.desk-columns .card{border-radius:16px}.entry-card textarea{min-height:225px;font-size:16px}.preview-card .scroll,.over-card .scroll{max-height:360px}.entry-card .stat{padding:9px}.entry-card .stat .v{font-size:20px}
+    .wide-board-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.unit-badge{background:#1d4ed8;color:#dbeafe;border-radius:8px;padding:5px 10px;font-weight:900;font-size:12px}
+
+
+    .inline-title{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap}.inline-title .namepick{min-width:220px;flex:1;max-width:360px}.nameRateGrid{display:grid;gap:8px;margin-top:10px}.nameRateRow{display:grid;grid-template-columns:1fr 120px 78px;gap:8px;align-items:center;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:8px}.nameRateRow input{padding:7px}.miniSelect{padding:8px 10px}.resultPositive{color:#16a34a;font-weight:900}.resultNegative{color:#ef4444;font-weight:900}.board-mode{display:flex;gap:8px;align-items:end}
+
+
+    /* Stage 1.7: global limit sync + balanced toolbar */
+    .board-toolbar{grid-template-columns:116px 96px 118px 132px minmax(440px,1fr);gap:7px;align-items:end}
+    .board-toolbar label{font-size:12px;margin:4px 0 4px}.board-toolbar input,.board-toolbar select{padding:8px 9px;font-size:14px;border-radius:10px}
+    .board-stats{display:grid;grid-template-columns:repeat(4,minmax(92px,1fr));gap:6px;align-items:stretch;margin-top:0}.board-card .stat{min-height:58px;display:flex;flex-direction:column;justify-content:center}.board-card .stat .v{font-size:18px}.board-card .stat .k{font-size:11px;white-space:nowrap}
+
+
+    .dealerGrid{display:grid;grid-template-columns:1fr 120px 100px;gap:8px;margin-top:8px}.dealerGrid input{padding:8px}.reportActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.summaryLine{display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniCard{background:#020617;border:1px solid #334155;border-radius:12px;padding:10px}.miniCard .k{font-size:12px;color:#94a3b8}.miniCard .v{font-size:20px;font-weight:900}
+
+
+    .recordFilters{display:grid;grid-template-columns:140px 110px 180px 150px 1fr;gap:8px;align-items:end}
+    .recordHeaderRow td{background:#111827;color:#bfdbfe;font-weight:900}
+    .actionBtn{border:0;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:800;margin:2px;cursor:pointer}
+    .actionBtn.edit{background:#38bdf8;color:#031018}.actionBtn.del{background:#ef4444;color:#fff}
+    .cloudNote{font-size:12px;color:#93c5fd;margin-top:6px}
+    @media(max-width:900px){.recordFilters{grid-template-columns:1fr 1fr}.recordFilters .wide{grid-column:1/-1}}
+
+    @media(max-width:1100px){.desk-columns{grid-template-columns:1fr}.board-toolbar{grid-template-columns:repeat(2,1fr)}.main-board{grid-template-columns:repeat(10,minmax(52px,1fr))}}
     @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.board{gap:4px}.cell{min-height:48px;padding:4px}.cell .amt{font-size:11px}.kbd{grid-template-columns:repeat(4,1fr)}h1{font-size:18px}.app{padding:8px}.card{padding:10px}.tab{padding:9px 10px}}
   </style>
 </head>
@@ -35,14 +88,15 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 1 + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Viber Paste · Manual Formula Entry · Limit/Over/Reports</div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 2.3 Full + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary</div>
       </div>
-      <div class="btnrow" style="margin-top:0">
-        <button class="btn gray small" onclick="exportJSON()">Backup JSON</button>
-        <button class="btn secondary small" onclick="saveCloudSnapshot()">Cloud Save</button>
+      <div class="btnrow" style="margin-top:0;align-items:center">
+        <div class="langbox"><span data-i18n="langLabel">Language</span><select id="langSelect" onchange="setLang(this.value)"><option value="my">မြန်မာ</option><option value="en">English</option></select></div>
+        <button class="btn gray small" onclick="exportJSON()" data-i18n="backup">Backup JSON</button>
+        <button class="btn secondary small" onclick="saveCloudSnapshot(false)">Cloud Save</button>
         <button class="btn warn small" onclick="loadLatestCloudSnapshot()">Load Cloud</button>
-        <button class="btn danger small" onclick="clearAllData()">Clear All</button>
+        <button class="btn danger small" onclick="clearAllData()" data-i18n="clearAll">Clear All</button>
       </div>
     </div>
     <div class="tabs" id="tabs"></div>
@@ -55,50 +109,108 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ version က Stage 1 features မဖျက်ဘဲ Firebase Cloud Save/Load ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။ Formula Engine / Viber Parser / Limit Board / Report logic ကို စမ်းရန်ပါ။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 2.2 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records page ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
-    <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
+    <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
   </section>
 
   <section id="entry" class="page">
-    <div class="grid2">
-      <div class="card">
-        <h2>Viber Paste / Manual Formula Entry</h2>
-        <div class="grid2">
-          <div><label>Date</label><input id="entryDate" type="date"></div>
-          <div><label>Session</label><select id="entrySession"><option>AM</option><option>PM</option></select></div>
+    <div class="desk-layout">
+      <div class="card board-card">
+        <div class="title">
+          <div>
+            <div class="wide-board-title"><h2 data-i18n="liveBoard">Limit Table Board / Live Desk</h2><span class="unit-badge">Unit = 100</span></div>
+            <div class="muted" data-i18n="boardNote">Top board is shown first for laptop screen. Amounts display in Unit format.</div>
+          </div>
+          <div class="btnrow" style="margin-top:0"><button class="btn secondary small" onclick="renderMainBoard()" data-i18n="refresh">Refresh</button></div>
         </div>
-        <label>စာရင်းထည့်ရန်</label>
-        <textarea id="entryText" placeholder="ဥပမာ
-59 R 250
-86.87.1000R250
-A 100
-//-3355 250
-/9 500"></textarea>
-        <div class="btnrow">
-          <button class="btn" onclick="parseInput()">Parse Preview</button>
-          <button class="btn secondary" onclick="savePreview()">Confirm Save</button>
-          <button class="btn gray" onclick="document.getElementById('entryText').value=''">Clear Text</button>
+        <div class="board-toolbar">
+          <div><label data-i18n="date">Date</label><input id="entryDate" type="date" onchange="renderEntryLive()"></div>
+          <div><label data-i18n="session">Session</label><select id="entrySession" onchange="renderEntryLive()"><option>AM</option><option>PM</option></select></div>
+          <div><label>Board View</label><select id="entryBoardMode" class="miniSelect" onchange="renderEntryLive()"><option value="ALL">Total</option><option value="NAME">By Name</option></select></div>
+          <div><label>Board Name</label><select id="entryBoardName" onchange="renderEntryLive()"></select></div>
+          <div><label data-i18n="limitAmount">Limit Amount</label><input id="entryLimitAmount" type="number" oninput="syncLimitFrom(this.value)" placeholder="10000"></div>
+          <div class="board-stats">
+            <div class="stat"><div class="k" data-i18n="total">Total</div><div class="v" id="mainBoardTotal">0</div></div>
+            <div class="stat"><div class="k" data-i18n="overTotal">Over Total</div><div class="v bad" id="mainBoardOverTotal">0</div></div>
+            <div class="stat"><div class="k" data-i18n="overCount">Over Count</div><div class="v warnText" id="mainBoardOverCount">0</div></div>
+            <div class="stat"><div class="k" data-i18n="recordRows">Rows</div><div class="v blue" id="mainBoardRows">0</div></div>
+          </div>
         </div>
-        <h3 style="margin-top:14px">Quick Formula Keyboard</h3>
-        <div class="kbd" id="quickKeys"></div>
+        <div class="board-wrap"><div class="board-table" id="mainLimitBoard"></div></div>
       </div>
-      <div class="card">
-        <h2>Preview Summary</h2>
-        <div class="grid3">
-          <div class="stat"><div class="k">Rows</div><div class="v" id="pvRows">0</div></div>
-          <div class="stat"><div class="k">Total</div><div class="v good" id="pvTotal">0</div></div>
-          <div class="stat"><div class="k">Warnings</div><div class="v bad" id="pvWarnings">0</div></div>
+
+      <div class="desk-columns">
+        <div class="card entry-card">
+          <div class="inline-title"><h2 data-i18n="entryTitle">စာရင်းထည့်ရန် / Entry</h2><div class="namepick"><label data-i18n="name">Name / ကော်မရှင်</label><select id="entryName" onchange="renderEntryLive()"></select></div></div>
+          <textarea id="entryText" placeholder="//-7733=500
+42.32,65.21.700r300
+45.65R500,23,53.86.300r200.77,22,00.1000,
+52R500
+34 r 300
+96
+41
+77=500
+22"></textarea>
+          <div class="btnrow">
+            <button class="btn" onclick="parseInput()" data-i18n="parsePreview">Parse Preview</button>
+            <button class="btn secondary" onclick="savePreview()" data-i18n="confirmSave">Confirm Save</button>
+            <button class="btn gray" onclick="document.getElementById('entryText').value=''" data-i18n="clearText">Clear Text</button>
+          </div>
+          <div class="grid3" style="margin-top:12px">
+            <div class="stat"><div class="k" data-i18n="previewRows">Preview Rows</div><div class="v" id="pvRows">0</div></div>
+            <div class="stat"><div class="k" data-i18n="previewTotal">Preview Total</div><div class="v good" id="pvTotal">0</div></div>
+            <div class="stat"><div class="k" data-i18n="warnings">Warnings</div><div class="v bad" id="pvWarnings">0</div></div>
+          </div>
+          <h3 style="margin-top:12px" data-i18n="aggByNumber">Aggregated by Number</h3>
+          <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="previewAgg"></tbody></table></div>
         </div>
-        <h3 style="margin-top:14px">Aggregated by Number</h3>
-        <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="previewAgg"></tbody></table></div>
+
+        <div class="card preview-card">
+          <h2 data-i18n="previewDetail">Preview Detail</h2>
+          <div id="warnBox" class="muted"></div>
+          <div class="scroll"><table><thead><tr><th>No</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Type</th><th>Source</th></tr></thead><tbody id="previewRows"></tbody></table></div>
+        </div>
+
+        <div class="card over-card">
+          <h2 data-i18n="overLive">Over</h2>
+          <div class="muted" data-i18n="overNote">Over is calculated from the selected date/session/name above.</div>
+          <div class="scroll" style="margin-top:10px"><table><thead><tr><th>No</th><th>Number</th><th class="right">Over</th></tr></thead><tbody id="entryOverRows"></tbody><tfoot><tr><th colspan="2">Total</th><th class="right" id="entryOverSumOver">0</th></tr></tfoot></table></div>
+        </div>
       </div>
     </div>
-    <div class="card" style="margin-top:12px">
-      <h2>Preview Detail</h2>
-      <div id="warnBox" class="muted"></div>
-      <div class="scroll"><table><thead><tr><th>No</th><th>Number</th><th class="right">Amount</th><th>Type</th><th>Source</th></tr></thead><tbody id="previewRows"></tbody></table></div>
+  </section>
+
+
+  <section id="records" class="page">
+    <div class="card">
+      <h2>Entry Records / သွင်းပြီးစာရင်း</h2>
+      <div class="muted">Entry Page ကိုမပြောင်းဘဲ သီးသန့် Record page အဖြစ် ထည့်ထားပါတယ်။ Time order / Name group / Edit / Delete ပါပါတယ်။</div>
+      <div class="recordFilters" style="margin-top:10px">
+        <div><label>Date</label><input id="recordDate" type="date" onchange="renderEntryRecords()"></div>
+        <div><label>Session</label><select id="recordSession" onchange="renderEntryRecords()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>Name</label><select id="recordName" onchange="renderEntryRecords()"></select></div>
+        <div><label>View</label><select id="recordViewMode" onchange="renderEntryRecords()"><option value="TIME">Time Order</option><option value="NAME">Name Group</option></select></div>
+        <div class="wide"><label>Search</label><input id="recordSearch" placeholder="Name / Number / Source" oninput="renderEntryRecords()"></div>
+      </div>
+      <div class="grid3" style="margin-top:12px">
+        <div class="stat"><div class="k">Rows</div><div class="v" id="recordRowsCount">0</div></div>
+        <div class="stat"><div class="k">Total Amount</div><div class="v good" id="recordRowsTotal">0</div></div>
+        <div class="stat"><div class="k">Names</div><div class="v blue" id="recordNamesCount">0</div></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn secondary" onclick="renderEntryRecords()">Refresh</button>
+        <button class="btn gray" onclick="copyEntryRecordsText()">Copy Record Text</button>
+        <button class="btn warn" onclick="saveCloudSnapshot(false)">Cloud Save</button>
+      </div>
+      <div class="cloudNote">မှတ်ချက်: Same Name + Same Number + Same Amount ထပ်ထိုးတာကို မတားပါ။ Row တစ်ကြောင်းချင်း သီးသန့်သိမ်းပါတယ်။</div>
+      <div class="scroll" style="margin-top:12px;max-height:620px">
+        <table>
+          <thead><tr><th>No</th><th>Time</th><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Type</th><th>Source</th><th>Action</th></tr></thead>
+          <tbody id="entryRecordRows"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -108,14 +220,15 @@ A 100
       <div class="grid3">
         <div><label>Date</label><input id="limitDate" type="date" onchange="renderLimit()"></div>
         <div><label>Session</label><select id="limitSession" onchange="renderLimit()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
-        <div><label>Limit Amount</label><input id="limitAmount" type="number" oninput="saveSettings();renderLimit();" placeholder="10000"></div>
+        <div><label>Name</label><select id="limitName" onchange="renderLimit()"></select></div>
+        <div><label>Limit Amount</label><input id="limitAmount" type="number" oninput="syncLimitFrom(this.value)" placeholder="10000"></div>
       </div>
       <div class="grid3" style="margin-top:12px">
         <div class="stat"><div class="k">Total</div><div class="v" id="limitTotal">0</div></div>
         <div class="stat"><div class="k">Over Total</div><div class="v bad" id="limitOverTotal">0</div></div>
         <div class="stat"><div class="k">Over Count</div><div class="v warnText" id="limitOverCount">0</div></div>
       </div>
-      <div class="board" id="limitBoard" style="margin-top:12px"></div>
+      <div class="board-wrap" style="margin-top:12px"><div class="board-table" id="limitBoard"></div></div>
     </div>
   </section>
 
@@ -125,10 +238,11 @@ A 100
       <div class="grid3">
         <div><label>Date</label><input id="overDate" type="date" onchange="renderOver()"></div>
         <div><label>Session</label><select id="overSession" onchange="renderOver()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
-        <div><label>Limit Amount</label><input id="overLimit" type="number" oninput="saveSettings();renderOver();"></div>
+        <div><label>Name</label><select id="overName" onchange="renderOver()"></select></div>
+        <div><label>Limit Amount</label><input id="overLimit" type="number" oninput="syncLimitFrom(this.value)"></div>
       </div>
-      <div class="btnrow"><button class="btn secondary" onclick="copyOverText()">Copy Over Text</button></div>
-      <div class="scroll" style="margin-top:10px"><table><thead><tr><th>No</th><th>Number</th><th class="right">Amount</th><th class="right">Over</th></tr></thead><tbody id="overRows"></tbody><tfoot><tr><th colspan="2">Total</th><th class="right" id="overSumAmt">0</th><th class="right" id="overSumOver">0</th></tr></tfoot></table></div>
+      <div class="btnrow"><button class="btn secondary" onclick="copyOverText()">Copy Over Text</button><button class="btn warn" onclick="saveOverImage()">Save Image</button></div>
+      <div class="scroll" style="margin-top:10px"><table><thead><tr><th>No</th><th>Number</th><th class="right">Over</th></tr></thead><tbody id="overRows"></tbody><tfoot><tr><th colspan="2">Total</th><th class="right" id="overSumOver">0</th></tr></tfoot></table></div>
     </div>
   </section>
 
@@ -138,6 +252,7 @@ A 100
       <div class="grid3">
         <div><label>Date</label><input id="reportDate" type="date" onchange="renderReports()"></div>
         <div><label>Session</label><select id="reportSession" onchange="renderReports()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>Name</label><select id="reportName" onchange="renderReports()"></select></div>
         <div><label>P Number</label><input id="pNumber" maxlength="2" placeholder="ဥပမာ 59" oninput="renderReports()"></div>
       </div>
       <div class="grid3" style="margin-top:12px">
@@ -148,8 +263,32 @@ A 100
         <div class="stat"><div class="k">Payout</div><div class="v bad" id="rPayout">0</div></div>
         <div class="stat"><div class="k">Final</div><div class="v" id="rFinal">0</div></div>
       </div>
+      <h3 style="margin-top:14px">Name Summary</h3>
+      <div class="scroll"><table><thead><tr><th>Name</th><th class="right">Total</th><th class="right">P Amount</th><th class="right">Payout</th><th class="right">Cor %</th><th class="right">Cor</th><th class="right">Final</th></tr></thead><tbody id="reportNameRows"></tbody></table></div>
       <h3 style="margin-top:14px">Number Summary</h3>
       <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+      <div class="reportActions">
+        <button class="btn secondary" onclick="saveCommissionReportImage()">Save Commission Image</button>
+        <button class="btn warn" onclick="saveDealerReportImage()">Save Dealer Image</button>
+      </div>
+      <div class="card" style="background:#020617;margin-top:12px">
+        <h3>ဒိုင်စာရင်း / Dealer Summary</h3>
+        <div class="muted">Manual Over Dealer Split: Name / Amount / Cor %</div>
+        <div class="dealerGrid">
+          <input id="odName1" placeholder="Over ဒိုင် 1" oninput="renderReports()"><input id="odAmt1" type="number" placeholder="Amount" oninput="renderReports()"><input id="odCor1" type="number" placeholder="Cor %" oninput="renderReports()">
+          <input id="odName2" placeholder="Over ဒိုင် 2" oninput="renderReports()"><input id="odAmt2" type="number" placeholder="Amount" oninput="renderReports()"><input id="odCor2" type="number" placeholder="Cor %" oninput="renderReports()">
+          <input id="odName3" placeholder="Over ဒိုင် 3" oninput="renderReports()"><input id="odAmt3" type="number" placeholder="Amount" oninput="renderReports()"><input id="odCor3" type="number" placeholder="Cor %" oninput="renderReports()">
+        </div>
+        <div class="grid3" style="margin-top:12px">
+          <div class="miniCard"><div class="k">All Total</div><div class="v" id="dealerTotal">0</div></div>
+          <div class="miniCard"><div class="k">All Payout</div><div class="v bad" id="dealerPayout">0</div></div>
+          <div class="miniCard"><div class="k">All Cor</div><div class="v blue" id="dealerCor">0</div></div>
+          <div class="miniCard"><div class="k">Manual Over</div><div class="v warnText" id="dealerOverAmt">0</div></div>
+          <div class="miniCard"><div class="k">Over P Payout</div><div class="v good" id="dealerOverPayout">0</div></div>
+          <div class="miniCard"><div class="k">Over Cor</div><div class="v blue" id="dealerOverCor">0</div></div>
+          <div class="miniCard"><div class="k">Dealer Final</div><div class="v" id="dealerFinal">0</div></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -159,6 +298,7 @@ A 100
       <div class="grid3">
         <div><label>Date</label><input id="imageDate" type="date" onchange="renderImageText()"></div>
         <div><label>Session</label><select id="imageSession" onchange="renderImageText()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>Name</label><select id="imageName" onchange="renderImageText()"></select></div>
         <div><label>Title</label><input id="imageTitle" value="2D Report" oninput="renderImageText()"></div>
       </div>
       <div class="btnrow"><button class="btn secondary" onclick="copyShareText()">Copy Share Text</button><button class="btn gray" onclick="renderImageText()">Refresh</button></div>
@@ -173,11 +313,19 @@ A 100
         <div><label>Shop Name</label><input id="shopName" oninput="saveSettings()"></div>
         <div><label>Commission %</label><input id="commissionRate" type="number" oninput="saveSettings();renderReports();"></div>
         <div><label>Payout Rate</label><input id="payoutRate" type="number" oninput="saveSettings();renderReports();"></div>
-        <div><label>Default Limit Amount</label><input id="defaultLimit" type="number" oninput="saveSettings();syncLimitInputs();"></div>
+        <div><label>Default Limit Amount</label><input id="defaultLimit" type="number" oninput="syncLimitFrom(this.value)"></div>
         <div><label>AM Close</label><input id="amClose" type="time" oninput="saveSettings()"></div>
         <div><label>PM Close</label><input id="pmClose" type="time" oninput="saveSettings()"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 1 + Firebase: localStorage + Firestore snapshot sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="card" style="margin-top:12px;background:#020617">
+        <h3>Commission Names / နာမည်စာရင်း</h3>
+        <div class="grid2">
+          <div><label>New Name</label><input id="newName" placeholder="ဥပမာ ကိုအောင် / Shop A"></div>
+          <div style="display:flex;align-items:end"><button class="btn" onclick="addName()" style="width:100%">Add Name</button></div>
+        </div>
+        <div class="nameRateGrid" id="nameList"></div>
+      </div>
+      <div class="muted" style="margin-top:12px">Stage 2.2: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -196,11 +344,13 @@ const firebaseConfig = {
   messagingSenderId: "98470658215",
   appId: "1:98470658215:web:28475a9afc8f1f85695b82"
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let db=null;
+try{
+  if(window.firebase){ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); }
+}catch(e){ console.warn("Firebase init failed", e); }
 
-const pages =  [
-  ['dashboard','Dashboard'],['entry','Entry'],['limit','Limit Board'],['over','Over'],['reports','Reports'],['image','Image'],['settings','Settings']
+const pages = [
+  ['dashboard','Dashboard'],['entry','Entry'],['records','Entry Records'],['limit','Limit Board'],['over','Over'],['reports','Reports'],['image','Image'],['settings','Settings']
 ];
 const N2 = Array.from({length:100},(_,i)=>String(i).padStart(2,'0'));
 const FIXED = {
@@ -210,6 +360,7 @@ const FIXED = {
   B:['01','10','12','21','23','32','34','43','45','54','56','65','67','76','78','87','89','98','90','09']
 };
 let records = JSON.parse(localStorage.getItem('v2d_records')||'[]');
+let overDeductions = JSON.parse(localStorage.getItem('v2d_over_deductions')||'[]');
 let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
 let preview = {detailRows:[], totals:[], warnings:[]};
 
@@ -219,59 +370,48 @@ function unit(n){let v=Number(n||0)/100; return Number.isInteger(v)? String(v): 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 function saveRecords(){localStorage.setItem('v2d_records',JSON.stringify(records));}
 
-async function saveCloudSnapshot(silent=false){
+async function saveCloudSnapshot(showMsg=true){
+  if(!db){ if(showMsg) showToast('Firebase မချိတ်မိသေးပါ'); return; }
   try{
     const totalAmount = records.reduce((sum,r)=>sum+Number(r.amount||0),0);
     await db.collection('record').add({
-      type:'stage1_snapshot',
-      app:'Viber 2D Desk Stage 1 + Firebase',
+      type:'stage2_full_snapshot',
+      app:'Viber 2D Desk',
+      version:'Stage 2.2 Full',
       records,
+      overDeductions,
       settings,
-      totalRecords: records.length,
+      totalRecords:records.length,
       totalAmount,
-      localCreatedAt: new Date().toISOString(),
+      localCreatedAt:new Date().toISOString(),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    if(!silent) showToast('Cloud Save အောင်မြင်ပါပြီ');
+    if(showMsg) showToast('Cloud Save အောင်မြင်ပါပြီ');
   }catch(err){
     console.error(err);
-    showToast('Cloud Save မအောင်မြင်ပါ: ' + err.message);
+    if(showMsg) showToast('Cloud Save မအောင်မြင်ပါ: '+err.message);
   }
 }
-
 async function loadLatestCloudSnapshot(){
+  if(!db){ showToast('Firebase မချိတ်မိသေးပါ'); return; }
   try{
     showToast('Cloud data ဖတ်နေပါသည်...');
-    const snap = await db.collection('record')
-      .orderBy('localCreatedAt','desc')
-      .limit(20)
-      .get();
-
-    let found = null;
-    snap.forEach(doc=>{
-      const d = doc.data();
-      if(!found && d.type === 'stage1_snapshot') found = d;
-    });
-
-    if(!found){
-      showToast('Cloud snapshot မတွေ့သေးပါ');
-      return;
-    }
-
-    if(!confirm('Cloud မှာသိမ်းထားတဲ့ နောက်ဆုံး Stage 1 data ကို ဒီဖုန်းထဲ ပြန်တင်မလား? လက်ရှိ local data ကိုအစားထိုးပါမယ်။')) return;
-
-    records = Array.isArray(found.records) ? found.records : [];
+    const snap = await db.collection('record').orderBy('localCreatedAt','desc').limit(30).get();
+    let found=null;
+    snap.forEach(doc=>{ const d=doc.data(); if(!found && d.type==='stage2_full_snapshot') found=d; });
+    if(!found){ showToast('Cloud snapshot မတွေ့သေးပါ'); return; }
+    if(!confirm('Cloud မှာရှိတဲ့နောက်ဆုံး Stage 2 data ကို ဖုန်းထဲပြန်တင်မလား? လက်ရှိ local data ကို အစားထိုးပါမယ်။')) return;
+    records = Array.isArray(found.records)? found.records : [];
+    overDeductions = Array.isArray(found.overDeductions)? found.overDeductions : [];
     settings = found.settings || settings || {};
-    saveRecords();
-    localStorage.setItem('v2d_settings', JSON.stringify(settings));
-    init();
-    renderAll();
-    showToast('Cloud Load အောင်မြင်ပါပြီ');
+    saveRecords(); saveOverDeductions(); localStorage.setItem('v2d_settings',JSON.stringify(settings));
+    init(); renderAll(); showToast('Cloud Load အောင်မြင်ပါပြီ');
   }catch(err){
     console.error(err);
-    showToast('Cloud Load မအောင်မြင်ပါ: ' + err.message);
+    showToast('Cloud Load မအောင်မြင်ပါ: '+err.message);
   }
 }
+function saveOverDeductions(){localStorage.setItem('v2d_over_deductions',JSON.stringify(overDeductions));}
 function saveSettings(){
   settings.shopName = val('shopName') || 'Viber 2D Desk';
   settings.commissionRate = Number(val('commissionRate')||0);
@@ -279,6 +419,9 @@ function saveSettings(){
   settings.defaultLimit = Number(val('defaultLimit')||10000);
   settings.amClose = val('amClose') || '12:00';
   settings.pmClose = val('pmClose') || '16:30';
+  if(!Array.isArray(settings.names)||!settings.names.length) settings.names=['Default'];
+  if(!settings.nameRates) settings.nameRates={}; settings.names.forEach(n=>{if(settings.nameRates[n]==null) settings.nameRates[n]=settings.commissionRate||20;});
+  settings.lang = val('langSelect') || settings.lang || 'my';
   localStorage.setItem('v2d_settings',JSON.stringify(settings));
 }
 function val(id){const el=document.getElementById(id); return el?el.value:''}
@@ -288,7 +431,7 @@ function rev(n){n=String(n).padStart(2,'0'); return n[1]+n[0]}
 function even(d){return Number(d)%2===0}
 function odd(d){return !even(d)}
 function splitPairs(s){const c=String(s).replace(/\D/g,''); const out=[]; for(let i=0;i+1<c.length;i+=2) out.push(c.slice(i,i+2)); return out.filter(x=>/^\d{2}$/.test(x));}
-function normalize(s){return String(s||'').normalize('NFKC').replace(/[Ｒｒ]/g,'R').replace(/[＝]/g,'=').replace(/[–—−]/g,'-').replace(/\r/g,'\n').trim();}
+function normalize(s){return String(s||'').normalize('NFKC').replace(/@/g,'R').replace(/[Ｒｒ]/g,'R').replace(/ပါဝါ/g,' A ').replace(/နက်ခက်|နက္ခ|နက်ခ/g,' Z ').replace(/ညီအကို|ညီကို/g,' B ').replace(/[＝]/g,'=').replace(/[–—−]/g,'-').replace(/\r/g,'\n').trim();}
 function numberGroups(s){return [...String(s).matchAll(/\d+/g)].map(m=>m[0]);}
 function breakNums(code){
   const n=Number(code); if(!Number.isFinite(n)) return [];
@@ -356,17 +499,247 @@ function addRow(rows,warnings,num,amount,source,type){
 function parseReverseLine(line){
   const source=line; const rows=[]; const warnings=[]; const s=normalize(line); const up=s.toUpperCase(); const rIndex=up.indexOf('R');
   const before=s.slice(0,rIndex).trim(); const after=s.slice(rIndex+1).trim(); const afterNums=numberGroups(after); const beforeGroups=numberGroups(before);
-  if(!afterNums.length){warnings.push('R နောက် amount မတွေ့: '+source); return {rows,warnings};}
-  let nums=[], normalAmount=afterNums[0], reverseAmount=afterNums[0];
+  if(!afterNums.length){warnings.push('R နောက် amount မတွေ့: '+source); return {rows,warnings, meta:null};}
+  let nums=[], normalAmount=afterNums[0], reverseAmount=afterNums[0], carryable=true;
   const lastBefore=beforeGroups[beforeGroups.length-1];
   if(beforeGroups.length>=2 && lastBefore && lastBefore.length>2){
-    normalAmount=lastBefore; reverseAmount=afterNums[0]; nums=beforeGroups.slice(0,-1).flatMap(g=>g.length===2?[g]:splitPairs(g));
+    // Example: 86.87.1000R250 => normal amount 1000, reverse amount 250.
+    // This mixed-amount style is not used as carry mode for following bare lines.
+    normalAmount=lastBefore; reverseAmount=afterNums[0]; carryable=false;
+    nums=beforeGroups.slice(0,-1).flatMap(g=>g.length===2?[g]:splitPairs(g));
   }else{
+    // Example: 52R500 or 34 r 300 => both original and reverse use 500/300.
     nums=expandExpression(before);
   }
-  if(!nums.length){warnings.push('R ရှေ့ number မတွေ့: '+source); return {rows,warnings};}
-  nums.forEach(n=>{addRow(rows,warnings,n,normalAmount,source,'normal'); const rn=rev(n); if(rn!==n) addRow(rows,warnings,rn,reverseAmount,source,'reverse');});
-  return {rows,warnings};
+  if(!nums.length){warnings.push('R ရှေ့ number မတွေ့: '+source); return {rows,warnings, meta:null};}
+  nums.forEach(n=>{
+    addRow(rows,warnings,n,normalAmount,source,'normal');
+    // In Viber R mode, doubles are intentionally entered twice, e.g. 00=300 and 00=300.
+    addRow(rows,warnings,rev(n),reverseAmount,source,'reverse');
+  });
+  return {rows,warnings, meta: carryable ? {mode:'reverse', amount:Number(reverseAmount)} : null};
+}
+
+function tokenList(s){
+  return [...normalize(s).matchAll(/[Rr]|\d+|[^\dRr]+/g)].map(m=>m[0]).filter(Boolean);
+}
+function isNumTok(t){return /^\d+$/.test(t);}
+function isRTok(t){return /^[Rr]$/.test(t);}
+function nextNumber(tokens, start){
+  for(let j=start;j<tokens.length;j++) if(isNumTok(tokens[j])) return {value:tokens[j], index:j};
+  return null;
+}
+function nextR(tokens, start){
+  for(let j=start;j<tokens.length;j++){
+    if(isRTok(tokens[j])) return j;
+    if(isNumTok(tokens[j])) return -1;
+  }
+  return -1;
+}
+function emitNormal(nums, amount, rows, warnings, source, type='normal'){
+  nums.forEach(n=>addRow(rows,warnings,n,amount,source,type));
+}
+function emitReverse(nums, normalAmount, reverseAmount, rows, warnings, source, mixed=false){
+  nums.forEach(n=>{
+    addRow(rows,warnings,n,normalAmount,source,mixed?'mixed-normal':'normal');
+    addRow(rows,warnings,rev(n),reverseAmount,source,mixed?'mixed-reverse':'reverse');
+  });
+}
+function parseComplexLine(line){
+  // Smart inline parser for styles like:
+  // 42.32,65.21.700r300
+  // 45.65R500,23,53.86.300r200.77,22,00.1000,
+  const source=line; const rows=[]; const warnings=[]; const tokens=tokenList(line);
+  let nums=[]; let meta=null;
+  for(let i=0;i<tokens.length;i++){
+    const t=tokens[i];
+    if(isNumTok(t)){
+      if(t.length===2){ nums.push(t); continue; }
+      // length >= 3 means amount in this number-only parser.
+      const rIdx=nextR(tokens,i+1);
+      if(rIdx>i){
+        const revObj=nextNumber(tokens,rIdx+1);
+        if(!revObj){ warnings.push('R နောက် amount မတွေ့: '+source); break; }
+        if(!nums.length){ warnings.push('Amount ရှေ့ number မတွေ့: '+source); }
+        emitReverse(nums,t,revObj.value,rows,warnings,source,true);
+        nums=[]; meta=null; i=revObj.index; continue;
+      }else{
+        if(!nums.length){ warnings.push('Amount ရှေ့ number မတွေ့: '+source); }
+        emitNormal(nums,t,rows,warnings,source,'normal');
+        nums=[]; meta={mode:'normal', amount:Number(t)}; continue;
+      }
+    }
+    if(isRTok(t)){
+      const amtObj=nextNumber(tokens,i+1);
+      if(!amtObj){ warnings.push('R နောက် amount မတွေ့: '+source); break; }
+      if(!nums.length){ warnings.push('R ရှေ့ number မတွေ့: '+source); }
+      emitReverse(nums,amtObj.value,amtObj.value,rows,warnings,source,false);
+      nums=[]; meta={mode:'reverse', amount:Number(amtObj.value)}; i=amtObj.index; continue;
+    }
+  }
+  if(nums.length){ warnings.push('Amount မပါသော number များ: '+nums.join(',')+' | '+source); }
+  return {rows,warnings,meta};
+}
+function addRowsForList(rows,warnings,nums,amount,source,type='normal'){
+  nums.forEach(n=>addRow(rows,warnings,n,amount,source,type));
+}
+function breakByDigit(d){
+  const x=Number(d); return N2.filter(n=>[x,x+10].includes(Number(n[0])+Number(n[1])));
+}
+function parseSpecialBurmeseLine(line){
+  const source=line; const rows=[]; const warnings=[]; let s=normalize(line).replace(/\s+/g,' ').trim();
+  // Total notes like T45000 / T 3000 are ignored.
+  if(/^T\s*\d+\s*$/i.test(s)) return {handled:true, rows, warnings, meta:null, ignored:true};
+
+  let m;
+
+  // 47*49*76R1000 => each 2-digit star pair gets same amount on original + reverse.
+  m=s.match(/^((?:\d{2}\*\s*)+)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    const nums=[...m[1].matchAll(/(\d{2})\*/g)].map(x=>x[1]);
+    const amount=m[2];
+    nums.forEach(n=>{
+      addRow(rows,warnings,n,amount,source,'star-pair-r');
+      addRow(rows,warnings,rev(n),amount,source,'star-pair-r');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'reverse', amount:Number(amount)}};
+  }
+
+  // 40=3000R1000 => original gets 3000, reverse gets 1000.
+  m=s.match(/^(\d{2})\s*=\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    addRow(rows,warnings,m[1],m[2],source,'mixed-normal');
+    addRow(rows,warnings,rev(m[1]),m[3],source,'mixed-reverse');
+    return {handled:true, rows, warnings, meta:null};
+  }
+
+  // 67R1500 => original and reverse both use same amount.
+  m=s.match(/^(\d{2})\s*[Rr]\s*(\d+)$/);
+  if(m){
+    addRow(rows,warnings,m[1],m[2],source,'reverse');
+    addRow(rows,warnings,rev(m[1]),m[2],source,'reverse');
+    return {handled:true, rows, warnings, meta:{mode:'reverse', amount:Number(m[2])}};
+  }
+
+  // nပါR100 / nပါတ်R100: digit-include with optional R marker from handwriting/OCR.
+  m=s.match(/^(\d)\s*=?\s*(?:ပါ|ပါတ်|ပတ်)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    const d=m[1], amount=m[2];
+    addRowsForList(rows,warnings,containsDigit(d),amount,source,'digit-include-r');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
+  }
+
+  // 3/8ဘရိတ်500: multiple break digits, same amount for each break set.
+  m=s.match(/^(\d(?:\s*\/\s*\d)+)\s*ဘရိတ်\s*=?\s*(\d+)$/);
+  if(m){
+    const digits=m[1].split('/').map(x=>x.trim()).filter(Boolean), amount=m[2];
+    digits.forEach(d=>addRowsForList(rows,warnings,breakByDigit(d),amount,source,'multi-break'));
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
+  }
+
+  // 2ထိပ် 500 R 200: front/top digit at normal amount and reverse/back digit at R amount.
+  m=s.match(/^(\d)\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'front-digit');
+    addRowsForList(rows,warnings,parityNums('/',m[1]),m[3],source,'back-digit-r');
+    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+  }
+
+  // 2နောက် 500 R 200: back digit at normal amount and front digit at R amount.
+  m=s.match(/^(\d)\s*(?:နောက်ပိတ်|နောက်)\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'back-digit');
+    addRowsForList(rows,warnings,parityNums(m[1],'/'),m[3],source,'front-digit-r');
+    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+  }
+
+  // 123ထိပ်500 / 123နောက်500: multiple front/back digits.
+  m=s.match(/^(\d{2,})\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*=?\s*(\d+)$/);
+  if(m){
+    uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums(d,'/'),m[2],source,'multi-front'));
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+  m=s.match(/^(\d{2,})\s*(?:နောက်ပိတ်|နောက်)\s*=?\s*(\d+)$/);
+  if(m){
+    uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums('/',d),m[2],source,'multi-back'));
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // n=ပါ1000 / nပါတ်ပူးပါ 5000 / nပတ် amount
+  m=s.match(/^(\d)\s*=?\s*(?:ပါ|ပါတ်|ပတ်)\s*(အ?ပူးပါ)?\s*=?\s*(\d+)$/);
+  if(m){
+    const d=m[1], extraDouble=!!m[2], amount=m[3];
+    addRowsForList(rows,warnings,containsDigit(d),amount,source,'digit-include');
+    if(extraDouble) addRow(rows,warnings,d+d,amount,source,'extra-double');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
+  }
+
+  // အပူး500 / အပူး=200
+  m=s.match(/^အ?ပူး\s*=?\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,N2.filter(n=>n[0]===n[1]),m[1],source,'double');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[1])}};
+  }
+
+  // (33)ပူး500 or 33ပူး500
+  m=s.match(/^\(?\s*(\d{2})\s*\)?\s*ပူး\s*=?\s*(\d+)$/);
+  if(m){
+    addRow(rows,warnings,m[1],m[2],source,'single-double');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // 1790ခွေ500အပူးပါ: digit combinations; အပူးပါ means include doubles, not duplicate.
+  m=s.match(/^(\d{2,})\s*(?:အခွေ|ခွေ)\s*(\d+)\s*(အ?ပူးပါ)?$/);
+  if(m){
+    const digits=uniq(m[1].split('')); const amount=m[2]; const includeDoubles=!!m[3];
+    const nums=[]; digits.forEach(a=>digits.forEach(b=>{ if(includeDoubles || a!==b) nums.push(a+b); }));
+    addRowsForList(rows,warnings,nums,amount,source,'khwe');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
+  }
+
+  // 3=ဘရိတ်1000 => break digit 3 and 13.
+  m=s.match(/^(\d)\s*=?\s*ဘရိတ်\s*=?\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,breakByDigit(m[1]),m[2],source,'break');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // နက္ခ / နက်ခက် amount
+  m=s.match(/^(?:Z|နက်ခက်|နက္ခ|နက်ခ)\s*=?\s*(\d+)$/i);
+  if(m){
+    addRowsForList(rows,warnings,FIXED.Z,m[1],source,'natkhat');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[1])}};
+  }
+
+  // ပါဝါ amount
+  m=s.match(/^(?:A|ပါဝါ)\s*=?\s*(\d+)$/i);
+  if(m){
+    addRowsForList(rows,warnings,FIXED.A,m[1],source,'power');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[1])}};
+  }
+
+  // ညီကို / ညီအကို amount
+  m=s.match(/^(?:B|ညီကို|ညီအကို)\s*=?\s*(\d+)$/i);
+  if(m){
+    addRowsForList(rows,warnings,FIXED.B,m[1],source,'brother');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[1])}};
+  }
+
+  // 3နောက် =1000, 3နောက်ပိတ်1000
+  m=s.match(/^(\d)\s*(?:နောက်ပိတ်|နောက်)\s*=?\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'back-digit');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // 3ထိပ် / 3ထိပ်စီး amount
+  m=s.match(/^(\d)\s*(?:ထိပ်စီး|ထိပ်)\s*=?\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'front-digit');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  return {handled:false, rows, warnings, meta:null};
 }
 function splitExprAmount(line){
   let s=normalize(line); const m=s.match(/(\d+)\s*$/); if(!m) return null;
@@ -384,88 +757,350 @@ function parseLine(line){
   nums.forEach(n=>addRow(rows,warnings,n,pair.amount,line,'normal'));
   return {rows,warnings};
 }
-function parseMessage(text){
+function applyCarryLine(line, ctx){
+  const rows=[]; const warnings=[]; const nums=expandExpression(line);
+  if(!nums.length) return null;
+  if(!ctx || !ctx.amount || !ctx.mode){warnings.push('Amount carry မရှိသေးသော bare line: '+line); return {rows,warnings};}
+  nums.forEach(n=>{
+    addRow(rows,warnings,n,ctx.amount,line,ctx.mode==='reverse'?'carry-normal':'carry-normal');
+    if(ctx.mode==='reverse') addRow(rows,warnings,rev(n),ctx.amount,line,'carry-reverse');
+  });
+  return {rows,warnings};
+}
+function isBareCarryCandidate(line){
+  const s=normalize(line);
+  if(!s) return false;
+  // one compact formula/number without amount delimiter. Examples: 96, 00, A, *12, /9, 9/, //, //-3355
+  if(/\s/.test(s)) return false;
+  if(/[=]/.test(s)) return false;
+  return expandExpression(s).length>0;
+}
+function cleanNameText(x){
+  return String(x||'').replace(/[⁨⁩\u200e\u200f\u202a-\u202e]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+}
+function matchKnownName(raw){const n=cleanNameText(raw); return (settings.names||[]).find(x=>cleanNameText(x)===n) || null;}
+function parseHeaderLine(line){
+  const m=String(line).match(/^\s*\[[^\]]+\]\s*[⁨]?(.+?)[⁩]?\s*:\s*(.*)$/);
+  if(!m) return null;
+  return {rawName:m[1].trim(), content:m[2].trim()};
+}
+function parseMessage(text, defaultName='Default'){
   const lines=normalize(text).split('\n').map(x=>x.trim()).filter(Boolean); const detailRows=[]; const warnings=[];
-  lines.forEach(l=>{const r=parseLine(l); detailRows.push(...r.rows); warnings.push(...r.warnings);});
+  let ctx={mode:null, amount:null}; let currentName=defaultName || 'Default';
+  lines.forEach(rawLine=>{
+    let l=rawLine;
+    const header=parseHeaderLine(l);
+    if(header){
+      const matched=matchKnownName(header.rawName);
+      if(matched) currentName=matched; else warnings.push('Header name not in Name list: '+header.rawName);
+      l=header.content;
+      if(!l) return;
+    }
+    let r;
+    const eqCarry = /=$/.test(l.trim()) ? l.trim().replace(/=+$/,'').trim() : null;
+    if(eqCarry && ctx.amount && expandExpression(eqCarry).length){
+      r=applyCarryLine(eqCarry,ctx);
+    }else{
+      const sp=parseSpecialBurmeseLine(l);
+      if(sp.handled){
+        r=sp;
+        if(sp.meta) ctx={mode:sp.meta.mode, amount:sp.meta.amount};
+      }else if(isBareCarryCandidate(l) && ctx.amount && !/[Rr@]/.test(l)){
+        r=applyCarryLine(l,ctx);
+      }else if(/[Rr@]/.test(l)){
+        r=parseComplexLine(l);
+        if(r.meta) ctx={mode:r.meta.mode, amount:r.meta.amount};
+      }else{
+        r=parseLine(l);
+        const pair=splitExprAmount(l);
+        if(pair && expandExpression(pair.expr).length){
+          ctx={mode:'normal', amount:Number(pair.amount)};
+        }
+      }
+    }
+    (r?.rows||[]).forEach(row=>row.name=currentName);
+    detailRows.push(...(r?.rows||[])); warnings.push(...(r?.warnings||[]));
+  });
   const map=new Map(); detailRows.forEach(r=>map.set(r.number,(map.get(r.number)||0)+r.amount));
   const totals=[...map.entries()].map(([number,amount])=>({number,amount})).sort((a,b)=>Number(a.number)-Number(b.number));
   return {detailRows,totals,warnings};
 }
 function parseInput(){
-  preview=parseMessage(val('entryText')); renderPreview(); showToast('Preview ပြီးပါပြီ');
+  preview=parseMessage(val('entryText'), val('entryName')||'Default'); renderPreview(); showToast('Preview ပြီးပါပြီ');
 }
 function renderPreview(){
   setText('pvRows',preview.detailRows.length); setText('pvTotal',money(preview.detailRows.reduce((a,b)=>a+b.amount,0))); setText('pvWarnings',preview.warnings.length);
-  document.getElementById('previewRows').innerHTML=preview.detailRows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${r.type}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">No preview</td></tr>';
+  document.getElementById('previewRows').innerHTML=preview.detailRows.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name||val('entryName')||'Default')}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${r.type}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No preview</td></tr>';
   document.getElementById('previewAgg').innerHTML=preview.totals.map(r=>`<tr><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
   document.getElementById('warnBox').innerHTML=preview.warnings.length? `<div class="bad">${preview.warnings.map(escapeHtml).join('<br>')}</div>` : '<span class="good">Warnings မရှိပါ</span>';
 }
 function savePreview(){
   if(!preview.detailRows.length){showToast('Save လုပ်ရန် preview မရှိပါ'); return;}
-  const date=val('entryDate')||today(); const session=val('entrySession')||'AM'; const ts=Date.now();
-  preview.detailRows.forEach(r=>records.push({...r,date,session,ts,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()}));
-  saveRecords(); saveCloudSnapshot(true); preview={detailRows:[],totals:[],warnings:[]}; renderAll(); showToast('Saved + Cloud Sync');
+  const date=val('entryDate')||today(); const session=val('entrySession')||'AM'; const name=val('entryName')||'Default'; const ts=Date.now();
+  preview.detailRows.forEach(r=>records.push({...r,name:(r.name||name),date,session,ts,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()}));
+  saveRecords(); saveCloudSnapshot(false); preview={detailRows:[],totals:[],warnings:[]}; renderAll(); showToast('Saved + Cloud Sync');
 }
-function filterRecords(date,session){
-  return records.filter(r=>r.date===date && (session==='DAILY' || r.session===session));
+function filterRecords(date,session,name='ALL'){
+  return records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (name==='ALL' || (r.name||'Default')===name));
 }
-function totalsByNumber(date,session){
-  const map=new Map(); filterRecords(date,session).forEach(r=>map.set(r.number,(map.get(r.number)||0)+Number(r.amount||0)));
+function totalsByNumber(date,session,name='ALL'){
+  const map=new Map(); filterRecords(date,session,name).forEach(r=>map.set(r.number,(map.get(r.number)||0)+Number(r.amount||0)));
   return Object.fromEntries([...map.entries()].sort((a,b)=>Number(a[0])-Number(b[0])));
 }
+function totalsByName(date,session){
+  const map=new Map(); filterRecords(date,session,'ALL').forEach(r=>map.set(r.name||'Default',(map.get(r.name||'Default')||0)+Number(r.amount||0)));
+  return Object.fromEntries([...map.entries()].sort((a,b)=>a[0].localeCompare(b[0])));
+}
+function deductionsFor(date,session,name='ALL'){
+  return overDeductions.filter(d=>d.date===date && (session==='DAILY' || d.session===session) && (name==='ALL' ? true : (d.name===name || d.name==='ALL')));
+}
+function boardTotalsByNumber(date,session,name='ALL'){
+  const totals={...totalsByNumber(date,session,name)};
+  deductionsFor(date,session,name).forEach(d=>{totals[d.number]=(totals[d.number]||0)-Number(d.amount||0); if(totals[d.number]<0) totals[d.number]=0;});
+  return totals;
+}
+function boardTableHTML(totals, limit, cb){
+  let html='', total=0, overTotal=0, overCount=0;
+  for(let row=0; row<10; row++){
+    for(let ten=0; ten<10; ten++){
+      const n=String(ten)+String(row); const amt=Number(totals[n]||0); total+=amt; const over=amt>limit; const hot=amt>0 && !over;
+      if(over){overCount++; overTotal+=amt-limit;}
+      html += `<div class="numCell ${over?'over':hot?'hot':''}">${n}</div><div class="amtCell ${amt?'':'empty'} ${over?'over':hot?'hot':''}">${amt?unit(amt):''}</div>`;
+    }
+  }
+  cb?.({total,overTotal,overCount}); return html;
+}
 function renderLimit(){
-  const date=val('limitDate')||today(); const session=val('limitSession')||'AM'; const limit=Number(val('limitAmount')||settings.defaultLimit||10000); const totals=totalsByNumber(date,session);
+  const date=val('limitDate')||today(); const session=val('limitSession')||'AM'; const name=val('limitName')||'ALL'; const limit=Number(val('limitAmount')||settings.defaultLimit||10000); const totals=boardTotalsByNumber(date,session,name);
   const board=document.getElementById('limitBoard'); let total=0, overTotal=0, overCount=0;
-  board.innerHTML=N2.map(n=>{const amt=totals[n]||0; total+=amt; const over=amt>limit; if(over){overCount++; overTotal+=amt-limit;} return `<div class="cell ${amt?'' :'zero'} ${over?'over':''}"><div class="num">${n}</div><div class="amt">${amt?unit(amt):'-'}</div></div>`}).join('');
+  board.innerHTML=boardTableHTML(totals, limit, (calc)=>{total=calc.total; overTotal=calc.overTotal; overCount=calc.overCount;});
   setText('limitTotal',money(total)); setText('limitOverTotal',money(overTotal)); setText('limitOverCount',overCount);
 }
 function renderOver(){
-  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const totals=totalsByNumber(date,session);
+  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const name=val('overName')||'ALL'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const totals=boardTotalsByNumber(date,session,name);
   const rows=Object.entries(totals).filter(([n,a])=>a>limit).map(([number,amount])=>({number,amount,over:amount-limit}));
-  document.getElementById('overRows').innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td class="right bad">${money(r.over)}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Over မရှိပါ</td></tr>';
-  setText('overSumAmt',money(rows.reduce((a,b)=>a+b.amount,0))); setText('overSumOver',money(rows.reduce((a,b)=>a+b.over,0)));
+  document.getElementById('overRows').innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right bad">${money(r.over)}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">Over မရှိပါ</td></tr>';
+  setText('overSumOver',money(rows.reduce((a,b)=>a+b.over,0)));
 }
+function getRate(name){return Number((settings.nameRates&&settings.nameRates[name]!=null)?settings.nameRates[name]:(settings.commissionRate||0));}
 function reportCalc(){
-  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const totals=totalsByNumber(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const name=val('reportName')||'ALL'; const totals=totalsByNumber(date,session,name); const nameTotals=totalsByName(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
   const com=total*(Number(settings.commissionRate||0)/100); const net=total-com; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2); const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*(Number(settings.payoutRate||80)); const final=net-payout;
-  return {date,session,totals,total,com,net,p,pamt,payout,final};
+  return {date,session,name,totals,nameTotals,total,com,net,p,pamt,payout,final};
+}
+function commissionSummary(name,date,session,p){
+  const totals=totalsByNumber(date,session,name); const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*Number(settings.payoutRate||80);
+  const rate=getRate(name); const cor=total*rate/100; const final=total-payout-cor;
+  return {name,date,session,p,total,pamt,payout,rate,cor,final,status: final<0?'ဒိုင်မှ ပေးရန်':'ဒိုင်မှ ရရန်'};
+}
+function signedMoney(v){return v<0?'('+money(Math.abs(Math.round(v)))+')':money(Math.round(v));}
+function manualOverDealerRows(){
+  return [1,2,3].map(i=>({name:val('odName'+i)||('Over '+i), amount:Number(val('odAmt'+i)||0), cor:Number(val('odCor'+i)||0)})).filter(x=>x.amount>0);
+}
+function dealerSummary(date,session,p){
+  const names=settings.names||[]; const sums=names.map(n=>commissionSummary(n,date,session,p));
+  const allTotal=sums.reduce((a,b)=>a+b.total,0); const allPayout=sums.reduce((a,b)=>a+b.payout,0); const allCor=sums.reduce((a,b)=>a+b.cor,0);
+  const overRows=manualOverDealerRows(); const overAmount=overRows.reduce((a,b)=>a+b.amount,0); const overCor=overRows.reduce((a,b)=>a+(b.amount*b.cor/100),0);
+  const overPAmount=/^\d{2}$/.test(p)?deductionsFor(date,session,'ALL').filter(d=>d.number===p).reduce((a,b)=>a+Number(b.amount||0),0):0;
+  const overPayout=overPAmount*Number(settings.payoutRate||80); const final=allTotal-allPayout-allCor-overAmount+overPayout+overCor;
+  return {allTotal,allPayout,allCor,overAmount,overCor,overPAmount,overPayout,final,overRows,sums};
+}
+function renderDealerSummary(r){
+  if(!document.getElementById('dealerTotal')) return; const d=dealerSummary(r.date,r.session,r.p);
+  setText('dealerTotal',money(d.allTotal)); setText('dealerPayout',money(d.allPayout)); setText('dealerCor',money(Math.round(d.allCor))); setText('dealerOverAmt',money(d.overAmount)); setText('dealerOverPayout',money(d.overPayout)); setText('dealerOverCor',money(Math.round(d.overCor))); setText('dealerFinal',signedMoney(d.final));
+  document.getElementById('dealerFinal').className='v '+(d.final<0?'resultNegative':'resultPositive');
+}
+function drawReportImage(title, lines, filename){
+  const canvas=document.createElement('canvas'); canvas.width=900; canvas.height=Math.max(500,120+lines.length*36); const c=canvas.getContext('2d');
+  c.fillStyle='#f8fafc'; c.fillRect(0,0,canvas.width,canvas.height); c.fillStyle='#0f172a'; c.font='bold 34px Arial'; c.fillText(title,32,54);
+  c.strokeStyle='#16a34a'; c.lineWidth=4; c.beginPath(); c.moveTo(32,76); c.lineTo(canvas.width-32,76); c.stroke();
+  c.font='22px Arial'; let y=120; lines.forEach(line=>{c.fillStyle=line.color||'#0f172a'; c.font=line.bold?'bold 23px Arial':'22px Arial'; c.fillText(line.text,40,y); y+=36;});
+  const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=filename; a.click();
+}
+function saveCommissionReportImage(){
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const selected=val('reportName')||'ALL'; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2);
+  const names=selected==='ALL'?(settings.names||[]): [selected];
+  names.forEach(name=>{
+    const s=commissionSummary(name,date,session,p); const neg=s.final<0;
+    drawReportImage(`${name} ${session} စာရင်း`,[
+      {text:`Date: ${date}`,bold:true},{text:`P Number: ${p}`,bold:true},{text:`Total Amount: ${money(s.total)}`},{text:`P Amount: ${money(s.pamt)}`},{text:`Payout: ${money(s.payout)}`},{text:`Cor ${s.rate}%: ${money(Math.round(s.cor))}`},{text:`Final: ${signedMoney(s.final)}`,bold:true,color:neg?'#dc2626':'#16a34a'},{text:s.status,bold:true,color:neg?'#dc2626':'#16a34a'}
+    ],`commission-${name}-${date}-${session}.png`);
+  });
+}
+function saveDealerReportImage(){
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2); const d=dealerSummary(date,session,p); const neg=d.final<0;
+  const lines=[{text:`Date: ${date} | Session: ${session} | P: ${p}`,bold:true},{text:`All Total: ${money(d.allTotal)}`},{text:`All Payout: ${money(d.allPayout)}`},{text:`All Cor: ${money(Math.round(d.allCor))}`},{text:`Manual Over Amount: ${money(d.overAmount)}`},{text:`Over P Payout: ${money(d.overPayout)}`},{text:`Over Amount Cor: ${money(Math.round(d.overCor))}`},{text:`Dealer Final: ${signedMoney(d.final)}`,bold:true,color:neg?'#dc2626':'#16a34a'}];
+  d.overRows.forEach(x=>lines.push({text:`${x.name}: ${money(x.amount)} × ${x.cor}% = ${money(Math.round(x.amount*x.cor/100))}`}));
+  drawReportImage('ဒိုင်စာရင်း / Dealer Summary',lines,`dealer-${date}-${session}.png`);
 }
 function renderReports(){
   const r=reportCalc(); setText('rTotal',money(r.total)); setText('rCom',money(Math.round(r.com))); setText('rNet',money(Math.round(r.net))); setText('rPamt',money(r.pamt)); setText('rPayout',money(r.payout)); setText('rFinal',money(Math.round(r.final)));
   document.getElementById('rFinal').className='v '+(r.final>=0?'good':'bad');
+  document.getElementById('reportNameRows').innerHTML=(settings.names||[]).map(n=>{const a=r.nameTotals[n]||0; const nt=totalsByNumber(r.date,r.session,n); const pamt=/^\d{2}$/.test(r.p)?(nt[r.p]||0):0; const payout=pamt*Number(settings.payoutRate||80); const rate=getRate(n); const cor=a*rate/100; const final=a-payout-cor; const cls=final<0?'resultNegative':'resultPositive'; const f=final<0?'('+money(Math.abs(Math.round(final)))+')':money(Math.round(final)); return `<tr><td><b>${escapeHtml(n)}</b></td><td class="right">${money(a)}</td><td class="right">${money(pamt)}</td><td class="right">${money(payout)}</td><td class="right">${rate}%</td><td class="right">${money(Math.round(cor))}</td><td class="right ${cls}">${f}</td></tr>`}).join('') || '<tr><td colspan="7" class="muted">No data</td></tr>';
   document.getElementById('reportRows').innerHTML=Object.entries(r.totals).map(([n,a])=>`<tr><td><b>${n}</b></td><td class="right">${money(a)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
+  renderDealerSummary(r);
 }
 function renderImageText(){
-  const date=val('imageDate')||today(); const session=val('imageSession')||'AM'; const title=val('imageTitle')||'2D Report'; const totals=totalsByNumber(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
-  const lines=[]; lines.push(`${title}`); lines.push(`${settings.shopName||'Viber 2D Desk'} | ${date} | ${session}`); lines.push('--------------------'); Object.entries(totals).forEach(([n,a])=>lines.push(`${n} = ${money(a)}`)); lines.push('--------------------'); lines.push(`Total = ${money(total)}`);
+  const date=val('imageDate')||today(); const session=val('imageSession')||'AM'; const name=val('imageName')||'ALL'; const title=val('imageTitle')||'2D Report'; const totals=totalsByNumber(date,session,name); const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const lines=[]; lines.push(`${title}`); lines.push(`${settings.shopName||'Viber 2D Desk'} | ${date} | ${session} | ${name}`); lines.push('--------------------'); Object.entries(totals).forEach(([n,a])=>lines.push(`${n} = ${money(a)}`)); lines.push('--------------------'); lines.push(`Total = ${money(total)}`);
   document.getElementById('shareText').textContent=lines.join('\n');
 }
+function renderMainBoard(){
+  const board=document.getElementById('mainLimitBoard'); if(!board) return;
+  const date=val('entryDate')||today(); const session=val('entrySession')||'AM'; const mode=val('entryBoardMode')||'ALL'; const name=mode==='NAME'?(val('entryBoardName')||'Default'):'ALL'; const limit=Number(val('entryLimitAmount')||settings.defaultLimit||10000);
+  const totals=boardTotalsByNumber(date,session,name); const rows=filterRecords(date,session,name).length;
+  let total=0, overTotal=0, overCount=0;
+  board.innerHTML=boardTableHTML(totals, limit, (calc)=>{total=calc.total; overTotal=calc.overTotal; overCount=calc.overCount;});
+  setText('mainBoardTotal',money(total)); setText('mainBoardOverTotal',money(overTotal)); setText('mainBoardOverCount',overCount); setText('mainBoardRows',rows);
+}
+function renderEntryOver(){
+  const tbody=document.getElementById('entryOverRows'); if(!tbody) return;
+  const date=val('entryDate')||today(); const session=val('entrySession')||'AM'; const mode=val('entryBoardMode')||'ALL'; const name=mode==='NAME'?(val('entryBoardName')||'Default'):'ALL'; const limit=Number(val('entryLimitAmount')||settings.defaultLimit||10000);
+  const totals=boardTotalsByNumber(date,session,name); const rows=Object.entries(totals).filter(([n,a])=>a>limit).map(([number,amount])=>({number,amount,over:amount-limit}));
+  tbody.innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right bad">${money(r.over)}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">Over မရှိပါ</td></tr>';
+  setText('entryOverSumOver',money(rows.reduce((a,b)=>a+b.over,0)));
+}
+function renderEntryLive(){renderMainBoard(); renderEntryOver();}
+const I18N={
+  my:{langLabel:'ဘာသာ',backup:'Backup JSON',clearAll:'အားလုံးဖျက်',liveBoard:'Limit Table Board / Live Desk',boardNote:'Laptop screen အတွက် Board ကို အပေါ်ဆုံးမှာ သေသပ်ကျယ်ပြန့်စွာထားထားသည်။ Amount ကို Unit ဖြင့်ပြသည်။',refresh:'Refresh',date:'ရက်စွဲ',session:'Session',name:'Name / ကော်မရှင်',limitAmount:'Limit Amount',total:'စုစုပေါင်း',overTotal:'Over စုစုပေါင်း',overCount:'Over အရေအတွက်',recordRows:'Rows',entryTitle:'စာရင်းထည့်ရန် / Entry',parsePreview:'Parse Preview',confirmSave:'Confirm Save',clearText:'Clear Text',previewRows:'Preview Rows',previewTotal:'Preview Total',warnings:'Warnings',aggByNumber:'Number အလိုက်ပေါင်း',previewDetail:'Preview Detail',overLive:'Over',overNote:'အပေါ်က ရက်စွဲ / Session / Name အတိုင်း Over တွက်ထားသည်။'},
+  en:{langLabel:'Language',backup:'Backup JSON',clearAll:'Clear All',liveBoard:'Limit Table Board / Live Desk',boardNote:'A clean wide board is placed first for laptop screens. Amounts are displayed in unit format.',refresh:'Refresh',date:'Date',session:'Session',name:'Name / Commission',limitAmount:'Limit Amount',total:'Total',overTotal:'Over Total',overCount:'Over Count',recordRows:'Rows',entryTitle:'Entry',parsePreview:'Parse Preview',confirmSave:'Confirm Save',clearText:'Clear Text',previewRows:'Preview Rows',previewTotal:'Preview Total',warnings:'Warnings',aggByNumber:'Aggregated by Number',previewDetail:'Preview Detail',overLive:'Over',overNote:'Over is calculated using the selected date/session/name above.'}
+};
+function setLang(lang){settings.lang=lang; localStorage.setItem('v2d_settings',JSON.stringify(settings)); const d=I18N[lang]||I18N.my; document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n; if(d[k]) el.textContent=d[k];}); const sel=document.getElementById('langSelect'); if(sel) sel.value=lang;}
 function renderDashboard(){
   const t=today(); const am=filterRecords(t,'AM').reduce((a,b)=>a+b.amount,0); const pm=filterRecords(t,'PM').reduce((a,b)=>a+b.amount,0); setText('dashToday',money(am+pm)); setText('dashAM',money(am)); setText('dashPM',money(pm));
-  document.getElementById('latestRows').innerHTML=records.slice(-30).reverse().map(r=>`<tr><td>${r.date}</td><td>${r.session}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">No records</td></tr>';
+  document.getElementById('latestRows').innerHTML=records.slice(-30).reverse().map(r=>`<tr><td>${r.date}</td><td>${r.session}</td><td>${escapeHtml(r.name||'Default')}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.source)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">No records</td></tr>';
 }
-function renderAll(){renderDashboard();renderPreview();renderLimit();renderOver();renderReports();renderImageText();}
+
+function jsArg(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function recordFilteredRows(){
+  const date=val('recordDate')||today(), session=val('recordSession')||'AM', name=val('recordName')||'ALL', q=(val('recordSearch')||'').toLowerCase().trim();
+  return records.filter(r=>{
+    const okDate=r.date===date;
+    const okSession=session==='DAILY' || r.session===session;
+    const okName=name==='ALL' || (r.name||'Default')===name;
+    const blob=((r.name||'')+' '+(r.number||'')+' '+(r.amount||'')+' '+(r.source||'')+' '+(r.type||'')).toLowerCase();
+    return okDate && okSession && okName && (!q || blob.includes(q));
+  }).sort((a,b)=>(a.ts||0)-(b.ts||0));
+}
+function renderEntryRecords(){
+  if(!document.getElementById('entryRecordRows')) return;
+  const rows=recordFilteredRows();
+  const mode=val('recordViewMode')||'TIME';
+  setText('recordRowsCount',rows.length);
+  setText('recordRowsTotal',money(rows.reduce((s,r)=>s+Number(r.amount||0),0)));
+  setText('recordNamesCount',new Set(rows.map(r=>r.name||'Default')).size);
+  let html='';
+  if(mode==='NAME'){
+    const groups={}; rows.forEach(r=>{const n=r.name||'Default'; (groups[n] ||= []).push(r);});
+    let no=1;
+    Object.keys(groups).sort().forEach(name=>{
+      const g=groups[name], total=g.reduce((s,r)=>s+Number(r.amount||0),0);
+      html += `<tr class="recordHeaderRow"><td colspan="10">${escapeHtml(name)} — ${g.length} rows — Total ${money(total)}</td></tr>`;
+      g.forEach(r=>{html += entryRecordRowHtml(r,no++);});
+    });
+  }else{
+    html = rows.map((r,i)=>entryRecordRowHtml(r,i+1)).join('');
+  }
+  document.getElementById('entryRecordRows').innerHTML = html || '<tr><td colspan="10" class="muted">Record မရှိသေးပါ</td></tr>';
+}
+function entryRecordRowHtml(r,no){
+  const t=r.ts?new Date(r.ts).toLocaleTimeString(): '-';
+  const id=jsArg(r.id||'');
+  return `<tr><td>${no}</td><td>${t}</td><td>${r.date||''}</td><td>${r.session||''}</td><td>${escapeHtml(r.name||'Default')}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.type||'')}</td><td>${escapeHtml(r.source||'')}</td><td class="nowrap"><button class="actionBtn edit" onclick="editEntryRecord('${id}')">Edit</button><button class="actionBtn del" onclick="deleteEntryRecord('${id}')">Delete</button></td></tr>`;
+}
+function editEntryRecord(id){
+  const i=records.findIndex(r=>r.id===id); if(i<0){showToast('Record မတွေ့ပါ');return;}
+  const r=records[i];
+  const name=prompt('Name ပြင်ရန်', r.name||'Default'); if(name===null) return;
+  const number=prompt('Number ပြင်ရန်', r.number||''); if(number===null) return;
+  const amount=prompt('Amount ပြင်ရန်', r.amount||''); if(amount===null) return;
+  const date=prompt('Date ပြင်ရန် YYYY-MM-DD', r.date||today()); if(date===null) return;
+  const session=prompt('Session ပြင်ရန် AM / PM', r.session||'AM'); if(session===null) return;
+  if(!/^\d{2}$/.test(String(number).padStart(2,'0').slice(-2))){showToast('Number မမှန်ပါ'); return;}
+  const amt=Number(String(amount).replace(/[^\d]/g,'')); if(!amt){showToast('Amount မမှန်ပါ'); return;}
+  records[i]={...r,name:name.trim()||'Default',number:String(number).padStart(2,'0').slice(-2),amount:amt,date:date.trim()||today(),session:(session.toUpperCase().startsWith('P')?'PM':'AM'),editedAt:Date.now()};
+  saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Edited + Cloud Sync');
+}
+function deleteEntryRecord(id){
+  const i=records.findIndex(r=>r.id===id); if(i<0){showToast('Record မတွေ့ပါ');return;}
+  const r=records[i]; if(!confirm(`${r.name||'Default'} | ${r.number} | ${money(r.amount)} ကို ဖျက်မလား?`)) return;
+  records.splice(i,1); saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Deleted + Cloud Sync');
+}
+function copyEntryRecordsText(){
+  const rows=recordFilteredRows();
+  if(!rows.length){showToast('Copy လုပ်ရန် record မရှိပါ'); return;}
+  const lines=[`Entry Records ${val('recordDate')||today()} ${val('recordSession')||'AM'} ${val('recordName')||'ALL'}`,'Time | Name | Number | Amount | Source'];
+  rows.forEach(r=>lines.push(`${r.ts?new Date(r.ts).toLocaleTimeString():'-'} | ${r.name||'Default'} | ${r.number} | ${money(r.amount)} | ${r.source||''}`));
+  lines.push('Total = '+money(rows.reduce((s,r)=>s+Number(r.amount||0),0)));
+  copyText(lines.join('\n'));
+}
+
+function renderAll(){renderDashboard();renderPreview();renderEntryLive();renderLimit();renderOver();renderReports();renderImageText();renderEntryRecords();}
 function setText(id,v){const el=document.getElementById(id); if(el) el.textContent=v;}
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.id===id));renderAll();}
 function insertKey(k){const ta=document.getElementById('entryText'); const add=(ta.value && !ta.value.endsWith('\n')?'\n':'')+k+' '; ta.value+=add; ta.focus();}
 function copyText(text){navigator.clipboard?.writeText(text).then(()=>showToast('Copied')).catch(()=>showToast('Copy မရပါ'));}
 function copyShareText(){copyText(document.getElementById('shareText').textContent)}
-function copyOverText(){
-  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const totals=totalsByNumber(date,session); const rows=Object.entries(totals).filter(([n,a])=>a>limit);
-  const lines=[`OVER ${date} ${session}`,'No | Number | Amount | Over']; rows.forEach(([n,a],i)=>lines.push(`${i+1}. ${n} | ${money(a)} | ${money(a-limit)}`)); lines.push('Total Over: '+money(rows.reduce((s,[n,a])=>s+a-limit,0))); copyText(lines.join('\n'));
+function currentOverRows(date,session,name,limit){
+  const totals=boardTotalsByNumber(date,session,name);
+  return Object.entries(totals).filter(([n,a])=>a>limit).map(([number,amount])=>({number,amount,over:amount-limit}));
 }
-function exportJSON(){const data={settings,records,exportedAt:new Date().toISOString()}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viber-2d-desk-backup.json';a.click();}
-function clearAllData(){if(confirm('Data အကုန်ဖျက်မှာ သေချာလား?')){records=[];saveRecords();renderAll();showToast('Cleared');}}
-function syncLimitInputs(){const v=val('defaultLimit')||settings.defaultLimit||10000; setVal('limitAmount',v); setVal('overLimit',v); renderLimit(); renderOver();}
+function applyOverDeduction(date,session,name,rows,reason){
+  rows.forEach(r=>overDeductions.push({date,session,name,number:r.number,amount:r.over,reason,ts:Date.now()}));
+  saveOverDeductions(); renderAll();
+}
+function copyOverText(){
+  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const name=val('overName')||'ALL'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const rows=currentOverRows(date,session,name,limit);
+  if(!rows.length){showToast('Over မရှိပါ'); return;}
+  if(!confirm('Copy Over Text လုပ်ပြီး Limit Board မှ Over amount ကို နုတ်မည်။ သေချာလား?')) return;
+  const lines=[`OVER ${date} ${session} ${name}`,'No | Number | Over']; rows.forEach((r,i)=>lines.push(`${i+1}. ${r.number} | ${money(r.over)}`)); lines.push('Total Over: '+money(rows.reduce((s,r)=>s+r.over,0))); copyText(lines.join('\n'));
+  applyOverDeduction(date,session,name,rows,'copyText');
+}
+function saveOverImage(){
+  const date=val('overDate')||today(); const session=val('overSession')||'AM'; const name=val('overName')||'ALL'; const limit=Number(val('overLimit')||settings.defaultLimit||10000); const rows=currentOverRows(date,session,name,limit);
+  if(!rows.length){showToast('Over မရှိပါ'); return;}
+  if(!confirm('Save Image လုပ်ပြီး Limit Board မှ Over amount ကို နုတ်မည်။ သေချာလား?')) return;
+  const canvas=document.createElement('canvas'); canvas.width=720; canvas.height=Math.max(260,120+rows.length*34); const c=canvas.getContext('2d');
+  c.fillStyle='#0f172a'; c.fillRect(0,0,canvas.width,canvas.height); c.fillStyle='#fff'; c.font='bold 28px Arial'; c.fillText(`OVER ${date} ${session} ${name}`,24,44); c.font='20px Arial'; c.fillStyle='#bbf7d0'; c.fillText('No     Number        Over',24,88); let y=122; c.fillStyle='#e5e7eb'; rows.forEach((r,i)=>{c.fillText(`${i+1}.        ${r.number}             ${money(r.over)}`,24,y); y+=34;}); c.fillStyle='#fca5a5'; c.fillText('Total Over: '+money(rows.reduce((s,r)=>s+r.over,0)),24,y+16);
+  const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=`over-${date}-${session}-${name}.png`; a.click();
+  applyOverDeduction(date,session,name,rows,'saveImage');
+}
+function exportJSON(){const data={settings,records,overDeductions,exportedAt:new Date().toISOString()}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viber-2d-desk-backup.json';a.click();}
+function clearAllData(){if(confirm('Data အကုန်ဖျက်မှာ သေချာလား?')){records=[];overDeductions=[];saveRecords();saveOverDeductions();renderAll();showToast('Cleared');}}
+function syncLimitInputs(){const v=settings.defaultLimit||val('defaultLimit')||10000; ['defaultLimit','limitAmount','overLimit','entryLimitAmount'].forEach(id=>setVal(id,v)); renderLimit(); renderOver(); renderEntryLive();}
+function syncLimitFrom(v){
+  const n=Number(v||0); settings.defaultLimit=n; ['defaultLimit','limitAmount','overLimit','entryLimitAmount'].forEach(id=>setVal(id,n)); saveSettings(); renderLimit(); renderOver(); renderEntryLive();
+}
+function nameOptions(includeAll=false){
+  const names=(settings.names&&settings.names.length?settings.names:['Default']);
+  return (includeAll?['ALL',...names]:names).map(n=>`<option value="${escapeHtml(n)}">${n==='ALL'?'All Names':escapeHtml(n)}</option>`).join('');
+}
+function refreshNameSelects(){
+  ['entryName','entryBoardName'].forEach(id=>{const el=document.getElementById(id); if(el){const old=el.value; el.innerHTML=nameOptions(false); if(old) el.value=old;}});
+  ['recordName','limitName','overName','reportName','imageName'].forEach(id=>{const el=document.getElementById(id); if(el){const old=el.value; el.innerHTML=nameOptions(true); if(old) el.value=old;}});
+  const box=document.getElementById('nameList'); if(box){box.innerHTML=(settings.names||['Default']).map(n=>`<div class="nameRateRow"><b>${escapeHtml(n)}</b><input type="number" value="${settings.nameRates?.[n]??settings.commissionRate??20}" onchange="setNameRate('${String(n).replace(/'/g,"\'")}', this.value)" title="Cor %"><button class="btn danger small" onclick="removeName('${String(n).replace(/'/g,"\'")}')">Remove</button></div>`).join('');}
+}
+function setNameRate(n,v){ if(!settings.nameRates) settings.nameRates={}; settings.nameRates[n]=Number(v||0); saveSettings(); renderReports(); }
+function addName(){
+  const n=(val('newName')||'').trim(); if(!n){showToast('Name ထည့်ပါ'); return;}
+  settings.names=uniq([...(settings.names||[]), n]); if(!settings.nameRates) settings.nameRates={}; settings.nameRates[n]=settings.nameRates[n]??settings.commissionRate??20; setVal('newName',''); saveSettings(); refreshNameSelects(); renderAll(); showToast('Name Added');
+}
+function removeName(n){
+  if((settings.names||[]).length<=1){showToast('အနည်းဆုံး Name ၁ ခုထားပါ'); return;}
+  if(!confirm(n+' ကို ဖယ်မလား?')) return;
+  settings.names=(settings.names||[]).filter(x=>x!==n); if(settings.nameRates) delete settings.nameRates[n]; saveSettings(); refreshNameSelects(); renderAll();
+}
 function init(){
   document.getElementById('tabs').innerHTML=pages.map(([id,name])=>`<button class="tab ${id==='dashboard'?'active':''}" data-id="${id}" onclick="go('${id}')">${name}</button>`).join('');
-  ['entryDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>setVal(id,today()));
-  settings={shopName:'Viber 2D Desk',commissionRate:20,payoutRate:80,defaultLimit:10000,amClose:'12:00',pmClose:'16:30',...settings};
+  ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>setVal(id,today()));
+  settings={shopName:'Viber 2D Desk',commissionRate:20,payoutRate:80,defaultLimit:10000,amClose:'12:00',pmClose:'16:30',names:['Default'],nameRates:{Default:20},lang:'my',...settings}; if(!Array.isArray(settings.names)||!settings.names.length) settings.names=['Default']; if(!settings.nameRates) settings.nameRates={}; settings.names.forEach(n=>{if(settings.nameRates[n]==null) settings.nameRates[n]=settings.commissionRate||20;});
   setVal('shopName',settings.shopName); setVal('commissionRate',settings.commissionRate); setVal('payoutRate',settings.payoutRate); setVal('defaultLimit',settings.defaultLimit); setVal('amClose',settings.amClose); setVal('pmClose',settings.pmClose); syncLimitInputs();
-  const keys=['A','Z','B','//','//-3355','*2','*12','1*','12*','1234**','++','--','+-','-+','/9','9/','+/','-/','/+','/-','+1','-1','1+','1-'];
-  document.getElementById('quickKeys').innerHTML=keys.map(k=>`<div class="key" onclick="insertKey('${k}')">${k}</div>`).join('');
+  const keys=['A','Z','B','//','//-3355','*2','*12','1*','1ပါ','7ပါတ်ပူးပါ','12*','1234**','12345 အခွေ','3/8ဘရိတ်','2ထိပ် 500 R 200','++','--','+-','-+','/9','9/','+/','-/','/+','/-','+1','-1','1+','1-'];
   document.getElementById('formulaChips').innerHTML=keys.map(k=>`<span class="chip" onclick="go('entry');insertKey('${k}')">${k}</span>`).join('');
+  refreshNameSelects();
+  setLang(settings.lang||'my');
   renderAll();
 }
 init();
