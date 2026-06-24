@@ -88,7 +88,7 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 2.3 Full + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 2.4 Full + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary</div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
@@ -431,7 +431,22 @@ function rev(n){n=String(n).padStart(2,'0'); return n[1]+n[0]}
 function even(d){return Number(d)%2===0}
 function odd(d){return !even(d)}
 function splitPairs(s){const c=String(s).replace(/\D/g,''); const out=[]; for(let i=0;i+1<c.length;i+=2) out.push(c.slice(i,i+2)); return out.filter(x=>/^\d{2}$/.test(x));}
-function normalize(s){return String(s||'').normalize('NFKC').replace(/@/g,'R').replace(/[Ｒｒ]/g,'R').replace(/ပါဝါ/g,' A ').replace(/နက်ခက်|နက္ခ|နက်ခ/g,' Z ').replace(/ညီအကို|ညီကို/g,' B ').replace(/[＝]/g,'=').replace(/[–—−]/g,'-').replace(/\r/g,'\n').trim();}
+function normalize(s){
+  return String(s||'')
+    .normalize('NFKC')
+    .replace(/@/g,'R')
+    .replace(/[Ｒｒ]/g,'R')
+    .replace(/အပါ/g,'ပါ')
+    .replace(/အပူ/g,'အပူး')
+    .replace(/အခေွ|အခွဲ/g,'အခွေ')
+    .replace(/ပါဝါ/g,' A ')
+    .replace(/နက်ခက်|နက္ခ|နက်ခ/g,' Z ')
+    .replace(/ညီအကို|ညီကို/g,' B ')
+    .replace(/[＝]/g,'=')
+    .replace(/[–—−]/g,'-')
+    .replace(/\r/g,'\n')
+    .trim();
+}
 function numberGroups(s){return [...String(s).matchAll(/\d+/g)].map(m=>m[0]);}
 function breakNums(code){
   const n=Number(code); if(!Number.isFinite(n)) return [];
@@ -637,6 +652,22 @@ function parseSpecialBurmeseLine(line){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
   }
 
+  // 5/=400R100 or 5/400R100 => 5/ = 400 and /5 = 100
+  m=s.match(/^(\d)\/\s*=?\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'front-digit-short');
+    addRowsForList(rows,warnings,parityNums('/',m[1]),m[3],source,'back-digit-short-r');
+    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+  }
+
+  // /5=100R400 or /5 100 R 400 => /5 = 100 and 5/ = 400
+  m=s.match(/^\/(\d)\s*=?\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'back-digit-short');
+    addRowsForList(rows,warnings,parityNums(m[1],'/'),m[3],source,'front-digit-short-r');
+    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+  }
+
   // 2ထိပ် 500 R 200: front/top digit at normal amount and reverse/back digit at R amount.
   m=s.match(/^(\d)\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*(\d+)\s*[Rr]\s*(\d+)$/);
   if(m){
@@ -662,6 +693,14 @@ function parseSpecialBurmeseLine(line){
   m=s.match(/^(\d{2,})\s*(?:နောက်ပိတ်|နောက်)\s*=?\s*(\d+)$/);
   if(m){
     uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums('/',d),m[2],source,'multi-back'));
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // 11.88.55.33=1000 [optional note]  or 22,77,88,99,44=1000
+  m=s.match(/^((?:\d{2}[\s,./-]*){2,})\s*=\s*(\d+)(?:\s+[^\d].*)?$/);
+  if(m){
+    const nums = (m[1].match(/\d{2}/g) || []);
+    addRowsForList(rows,warnings,nums,m[2],source,'explicit-multi');
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
@@ -742,11 +781,26 @@ function parseSpecialBurmeseLine(line){
   return {handled:false, rows, warnings, meta:null};
 }
 function splitExprAmount(line){
-  let s=normalize(line); const m=s.match(/(\d+)\s*$/); if(!m) return null;
-  const amount=m[1]; let expr=s.slice(0,m.index).trim();
-  expr=expr.replace(/[=,.\s]+$/g,'');
-  if(expr.endsWith('-') && !/^\d-$/.test(expr)) expr=expr.slice(0,-1).trim();
-  return {expr,amount};
+  let s=normalize(line).trim();
+
+  // Strong explicit form: expr = amount [optional trailing note]
+  let m = s.match(/^(.*?)\s*=\s*(\d+)(?:\s+[^\d].*)?$/);
+  if(m){
+    let expr = (m[1] || '').trim();
+    let amount = m[2];
+    expr = expr.replace(/[=,.\s]+$/g,'');
+    if(expr.endsWith('-') && !/^\d-$/.test(expr)) expr = expr.slice(0,-1).trim();
+    return expr ? {expr, amount} : null;
+  }
+
+  // Standard trailing amount form: expr amount
+  m = s.match(/(\d+)\s*$/);
+  if(!m) return null;
+  const amount = m[1];
+  let expr = s.slice(0,m.index).trim();
+  expr = expr.replace(/[=,.\s]+$/g,'');
+  if(expr.endsWith('-') && !/^\d-$/.test(expr)) expr = expr.slice(0,-1).trim();
+  return expr ? {expr, amount} : null;
 }
 function parseLine(line){
   line=normalize(line); const rows=[]; const warnings=[]; if(!line) return {rows,warnings};
