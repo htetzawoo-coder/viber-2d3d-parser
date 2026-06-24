@@ -1,111 +1,359 @@
 <!DOCTYPE html>
-<html>
+<html lang="my">
 <head>
-<meta charset="UTF-8">
-<title>Viber 2D Parser v2.1</title>
-<style>
-body { font-family: Arial; padding: 10px; }
-textarea { width: 100%; height: 200px; }
-pre { background:#111; color:#0f0; padding:10px; }
-button { padding:10px; margin-top:10px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viber 2D Parser v2.1 Firebase</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans Myanmar", sans-serif;
+      background: #f4f6f8;
+      color: #111827;
+      padding: 12px;
+    }
+    h2 { margin: 8px 0 12px; font-size: 20px; }
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    textarea {
+      width: 100%;
+      height: 190px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      resize: vertical;
+      background: #fff;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    button {
+      padding: 12px 10px;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+    button.secondary { background: #374151; }
+    button.danger { background: #dc2626; }
+    button.success { background: #16a34a; }
+    button:disabled { background: #9ca3af; cursor: not-allowed; }
+    .status {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    pre {
+      width: 100%;
+      min-height: 120px;
+      background: #101010;
+      color: #22ff44;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    .small { font-size: 12px; color: #6b7280; margin-top: 6px; }
+    .history-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      background: #fafafa;
+      font-size: 14px;
+    }
+    .history-title { font-weight: 700; margin-bottom: 4px; }
+  </style>
 </head>
 <body>
+  <h2>Viber 2D Parser v2.1 + Firebase</h2>
 
-<h2>Viber 2D Parser v2.1</h2>
+  <div class="card">
+    <textarea id="input" placeholder="Example:
+24 R 500
+1ပါ 100
+12345 အခွေ 500"></textarea>
 
-<textarea id="input" placeholder="Enter data..."></textarea>
-<br>
-<button onclick="parse()">PARSE</button>
+    <div class="buttons">
+      <button onclick="parseInput()">PARSE</button>
+      <button class="success" onclick="saveToFirebase()" id="saveBtn" disabled>SAVE FIREBASE</button>
+      <button class="secondary" onclick="loadRecent()">LOAD RECENT</button>
+      <button class="danger" onclick="clearAll()">CLEAR</button>
+    </div>
 
-<pre id="output"></pre>
+    <div id="status" class="status">Ready. Paste data → PARSE → SAVE FIREBASE.</div>
+  </div>
 
-<script>
-function reverse(n){
-  return n.toString().split('').reverse().join('');
-}
+  <div class="card">
+    <h3>Parsed Result</h3>
+    <pre id="output">TOTAL = 0</pre>
+    <div class="small">Collection name: <b>record</b></div>
+  </div>
 
-function expandA2(digits, amount){
-  let arr = digits.split('');
-  let res = [];
-  for(let i=0;i<arr.length;i++){
-    for(let j=0;j<arr.length;j++){
-      if(i!==j){
-        res.push(arr[i]+arr[j]+"="+amount);
+  <div class="card">
+    <h3>Recent Firebase Records</h3>
+    <div id="history">No records loaded.</div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBlii0svzXc6OvL49P06e8TgFF4QrzyXm0",
+      authDomain: "viber2ddesk.firebaseapp.com",
+      projectId: "viber2ddesk",
+      storageBucket: "viber2ddesk.firebasestorage.app",
+      messagingSenderId: "98470658215",
+      appId: "1:98470658215:web:28475a9afc8f1f85695b82"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let parsedRows = [];
+    let parsedSummary = [];
+    let parsedTotal = 0;
+
+    function setStatus(msg) {
+      document.getElementById("status").innerText = msg;
+    }
+
+    function normalizeLine(line) {
+      return line
+        .replace(/\u200B/g, "")
+        .replace(/[၊,]/g, " ")
+        .replace(/[=]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function reverse2(num) {
+      const s = String(num).padStart(2, "0");
+      return s.split("").reverse().join("");
+    }
+
+    function addRow(rows, number, amount, source, raw) {
+      if (!number || isNaN(amount)) return;
+      const n = String(number).padStart(2, "0").slice(-2);
+      rows.push({
+        number: n,
+        amount: Number(amount),
+        source: source || "manual",
+        raw: raw || ""
+      });
+    }
+
+    function expandStarDigit(digit, amount, raw) {
+      const rows = [];
+      const d = String(digit);
+      for (let i = 0; i <= 9; i++) {
+        addRow(rows, d + i, amount, "star_front", raw);
+        addRow(rows, i + d, amount, "star_back", raw);
+      }
+      return rows;
+    }
+
+    function expandAkwe(digits, amount, raw) {
+      const rows = [];
+      const arr = String(digits).split("");
+      for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr.length; j++) {
+          if (i !== j) addRow(rows, arr[i] + arr[j], amount, "akwe", raw);
+        }
+      }
+      return rows;
+    }
+
+    function parseLine(line) {
+      const raw = line;
+      line = normalizeLine(line);
+      if (!line) return [];
+
+      // Ignore total-only lines
+      if (/^(total|စုစုပေါင်း|ပေါင်း)/i.test(line)) return [];
+
+      // အခွေ rule: 12345 အခွေ 500
+      if (line.includes("အခွေ") || line.toLowerCase().includes("akwe")) {
+        const digitsMatch = line.match(/\d+/);
+        const allNums = line.match(/\d+/g) || [];
+        const digits = digitsMatch ? digitsMatch[0] : "";
+        const amount = Number(allNums[allNums.length - 1]);
+        if (digits && !isNaN(amount)) return expandAkwe(digits, amount, raw);
+      }
+
+      // ပါ / * rule: 1ပါ 100, 1ပါR100, 1* 100
+      if (line.includes("ပါ") || line.includes("*")) {
+        const digitMatch = line.match(/\d/);
+        const allNums = line.match(/\d+/g) || [];
+        const amount = Number(allNums[allNums.length - 1]);
+        if (digitMatch && !isNaN(amount)) {
+          return expandStarDigit(digitMatch[0], amount, raw);
+        }
+      }
+
+      // R rule: 24 R 500, 24R500
+      if (/[Rr]/.test(line)) {
+        const m = line.match(/(\d{1,2})\s*[Rr]\s*(\d+)/);
+        if (m) {
+          const num = m[1].padStart(2, "0");
+          const amount = Number(m[2]);
+          const rows = [];
+          addRow(rows, num, amount, "reverse", raw);
+          addRow(rows, reverse2(num), amount, "reverse", raw);
+          return rows;
+        }
+      }
+
+      // Plain rule: 22 200, 77-2000, 44=1000
+      const nums = line.match(/\d+/g) || [];
+      if (nums.length >= 2) {
+        const num = nums[0].padStart(2, "0");
+        const amount = Number(nums[nums.length - 1]);
+        const rows = [];
+        addRow(rows, num, amount, "plain", raw);
+        return rows;
+      }
+
+      return [];
+    }
+
+    function parseInput() {
+      const text = document.getElementById("input").value || "";
+      const lines = text.split("\n");
+      const rows = [];
+
+      for (const line of lines) {
+        const parsed = parseLine(line);
+        parsed.forEach(r => rows.push(r));
+      }
+
+      const summaryMap = {};
+      rows.forEach(r => {
+        if (!summaryMap[r.number]) summaryMap[r.number] = 0;
+        summaryMap[r.number] += r.amount;
+      });
+
+      parsedSummary = Object.keys(summaryMap)
+        .sort((a, b) => Number(a) - Number(b))
+        .map(number => ({
+          number,
+          amount: summaryMap[number]
+        }));
+
+      parsedRows = rows;
+      parsedTotal = parsedSummary.reduce((sum, r) => sum + r.amount, 0);
+
+      const outputLines = parsedSummary.map(r => `${r.number} = ${r.amount}`);
+      outputLines.push("");
+      outputLines.push(`DETAIL ROWS = ${parsedRows.length}`);
+      outputLines.push(`TOTAL = ${parsedTotal}`);
+
+      document.getElementById("output").innerText = outputLines.join("\n");
+      document.getElementById("saveBtn").disabled = parsedRows.length === 0;
+
+      setStatus(parsedRows.length
+        ? `Parsed OK. ${parsedRows.length} detail rows. Total = ${parsedTotal}. Now press SAVE FIREBASE.`
+        : "No valid entries found.");
+    }
+
+    async function saveToFirebase() {
+      if (!parsedRows.length) {
+        setStatus("Please PARSE first.");
+        return;
+      }
+
+      const inputText = document.getElementById("input").value || "";
+      const saveBtn = document.getElementById("saveBtn");
+      saveBtn.disabled = true;
+      setStatus("Saving to Firebase...");
+
+      try {
+        await db.collection("record").add({
+          inputText,
+          rows: parsedRows,
+          summary: parsedSummary,
+          total: parsedTotal,
+          source: "github-parser-v2.1",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          localCreatedAt: new Date().toISOString()
+        });
+
+        setStatus(`Saved to Firebase ✅\nTotal = ${parsedTotal}\nRows = ${parsedRows.length}`);
+        await loadRecent();
+      } catch (err) {
+        console.error(err);
+        setStatus("Firebase save failed ❌\n" + err.message);
+        saveBtn.disabled = false;
       }
     }
-  }
-  return res;
-}
 
-function expandStar(n, amount){
-  let res=[];
-  for(let i=0;i<=9;i++){
-    res.push(n+i+"="+amount);
-    res.push(i+n+"="+amount);
-  }
-  return res;
-}
+    async function loadRecent() {
+      const history = document.getElementById("history");
+      history.innerHTML = "Loading...";
 
-function parse(){
-  let lines = document.getElementById("input").value.split("\n");
-  let map = {};
+      try {
+        const snap = await db.collection("record")
+          .orderBy("localCreatedAt", "desc")
+          .limit(10)
+          .get();
 
-  function add(k,v){
-    if(!map[k]) map[k]=0;
-    map[k]+=v;
-  }
+        if (snap.empty) {
+          history.innerHTML = "No records found.";
+          return;
+        }
 
-  for(let line of lines){
-    line=line.trim();
-    if(!line) continue;
+        let html = "";
+        snap.forEach(doc => {
+          const d = doc.data();
+          const created = d.localCreatedAt ? new Date(d.localCreatedAt).toLocaleString() : "-";
+          html += `
+            <div class="history-item">
+              <div class="history-title">Total: ${d.total || 0} | Rows: ${(d.rows || []).length}</div>
+              <div>Date: ${created}</div>
+              <div class="small">Doc ID: ${doc.id}</div>
+            </div>
+          `;
+        });
 
-    // R rule
-    if(line.includes("R")){
-      let [a,b]=line.split("R");
-      let num=a.trim();
-      let amt=parseInt(b);
-
-      add(num,amt);
-      add(reverse(num),amt);
+        history.innerHTML = html;
+        setStatus("Recent Firebase records loaded ✅");
+      } catch (err) {
+        console.error(err);
+        history.innerHTML = "Load failed: " + err.message;
+        setStatus("Firebase load failed ❌\n" + err.message);
+      }
     }
 
-    // A2 rule
-    else if(line.includes("အခွေ")){
-      let parts=line.split(" ");
-      let digits=parts[0];
-      let amt=parseInt(parts[2]||parts[1]);
-      let ex=expandA2(digits,amt);
-      ex.forEach(e=>{
-        let [k,v]=e.split("=");
-        add(k,parseInt(v));
-      });
+    function clearAll() {
+      document.getElementById("input").value = "";
+      document.getElementById("output").innerText = "TOTAL = 0";
+      parsedRows = [];
+      parsedSummary = [];
+      parsedTotal = 0;
+      document.getElementById("saveBtn").disabled = true;
+      setStatus("Cleared.");
     }
-
-    // star rule (1ပါ style)
-    else if(line.includes("ပါ")){
-      let n=line.match(/\d+/)[0];
-      let amt=parseInt(line.match(/\d+$/)[0]);
-      let ex=expandStar(n,amt);
-      ex.forEach(e=>{
-        let [k,v]=e.split("=");
-        add(k,parseInt(v));
-      });
-    }
-  }
-
-  let out=[];
-  let total=0;
-
-  for(let k in map){
-    out.push(k+" = "+map[k]);
-    total+=map[k];
-  }
-
-  out.push("\nTOTAL = "+total);
-  document.getElementById("output").innerText=out.join("\n");
-}
-</script>
-
+  </script>
 </body>
 </html>
