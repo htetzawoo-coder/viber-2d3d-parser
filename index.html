@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 2.5 Full</title>
+  <title>Viber 2D Desk - Stage 2.7 Full</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -96,7 +96,7 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 2.5 Full + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 2.7 Full + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary</div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
@@ -117,7 +117,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 2.5 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records page ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 2.7 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records page ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -342,7 +342,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 2.5: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 2.7: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -394,7 +394,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 2.5 Full',
+      version:'Stage 2.7 Full',
       records,
       overDeductions,
       settings,
@@ -625,8 +625,35 @@ function parseSpecialBurmeseLine(line){
 
   let m;
 
+  // 57=82=32=R300 => each pair gets amount on original + reverse.
+  m=s.match(/^((?:\d{2}\s*=\s*){2,}\d{2})\s*=\s*[Rr]\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    const nums=(m[1].match(/\d{2}/g)||[]);
+    const amount=m[2];
+    nums.forEach(n=>{
+      addRow(rows,warnings,n,amount,source,'multi-eq-r');
+      addRow(rows,warnings,rev(n),amount,source,'multi-eq-r');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'reverse', amount:Number(amount)}};
+  }
+
+  // 22*55*66*=500 => explicit listed doubles with one shared amount.
+  m=s.match(/^((?:\d{2}\*\s*)+)\s*=\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    const nums=[...m[1].matchAll(/(\d{2})\*/g)].map(x=>x[1]);
+    addRowsForList(rows,warnings,nums,m[2],source,'explicit-star-list');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // အပူးးးးး500 / အပူး300 / အပူ300 => all doubles with one shared amount.
+  m=s.match(/^အ?ပူး[^\d=]*=?\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    addRowsForList(rows,warnings,N2.filter(n=>n[0]===n[1]),m[1],source,'double');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[1])}};
+  }
+
   // 47*49*76R1000 => each 2-digit star pair gets same amount on original + reverse.
-  m=s.match(/^((?:\d{2}\*\s*)+)\s*[Rr]\s*(\d+)$/);
+  m=s.match(/^((?:\d{2}\*\s*)+)\s*[Rr]\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     const nums=[...m[1].matchAll(/(\d{2})\*/g)].map(x=>x[1]);
     const amount=m[2];
@@ -638,7 +665,7 @@ function parseSpecialBurmeseLine(line){
   }
 
   // 40=3000R1000 => original gets 3000, reverse gets 1000.
-  m=s.match(/^(\d{2})\s*=\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  m=s.match(/^(\d{2})\s*=\s*(\d+)\s*[Rr]\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     addRow(rows,warnings,m[1],m[2],source,'mixed-normal');
     addRow(rows,warnings,rev(m[1]),m[3],source,'mixed-reverse');
@@ -646,7 +673,7 @@ function parseSpecialBurmeseLine(line){
   }
 
   // 67R1500 => original and reverse both use same amount.
-  m=s.match(/^(\d{2})\s*[Rr]\s*(\d+)$/);
+  m=s.match(/^(\d{2})\s*[Rr]\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     addRow(rows,warnings,m[1],m[2],source,'reverse');
     addRow(rows,warnings,rev(m[1]),m[2],source,'reverse');
@@ -714,7 +741,7 @@ function parseSpecialBurmeseLine(line){
   }
 
   // 11.88.55.33=1000 [optional note]  or 22,77,88,99,44=1000
-  m=s.match(/^((?:\d{2}[\s,./-]*){2,})\s*=\s*(\d+)(?:\s+[^\d].*)?$/);
+  m=s.match(/^((?:\d{2}[\s,./-]*){2,})\s*=\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     const nums = (m[1].match(/\d{2}/g) || []);
     addRowsForList(rows,warnings,nums,m[2],source,'explicit-multi');
@@ -744,12 +771,19 @@ function parseSpecialBurmeseLine(line){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
-  // 1790ခွေ500အပူးပါ: digit combinations; အပူးပါ means include doubles, not duplicate.
-  m=s.match(/^(\d{2,})\s*(?:အခွေ|ခွေ)\s*(\d+)\s*(အ?ပူးပါ)?$/);
+  // 1790ခွေ500 / 1790ခွေပူး500 / 1790အခွေ1000အပူးပါ
+  // ခွေ = permutations without doubles
+  // ခွေပူး / ခွေအပူး / ခွေအပူးပါ = permutations + doubles from the same digits
+  m=s.match(/^(\d{2,})\s*(?:အခွေ|ခွေ)\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)\s*)?=?\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
-    const digits=uniq(m[1].split('')); const amount=m[2]; const includeDoubles=!!m[3];
-    const nums=[]; digits.forEach(a=>digits.forEach(b=>{ if(includeDoubles || a!==b) nums.push(a+b); }));
-    addRowsForList(rows,warnings,nums,amount,source,'khwe');
+    const digits=uniq(m[1].split(''));
+    const includeDoubles=!!m[2];
+    const amount=m[3];
+    const nums=[];
+    digits.forEach(a=>digits.forEach(b=>{
+      if(includeDoubles || a!==b) nums.push(a+b);
+    }));
+    addRowsForList(rows,warnings,nums,amount,source,includeDoubles?'khwe-double':'khwe');
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
   }
 
@@ -801,7 +835,7 @@ function splitExprAmount(line){
   let s=normalize(line).trim();
 
   // Strong explicit form: expr = amount [optional trailing note]
-  let m = s.match(/^(.*?)\s*=\s*(\d+)(?:\s+[^\d].*)?$/);
+  let m = s.match(/^(.*?)\s*=\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     let expr = (m[1] || '').trim();
     let amount = m[2];
