@@ -27,6 +27,19 @@
     .board{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.cell{background:#03110a;border:1px solid #14532d;border-radius:10px;padding:6px;text-align:center;min-height:54px}.cell .num{font-weight:900;color:#86efac}.cell .amt{font-size:13px;color:#e5e7eb;margin-top:3px}.cell.over{background:#2a0707;border-color:#ef4444}.cell.over .num{color:#fecaca}.cell.over .amt{color:#fff}.cell.zero{background:#020617;border-color:#1e293b}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:800}.badge.good{background:#052e16}.badge.bad{background:#450a0a}.badge.warn{background:#422006;color:#fde68a}
     .kbd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.key{background:#0b1224;border:1px solid #475569;border-radius:12px;padding:10px 6px;text-align:center;font-weight:900;cursor:pointer}.key:hover{border-color:#22c55e;background:#102a1d}.sharebox{white-space:pre-wrap;background:#020617;border:1px solid #334155;border-radius:12px;padding:12px;min-height:180px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
     .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#052e16;color:#dcfce7;border:1px solid #22c55e;padding:10px 14px;border-radius:999px;display:none;z-index:50;font-weight:800}.toast.show{display:block}
+    .globalBar{display:grid;grid-template-columns:170px 140px 1fr;gap:8px;align-items:end;margin-top:10px}
+    .globalBar .gbox{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px 10px}
+    .globalBar .glabel{font-size:12px;color:#94a3b8;margin-bottom:4px}
+    .globalBar input,.globalBar select{background:#020617;border:1px solid #475569;color:#e5e7eb;padding:8px 10px;border-radius:10px;width:100%}
+    .globalNote{font-size:12px;color:#94a3b8;display:flex;align-items:center;padding:0 6px}
+    .recordTools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .miniBadge{display:inline-block;padding:2px 6px;border-radius:999px;background:#0b1224;border:1px solid #334155;color:#93c5fd;font-size:11px;font-weight:800}
+    .modalBack{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100}
+    .modalBack.show{display:flex}
+    .modalCard{width:min(920px,96vw);max-height:90vh;overflow:auto;background:#111827;border:1px solid #475569;border-radius:18px;padding:14px;box-shadow:0 16px 50px rgba(0,0,0,.4)}
+    .modalGrid{display:grid;grid-template-columns:1fr 140px 120px;gap:8px}
+    .modalCard textarea{min-height:240px;font-family:ui-monospace,Consolas,monospace}
+
     .issueBox{margin-top:10px;border:1px solid #7f1d1d;background:#1f0a0a;border-radius:14px;padding:10px}
     .issueBox h3{margin:0 0 8px;color:#fecaca}
     .issueHint{color:#fca5a5;font-size:12px;margin-bottom:8px}
@@ -106,7 +119,7 @@
     <div class="title">
       <div>
         <h1>Viber 2D Desk <span class="badge good">Stage 3.1.1.1 Checkpoint + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Checkpoint: Parser + Firebase + Entry Records + Red Fix Lines + Image Entry UI ထိ update ထားသည်</div></div>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Phase 2: Batch Delete + Group Edit + Faster Error Fix ထိ update ထားသည်</div></div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
         <div class="langbox"><span data-i18n="langLabel">Language</span><select id="langSelect" onchange="setLang(this.value)"><option value="my">မြန်မာ</option><option value="en">English</option></select></div>
@@ -115,6 +128,21 @@
         <button class="btn warn small" onclick="loadLatestCloudSnapshot()">Load Cloud</button>
         <button class="btn danger small" onclick="clearAllData()" data-i18n="clearAll">Clear All</button>
       </div>
+    </div>
+    <div class="globalBar">
+      <div class="gbox">
+        <div class="glabel">Global Date</div>
+        <input id="globalDate" type="date" onchange="onGlobalDateChange(this.value)">
+      </div>
+      <div class="gbox">
+        <div class="glabel">Global Session</div>
+        <select id="globalSession" onchange="onGlobalSessionChange(this.value)">
+          <option>AM</option>
+          <option>PM</option>
+          <option>DAILY</option>
+        </select>
+      </div>
+      <div class="globalNote">တစ်နေရာမှာ Date / Session ပြောင်းလိုက်တာနဲ့ Entry, Records, Limit, Over, Reports, Image page အားလုံးတပြိုင်တည်းပြောင်းမယ်။ 2:00 PM ကျော်ရင် Today ကို PM auto ပြောင်းပေးမယ်။</div>
     </div>
     <div class="tabs" id="tabs"></div>
   </div>
@@ -144,7 +172,7 @@
         </div>
         <div class="board-toolbar">
           <div><label data-i18n="date">Date</label><input id="entryDate" type="date" onchange="renderEntryLive()"></div>
-          <div><label data-i18n="session">Session</label><select id="entrySession" onchange="renderEntryLive()"><option>AM</option><option>PM</option></select></div>
+          <div><label data-i18n="session">Session</label><select id="entrySession" onchange="renderEntryLive()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
           <div><label>Board View</label><select id="entryBoardMode" class="miniSelect" onchange="renderEntryLive()"><option value="ALL">Total</option><option value="NAME">By Name</option></select></div>
           <div><label>Board Name</label><select id="entryBoardName" onchange="renderEntryLive()"></select></div>
           <div><label data-i18n="limitAmount">Limit Amount</label><input id="entryLimitAmount" type="number" oninput="syncLimitFrom(this.value)" placeholder="10000"></div>
@@ -243,7 +271,7 @@
   <section id="records" class="page">
     <div class="card">
       <h2>Entry Records / သွင်းပြီးစာရင်း</h2>
-      <div class="muted">Entry Page ကိုမပြောင်းဘဲ သီးသန့် Record page အဖြစ် ထည့်ထားပါတယ်။ Time order / Name group / Edit / Delete ပါပါတယ်။</div>
+      <div class="muted">Entry Page ကိုမပြောင်းဘဲ သီးသန့် Record page အဖြစ် ထည့်ထားပါတယ်။ Time order / Name group / Edit / Group Edit / Delete / Del Batch ပါပါတယ်။</div>
       <div class="recordFilters" style="margin-top:10px">
         <div><label>Date</label><input id="recordDate" type="date" onchange="renderEntryRecords()"></div>
         <div><label>Session</label><select id="recordSession" onchange="renderEntryRecords()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
@@ -256,15 +284,16 @@
         <div class="stat"><div class="k">Total Amount</div><div class="v good" id="recordRowsTotal">0</div></div>
         <div class="stat"><div class="k">Names</div><div class="v blue" id="recordNamesCount">0</div></div>
       </div>
-      <div class="btnrow">
+      <div class="recordTools">
         <button class="btn secondary" onclick="renderEntryRecords()">Refresh</button>
         <button class="btn gray" onclick="copyEntryRecordsText()">Copy Record Text</button>
+        <button class="btn danger" onclick="deleteFilteredNameRows()">Delete Filtered Name</button>
         <button class="btn warn" onclick="saveCloudSnapshot(false)">Cloud Save</button>
       </div>
       <div class="cloudNote">မှတ်ချက်: Same Name + Same Number + Same Amount ထပ်ထိုးတာကို မတားပါ။ Row တစ်ကြောင်းချင်း သီးသန့်သိမ်းပါတယ်။</div>
       <div class="scroll" style="margin-top:12px;max-height:620px">
         <table>
-          <thead><tr><th>No</th><th>Time</th><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Type</th><th>Source</th><th>Action</th></tr></thead>
+          <thead><tr><th>No</th><th>Time</th><th>Date</th><th>Session</th><th>Name</th><th>Batch</th><th>Number</th><th class="right">Amount</th><th>Type</th><th>Source</th><th>Action</th></tr></thead>
           <tbody id="entryRecordRows"></tbody>
         </table>
       </div>
@@ -310,7 +339,7 @@
         <div><label>Date</label><input id="reportDate" type="date" onchange="renderReports()"></div>
         <div><label>Session</label><select id="reportSession" onchange="renderReports()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
         <div><label>Name</label><select id="reportName" onchange="renderReports()"></select></div>
-        <div><label>P Number</label><input id="pNumber" maxlength="2" placeholder="ဥပမာ 59" oninput="renderReports()"></div>
+        <div><label>P Number</label><input id="pNumber" maxlength="2" placeholder="ဥပမာ 59"></div>
       </div>
       <div class="grid3" style="margin-top:12px">
         <div class="stat"><div class="k">Total Amount</div><div class="v" id="rTotal">0</div></div>
@@ -386,6 +415,25 @@
     </div>
   </section>
 </div>
+
+<div class="modalBack" id="groupEditModal">
+  <div class="modalCard">
+    <h2 style="margin:0 0 8px">Group Edit / Batch Edit</h2>
+    <div class="muted">ဒီ box ထဲမှာ batch/group source text ကို ပြင်လိုက်တာနဲ့ သက်ဆိုင်ရာ row တွေအကုန်တခါတည်းချိန်းပေးမယ်။ line အသစ်ထပ်ဖြည့်လို့လည်းရတယ်။</div>
+    <div class="modalGrid" style="margin-top:10px">
+      <div><label>Name</label><input id="groupEditName"></div>
+      <div><label>Date</label><input id="groupEditDate" type="date"></div>
+      <div><label>Session</label><select id="groupEditSession"><option>AM</option><option>PM</option></select></div>
+    </div>
+    <label style="margin-top:10px">Group Source Text</label>
+    <textarea id="groupEditText"></textarea>
+    <div class="btnrow">
+      <button class="btn" onclick="applyGroupEdit()">Apply Group Edit</button>
+      <button class="btn gray" onclick="closeGroupEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 
@@ -420,8 +468,99 @@ let records = JSON.parse(localStorage.getItem('v2d_records')||'[]');
 let overDeductions = JSON.parse(localStorage.getItem('v2d_over_deductions')||'[]');
 let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
 let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
+let globalView = JSON.parse(localStorage.getItem('v2d_global_view')||'{}');
+let pMemory = JSON.parse(localStorage.getItem('v2d_p_memory')||'{}');
+let currentGroupEdit = null;
 
 function today(){return new Date().toISOString().slice(0,10)}
+function autoSessionForDate(date){
+  const d = date || today();
+  if(d !== today()) return 'AM';
+  const now = new Date();
+  return now.getHours() >= 14 ? 'PM' : 'AM';
+}
+function saveGlobalView(){ localStorage.setItem('v2d_global_view', JSON.stringify(globalView)); }
+function savePMemory(){ localStorage.setItem('v2d_p_memory', JSON.stringify(pMemory)); }
+function pKey(date, session){ return `${date||today()}__${session||'AM'}`; }
+function allowedSessionValue(el, value){
+  if(!el) return false;
+  return Array.from(el.options || []).some(opt => opt.value === value);
+}
+function setValueIfExists(id, value){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(el.tagName === 'SELECT' && !allowedSessionValue(el, value)) return;
+  el.value = value;
+}
+function restorePNumber(){
+  const date = val('reportDate') || (globalView.date || today());
+  const session = val('reportSession') || (globalView.session || 'AM');
+  if(session === 'AM' || session === 'PM') setVal('pNumber', pMemory[pKey(date, session)] || '');
+  else setVal('pNumber', '');
+}
+function rememberPNumber(){
+  const date = val('reportDate') || (globalView.date || today());
+  const session = val('reportSession') || (globalView.session || 'AM');
+  if(session !== 'AM' && session !== 'PM') return;
+  pMemory[pKey(date, session)] = val('pNumber') || '';
+  savePMemory();
+}
+function applyGlobalDateSession(date, session, rerender=true){
+  const d = date || today();
+  const s = session || 'AM';
+  globalView = {date:d, session:s};
+  saveGlobalView();
+
+  setValueIfExists('globalDate', d);
+  setValueIfExists('globalSession', s);
+
+  ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id => setValueIfExists(id, d));
+  ['entrySession','recordSession','limitSession','overSession','reportSession','imageSession'].forEach(id => setValueIfExists(id, s));
+
+  restorePNumber();
+  if(rerender) renderAll();
+}
+function onGlobalDateChange(v){
+  applyGlobalDateSession(v, val('globalSession') || globalView.session || autoSessionForDate(v), true);
+}
+function onGlobalSessionChange(v){
+  applyGlobalDateSession(val('globalDate') || globalView.date || today(), v, true);
+}
+function setupGlobalSyncListeners(){
+  ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('change', ()=>applyGlobalDateSession(el.value, val('globalSession') || globalView.session || autoSessionForDate(el.value), true));
+  });
+  ['entrySession','recordSession','limitSession','overSession','reportSession','imageSession'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('change', ()=>{
+      const newSession = el.value || 'AM';
+      const date = val('globalDate') || globalView.date || today();
+      applyGlobalDateSession(date, newSession, true);
+    });
+  });
+  const pEl = document.getElementById('pNumber');
+  if(pEl){
+    pEl.addEventListener('input', ()=>{
+      rememberPNumber();
+      renderReports();
+    });
+  }
+}
+function startAutoPMSync(){
+  setInterval(()=>{
+    const currentDate = val('globalDate') || globalView.date || today();
+    if(currentDate !== today()) return;
+    const autoSession = autoSessionForDate(currentDate);
+    const currentSession = val('globalSession') || globalView.session || 'AM';
+    if(currentSession !== 'DAILY' && currentSession !== autoSession){
+      applyGlobalDateSession(currentDate, autoSession, true);
+      showToast('Auto session → ' + autoSession);
+    }
+  }, 60000);
+}
 function money(n){return Number(n||0).toLocaleString('en-US')}
 function unit(n){let v=Number(n||0)/100; return Number.isInteger(v)? String(v): String(parseFloat(v.toFixed(2)))}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
@@ -1092,8 +1231,10 @@ function renderIssueEditor(){
         <div class="issueMsg">Line ${it.lineNo}: ${escapeHtml(it.message)}</div>
         <textarea class="issueInput" id="issueLine_${i}" oninput="updateIssueText(${i}, this.value)">${escapeHtml(it.edited||it.line||'')}</textarea>
         <div class="btnrow">
+          <button class="btn secondary small" onclick="findIssueLineInEditor(${i})">Find in Paste</button>
           <button class="btn secondary small" onclick="replaceIssueLineInEditor(${i})">Replace in Paste Box</button>
           <button class="btn warn small" onclick="appendIssueLineToEditor(${i})">Append Bottom</button>
+          <button class="btn small" onclick="applyIssueLineAndReparse(${i})">Apply & Reparse</button>
         </div>
       </div>
     `).join('');
@@ -1109,6 +1250,20 @@ function updateIssueText(i, value){
   preview.issues[i].edited = value;
 }
 
+function findIssueLineInEditor(i){
+  if(!preview.issues || !preview.issues[i]) return;
+  const issue=preview.issues[i];
+  const ta=document.getElementById('entryText');
+  const lines=ta.value.split('\n');
+  const idx = issue.lineNo ? issue.lineNo-1 : lines.findIndex(x=>x.trim()===String(issue.line).trim());
+  let start=0;
+  for(let n=0;n<Math.max(0,idx);n++) start += lines[n].length + 1;
+  const target = (idx>=0 ? lines[idx] : (issue.line||''));
+  ta.focus();
+  ta.setSelectionRange(start, start + String(target).length);
+  showToast('Paste Box ထဲ line ကို ရှာပေးပြီးပါပြီ');
+}
+
 function replaceIssueLineInEditor(i){
   if(!preview.issues || !preview.issues[i]) return;
   const issue=preview.issues[i];
@@ -1118,7 +1273,13 @@ function replaceIssueLineInEditor(i){
   if(idx>=0) lines[idx]=issue.edited||issue.line;
   else lines.push(issue.edited||issue.line);
   ta.value = lines.join('\n');
-  showToast('Paste Box ထဲ အစားထိုးပြီးပါပြီ — Parse Preview ထပ်နှိပ်ပါ');
+  findIssueLineInEditor(i);
+  showToast('Paste Box ထဲ အစားထိုးပြီးပါပြီ');
+}
+
+function applyIssueLineAndReparse(i){
+  replaceIssueLineInEditor(i);
+  parseInput();
 }
 
 function appendIssueLineToEditor(i){
@@ -1195,8 +1356,13 @@ function renderOver(){
 }
 function getRate(name){return Number((settings.nameRates&&settings.nameRates[name]!=null)?settings.nameRates[name]:(settings.commissionRate||0));}
 function reportCalc(){
-  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const name=val('reportName')||'ALL'; const totals=totalsByNumber(date,session,name); const nameTotals=totalsByName(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
-  const com=total*(Number(settings.commissionRate||0)/100); const net=total-com; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2); const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*(Number(settings.payoutRate||80)); const final=net-payout;
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const name=val('reportName')||'ALL';
+  const key = pKey(date, session);
+  if((session==='AM' || session==='PM') && !val('pNumber') && pMemory[key]) setVal('pNumber', pMemory[key]);
+  const totals=totalsByNumber(date,session,name); const nameTotals=totalsByName(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const pRaw = (val('pNumber')||'').trim();
+  const p=/^\d{1,2}$/.test(pRaw)?String(pRaw).padStart(2,'0'):'';
+  const com=total*(Number(settings.commissionRate||0)/100); const net=total-com; const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*(Number(settings.payoutRate||80)); const final=net-payout;
   return {date,session,name,totals,nameTotals,total,com,net,p,pamt,payout,final};
 }
 function commissionSummary(name,date,session,p){
@@ -1284,13 +1450,16 @@ function renderDashboard(){
 }
 
 function jsArg(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function getBatchId(r){ return r.batchId || ('LEGACY-'+String(r.ts||0)); }
+function getGroupId(r){ return r.groupId || (getBatchId(r)+'__'+(r.name||'Default')+'__'+String(r.source||'')); }
+function batchLabel(r){ return getBatchId(r).replace(/^LEGACY-/,'L-').slice(-8); }
 function recordFilteredRows(){
   const date=val('recordDate')||today(), session=val('recordSession')||'AM', name=val('recordName')||'ALL', q=(val('recordSearch')||'').toLowerCase().trim();
   return records.filter(r=>{
     const okDate=r.date===date;
     const okSession=session==='DAILY' || r.session===session;
     const okName=name==='ALL' || (r.name||'Default')===name;
-    const blob=((r.name||'')+' '+(r.number||'')+' '+(r.amount||'')+' '+(r.source||'')+' '+(r.type||'')).toLowerCase();
+    const blob=((r.name||'')+' '+(r.number||'')+' '+(r.amount||'')+' '+(r.source||'')+' '+(r.type||'')+' '+getBatchId(r)).toLowerCase();
     return okDate && okSession && okName && (!q || blob.includes(q));
   }).sort((a,b)=>(a.ts||0)-(b.ts||0));
 }
@@ -1307,18 +1476,18 @@ function renderEntryRecords(){
     let no=1;
     Object.keys(groups).sort().forEach(name=>{
       const g=groups[name], total=g.reduce((s,r)=>s+Number(r.amount||0),0);
-      html += `<tr class="recordHeaderRow"><td colspan="10">${escapeHtml(name)} — ${g.length} rows — Total ${money(total)}</td></tr>`;
+      html += `<tr class="recordHeaderRow"><td colspan="11">${escapeHtml(name)} — ${g.length} rows — Total ${money(total)}</td></tr>`;
       g.forEach(r=>{html += entryRecordRowHtml(r,no++);});
     });
   }else{
     html = rows.map((r,i)=>entryRecordRowHtml(r,i+1)).join('');
   }
-  document.getElementById('entryRecordRows').innerHTML = html || '<tr><td colspan="10" class="muted">Record မရှိသေးပါ</td></tr>';
+  document.getElementById('entryRecordRows').innerHTML = html || '<tr><td colspan="11" class="muted">Record မရှိသေးပါ</td></tr>';
 }
 function entryRecordRowHtml(r,no){
   const t=r.ts?new Date(r.ts).toLocaleTimeString(): '-';
   const id=jsArg(r.id||'');
-  return `<tr><td>${no}</td><td>${t}</td><td>${r.date||''}</td><td>${r.session||''}</td><td>${escapeHtml(r.name||'Default')}</td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.type||'')}</td><td>${escapeHtml(r.source||'')}</td><td class="nowrap"><button class="actionBtn edit" onclick="editEntryRecord('${id}')">Edit</button><button class="actionBtn del" onclick="deleteEntryRecord('${id}')">Delete</button></td></tr>`;
+  return `<tr><td>${no}</td><td>${t}</td><td>${r.date||''}</td><td>${r.session||''}</td><td>${escapeHtml(r.name||'Default')}</td><td><span class="miniBadge">${escapeHtml(batchLabel(r))}</span></td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.type||'')}</td><td>${escapeHtml(r.source||'')}</td><td class="nowrap"><button class="actionBtn edit" onclick="editEntryRecord('${id}')">Edit</button><button class="actionBtn edit" onclick="openGroupEditByRecord('${id}')">Group</button><button class="actionBtn del" onclick="deleteEntryBatch('${id}')">Del Batch</button><button class="actionBtn del" onclick="deleteEntryRecord('${id}')">Delete</button></td></tr>`;
 }
 function editEntryRecord(id){
   const i=records.findIndex(r=>r.id===id); if(i<0){showToast('Record မတွေ့ပါ');return;}
@@ -1333,16 +1502,71 @@ function editEntryRecord(id){
   records[i]={...r,name:name.trim()||'Default',number:String(number).padStart(2,'0').slice(-2),amount:amt,date:date.trim()||today(),session:(session.toUpperCase().startsWith('P')?'PM':'AM'),editedAt:Date.now()};
   saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Edited + Cloud Sync');
 }
+function openGroupEditByRecord(id){
+  const row = records.find(r=>r.id===id);
+  if(!row){showToast('Group မတွေ့ပါ'); return;}
+  const batchId=getBatchId(row), rowName=row.name||'Default';
+  const same = records.filter(r=>getBatchId(r)===batchId && (r.name||'Default')===rowName && r.date===row.date && r.session===row.session).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  const seen=new Set(); const lines=[];
+  same.forEach(r=>{
+    const src=String(r.source||'').trim();
+    if(src && !seen.has(src)){ seen.add(src); lines.push(src); }
+  });
+  currentGroupEdit = {batchId, oldName:rowName, oldDate:row.date, oldSession:row.session, ts:row.ts||Date.now()};
+  setVal('groupEditName', rowName);
+  setVal('groupEditDate', row.date||today());
+  setVal('groupEditSession', row.session||'AM');
+  setVal('groupEditText', lines.join('\n'));
+  document.getElementById('groupEditModal').classList.add('show');
+}
+function closeGroupEditModal(){
+  currentGroupEdit = null;
+  document.getElementById('groupEditModal').classList.remove('show');
+}
+function applyGroupEdit(){
+  if(!currentGroupEdit){ showToast('Group state မရှိပါ'); return; }
+  const name = (val('groupEditName')||'Default').trim() || 'Default';
+  const date = val('groupEditDate')||today();
+  const session = (val('groupEditSession')||'AM').toUpperCase().startsWith('P') ? 'PM' : 'AM';
+  const text = val('groupEditText').trim();
+  const parsed = parseMessage(text, name);
+  if(!parsed.detailRows.length){ showToast('Group text ကို parse မလုပ်နိုင်ပါ'); return; }
+
+  records = records.filter(r=>!(getBatchId(r)===currentGroupEdit.batchId && (r.name||'Default')===currentGroupEdit.oldName && r.date===currentGroupEdit.oldDate && r.session===currentGroupEdit.oldSession));
+  parsed.detailRows.forEach(r=>{
+    const rowName = r.name || name;
+    const groupId = `${currentGroupEdit.batchId}__${rowName}__${String(r.source||'').trim()}`;
+    records.push({...r, name:rowName, date, session, ts:currentGroupEdit.ts, batchId:currentGroupEdit.batchId, groupId, id:crypto.randomUUID?crypto.randomUUID():String(currentGroupEdit.ts)+Math.random(), editedAt:Date.now()});
+  });
+  saveRecords(); saveCloudSnapshot(false); closeGroupEditModal(); renderAll(); showToast('Group Edit + Cloud Sync');
+}
 function deleteEntryRecord(id){
   const i=records.findIndex(r=>r.id===id); if(i<0){showToast('Record မတွေ့ပါ');return;}
   const r=records[i]; if(!confirm(`${r.name||'Default'} | ${r.number} | ${money(r.amount)} ကို ဖျက်မလား?`)) return;
   records.splice(i,1); saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Deleted + Cloud Sync');
 }
+function deleteEntryBatch(id){
+  const row = records.find(r=>r.id===id); if(!row){showToast('Batch မတွေ့ပါ'); return;}
+  const batchId=getBatchId(row);
+  const count = records.filter(r=>getBatchId(r)===batchId && r.date===row.date && r.session===row.session).length;
+  if(!confirm(`Batch ${batchLabel(row)} မှာ ${count} rows ရှိတယ်။ တစ်ခါတည်းဖျက်မလား?`)) return;
+  records = records.filter(r=>!(getBatchId(r)===batchId && r.date===row.date && r.session===row.session));
+  saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Batch Deleted + Cloud Sync');
+}
+function deleteFilteredNameRows(){
+  const date=val('recordDate')||today(), session=val('recordSession')||'AM', name=val('recordName')||'ALL';
+  if(name==='ALL'){ showToast('Name တစ်ခုရွေးပြီးမှ Delete Filtered Name လုပ်ပါ'); return; }
+  const count = records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (r.name||'Default')===name).length;
+  if(!count){ showToast('ဖျက်ရန် row မရှိပါ'); return; }
+  if(!confirm(`${date} ${session} ${name} rows ${count} ကြောင်းကို ဖျက်မလား?`)) return;
+  records = records.filter(r=>!(r.date===date && (session==='DAILY' || r.session===session) && (r.name||'Default')===name));
+  saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Filtered Name Rows Deleted + Cloud Sync');
+}
 function copyEntryRecordsText(){
   const rows=recordFilteredRows();
   if(!rows.length){showToast('Copy လုပ်ရန် record မရှိပါ'); return;}
-  const lines=[`Entry Records ${val('recordDate')||today()} ${val('recordSession')||'AM'} ${val('recordName')||'ALL'}`,'Time | Name | Number | Amount | Source'];
-  rows.forEach(r=>lines.push(`${r.ts?new Date(r.ts).toLocaleTimeString():'-'} | ${r.name||'Default'} | ${r.number} | ${money(r.amount)} | ${r.source||''}`));
+  const lines=[`Entry Records ${val('recordDate')||today()} ${val('recordSession')||'AM'} ${val('recordName')||'ALL'}`,'Time | Name | Batch | Number | Amount | Source'];
+  rows.forEach(r=>lines.push(`${r.ts?new Date(r.ts).toLocaleTimeString():'-'} | ${r.name||'Default'} | ${batchLabel(r)} | ${r.number} | ${money(r.amount)} | ${r.source||''}`));
   lines.push('Total = '+money(rows.reduce((s,r)=>s+Number(r.amount||0),0)));
   copyText(lines.join('\n'));
 }
