@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.1 Full</title>
+  <title>Viber 2D Desk - Stage 3.1.1.1 Checkpoint</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -105,8 +105,8 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.1 Full + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary</div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.1.1.1 Checkpoint + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Checkpoint: Parser + Firebase + Entry Records + Red Fix Lines + Image Entry UI ထိ update ထားသည်</div></div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
         <div class="langbox"><span data-i18n="langLabel">Language</span><select id="langSelect" onchange="setLang(this.value)"><option value="my">မြန်မာ</option><option value="en">English</option></select></div>
@@ -126,7 +126,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.1 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records + Stage 3.1 Image Entry UI ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.1.1 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records + Stage 3.1.1 Image Entry UI ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -171,7 +171,7 @@
 77=500
 22"></textarea>
           <div class="imgToolBox">
-            <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.1</span></h3>
+            <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.1.1</span></h3>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
             <input id="entryImageUpload" type="file" accept="image/*" style="display:none" onchange="handleEntryImage(event,'upload')">
             <input id="entryImageCamera" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleEntryImage(event,'camera')">
@@ -190,7 +190,7 @@
               </div>
               <div>
                 <label>OCR Text Preview / Manual Fix</label>
-                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.1 မှာ auto OCR မပါသေးပါ။
+                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.1.1 မှာ auto OCR မပါသေးပါ။
 ပုံကြည့်ပြီး ဒီ box ထဲ OCR text ကို paste / edit လုပ်ပါ။
 ပြီးရင် အောက်က Use OCR Text → Entry ကိုနှိပ်ပါ။"></textarea>
                 <div class="btnrow">
@@ -382,7 +382,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 3.1: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 3.1.1: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -434,7 +434,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 3.1 Full',
+      version:'Stage 3.1.1.1 Checkpoint',
       records,
       overDeductions,
       settings,
