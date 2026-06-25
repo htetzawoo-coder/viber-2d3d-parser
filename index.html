@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 2.7 Full</title>
+  <title>Viber 2D Desk - Stage 3.1 Full</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -34,6 +34,15 @@
     .issueMsg{color:#fca5a5;font-size:12px;font-weight:700;margin-bottom:6px}
     .issueInput{width:100%;min-height:56px;background:#2b0b0b !important;color:#fff1f2 !important;border:1px solid #ef4444 !important;border-radius:10px;padding:8px;font-size:15px;line-height:1.45}
     .entryError{border-color:#ef4444 !important;box-shadow:0 0 0 3px rgba(239,68,68,.18) !important}
+    .imgToolBox{margin-top:10px;border:1px solid #334155;background:#0b1224;border-radius:14px;padding:10px}
+    .imgToolGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .imgPreviewPane{border:1px dashed #475569;border-radius:12px;min-height:200px;background:#020617;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    .imgPreviewPane img{max-width:100%;max-height:280px;display:block}
+    .imgPreviewEmpty{color:#94a3b8;font-size:13px;text-align:center;padding:20px}
+    .imgMeta{font-size:12px;color:#94a3b8;margin-top:6px}
+    .ocrBox{min-height:130px;font-family:ui-monospace,Consolas,monospace}
+    .stageBadge{display:inline-block;background:#082f49;color:#bae6fd;border:1px solid #0ea5e9;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:800;margin-left:6px}
+
 
 
     .desk-layout{display:grid;gap:12px}
@@ -96,7 +105,7 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 2.7 Full + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.1 Full + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary</div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
@@ -117,7 +126,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 2.7 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records page ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.1 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records + Stage 3.1 Image Entry UI ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -161,6 +170,37 @@
 41
 77=500
 22"></textarea>
+          <div class="imgToolBox">
+            <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.1</span></h3>
+            <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
+            <input id="entryImageUpload" type="file" accept="image/*" style="display:none" onchange="handleEntryImage(event,'upload')">
+            <input id="entryImageCamera" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleEntryImage(event,'camera')">
+            <div class="btnrow">
+              <button class="btn secondary small" onclick="document.getElementById('entryImageUpload').click()">Upload Image</button>
+              <button class="btn warn small" onclick="document.getElementById('entryImageCamera').click()">Camera</button>
+              <button class="btn gray small" onclick="clearEntryImage()">Clear Image</button>
+            </div>
+            <div class="imgToolGrid" style="margin-top:10px">
+              <div>
+                <div class="imgPreviewPane" id="entryImgPane">
+                  <div class="imgPreviewEmpty" id="entryImgEmpty">No image selected yet.<br>ပုံရွေးပြီး preview ကြည့်ပါ။</div>
+                  <img id="entryImgPreview" alt="Entry Preview" style="display:none">
+                </div>
+                <div class="imgMeta" id="entryImgMeta">No file</div>
+              </div>
+              <div>
+                <label>OCR Text Preview / Manual Fix</label>
+                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.1 မှာ auto OCR မပါသေးပါ။
+ပုံကြည့်ပြီး ဒီ box ထဲ OCR text ကို paste / edit လုပ်ပါ။
+ပြီးရင် အောက်က Use OCR Text → Entry ကိုနှိပ်ပါ။"></textarea>
+                <div class="btnrow">
+                  <button class="btn secondary small" onclick="useOcrTextToEntry('replace')">Use OCR Text → Replace Entry</button>
+                  <button class="btn small" onclick="useOcrTextToEntry('append')">Use OCR Text → Append Entry</button>
+                  <button class="btn gray small" onclick="document.getElementById('ocrPreviewText').value=''">Clear OCR Box</button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="btnrow">
             <button class="btn" onclick="parseInput()" data-i18n="parsePreview">Parse Preview</button>
             <button class="btn secondary" onclick="savePreview()" data-i18n="confirmSave">Confirm Save</button>
@@ -342,7 +382,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 2.7: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 3.1: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -394,7 +434,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 2.7 Full',
+      version:'Stage 3.1 Full',
       records,
       overDeductions,
       settings,
@@ -623,6 +663,11 @@ function parseSpecialBurmeseLine(line){
   // Total notes like T45000 / T 3000 are ignored.
   if(/^T\s*\d+\s*$/i.test(s)) return {handled:true, rows, warnings, meta:null, ignored:true};
 
+  // Pure note/name lines with no digits are ignored.
+  if(!/\d/.test(s) && !/(ပါ|ပတ်|ပါတ်|ပူး|အပူး|ခွေ|အခွေ|ထိပ်|နောက်|ဘရိတ်|ပါဝါ|နက္ခ|နက်ခ|ညီကို|R|@|\*|\/)/i.test(s)){
+    return {handled:true, rows, warnings, meta:null, ignored:true};
+  }
+
   let m;
 
   // 57=82=32=R300 => each pair gets amount on original + reverse.
@@ -637,11 +682,26 @@ function parseSpecialBurmeseLine(line){
     return {handled:true, rows, warnings, meta:{mode:'reverse', amount:Number(amount)}};
   }
 
+  // 33*77*88*500 => 33,77,88 all at 500
+  m=s.match(/^((?:\d{2}\*\s*){2,})(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    const nums=[...m[1].matchAll(/(\d{2})\*/g)].map(x=>x[1]);
+    addRowsForList(rows,warnings,nums,m[2],source,'explicit-star-list-noeq');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
   // 22*55*66*=500 => explicit listed doubles with one shared amount.
   m=s.match(/^((?:\d{2}\*\s*)+)\s*=\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     const nums=[...m[1].matchAll(/(\d{2})\*/g)].map(x=>x[1]);
     addRowsForList(rows,warnings,nums,m[2],source,'explicit-star-list');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // 53/1000 => plain number 53 at amount 1000
+  m=s.match(/^(\d{2})\/\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    addRow(rows,warnings,m[1],m[2],source,'plain-slash-amount');
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
@@ -701,7 +761,7 @@ function parseSpecialBurmeseLine(line){
   if(m){
     addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'front-digit-short');
     addRowsForList(rows,warnings,parityNums('/',m[1]),m[3],source,'back-digit-short-r');
-    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
   // /5=100R400 or /5 100 R 400 => /5 = 100 and 5/ = 400
@@ -709,32 +769,32 @@ function parseSpecialBurmeseLine(line){
   if(m){
     addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'back-digit-short');
     addRowsForList(rows,warnings,parityNums(m[1],'/'),m[3],source,'front-digit-short-r');
-    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
-  // 2ထိပ် 500 R 200: front/top digit at normal amount and reverse/back digit at R amount.
-  m=s.match(/^(\d)\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  // 2ထိပ် 500 R 200 / 2=ထိပ်700R600: front/top digit at normal amount and reverse/back digit at R amount.
+  m=s.match(/^(\d)\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*(\d+)\s*[Rr]\s*(\d+)$/);
   if(m){
     addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'front-digit');
     addRowsForList(rows,warnings,parityNums('/',m[1]),m[3],source,'back-digit-r');
-    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
-  // 2နောက် 500 R 200: back digit at normal amount and front digit at R amount.
-  m=s.match(/^(\d)\s*(?:နောက်ပိတ်|နောက်)\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  // 2နောက် 500 R 200 / 2=နောက်700R600: back digit at normal amount and front digit at R amount.
+  m=s.match(/^(\d)\s*=?\s*(?:နောက်ပိတ်|နောက်)\s*(\d+)\s*[Rr]\s*(\d+)$/);
   if(m){
     addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'back-digit');
     addRowsForList(rows,warnings,parityNums(m[1],'/'),m[3],source,'front-digit-r');
-    return {handled:true, rows, warnings, meta:{mode:null, amount:null}};
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
-  // 123ထိပ်500 / 123နောက်500: multiple front/back digits.
-  m=s.match(/^(\d{2,})\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*=?\s*(\d+)$/);
+  // 123ထိပ်500 / 123=ထိပ်500 / 123နောက်500: multiple front/back digits.
+  m=s.match(/^(\d{2,})\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*=?\s*(\d+)$/);
   if(m){
     uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums(d,'/'),m[2],source,'multi-front'));
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
-  m=s.match(/^(\d{2,})\s*(?:နောက်ပိတ်|နောက်)\s*=?\s*(\d+)$/);
+  m=s.match(/^(\d{2,})\s*=?\s*(?:နောက်ပိတ်|နောက်)\s*=?\s*(\d+)$/);
   if(m){
     uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums('/',d),m[2],source,'multi-back'));
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
@@ -748,8 +808,21 @@ function parseSpecialBurmeseLine(line){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
+  // 1=8ပါ500 / 1=8=9ပါ500 => each digit expands as d*
+  m=s.match(/^((?:\d\s*=\s*)+\d)\s*(?:ပါ|ပါတ်|ပတ်)\s*(အ?ပူးပါ)?\s*=?\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    const digits=uniq((m[1].match(/\d/g)||[]));
+    const extraDouble=!!m[2];
+    const amount=m[3];
+    digits.forEach(d=>{
+      addRowsForList(rows,warnings,containsDigit(d),amount,source,'digit-include');
+      if(extraDouble) addRow(rows,warnings,d+d,amount,source,'extra-double');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(amount)}};
+  }
+
   // n=ပါ1000 / nပါတ်ပူးပါ 5000 / nပတ် amount
-  m=s.match(/^(\d)\s*=?\s*(?:ပါ|ပါတ်|ပတ်)\s*(အ?ပူးပါ)?\s*=?\s*(\d+)$/);
+  m=s.match(/^(\d)\s*=?\s*(?:ပါ|ပါတ်|ပတ်)\s*(အ?ပူးပါ)?\s*=?\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     const d=m[1], extraDouble=!!m[2], amount=m[3];
     addRowsForList(rows,warnings,containsDigit(d),amount,source,'digit-include');
@@ -771,10 +844,10 @@ function parseSpecialBurmeseLine(line){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
-  // 1790ခွေ500 / 1790ခွေပူး500 / 1790အခွေ1000အပူးပါ
+  // 1790ခွေ500 / 1790-ခွေ-500 / 1790ခွေပူး500 / 1790အခွေ1000အပူးပါ
   // ခွေ = permutations without doubles
   // ခွေပူး / ခွေအပူး / ခွေအပူးပါ = permutations + doubles from the same digits
-  m=s.match(/^(\d{2,})\s*(?:အခွေ|ခွေ)\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)\s*)?=?\s*(\d+)(?:\s*[^\d].*)?$/);
+  m=s.match(/^(\d{2,})\s*[-=]?\s*(?:အခွေ|ခွေ)\s*[-=]?\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)\s*)?[-=]?\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     const digits=uniq(m[1].split(''));
     const includeDoubles=!!m[2];
@@ -949,6 +1022,50 @@ function parseMessage(text, defaultName='Default'){
   const totals=[...map.entries()].map(([number,amount])=>({number,amount})).sort((a,b)=>Number(a.number)-Number(b.number));
   return {detailRows, totals, warnings, issues};
 }
+
+let entryImageState={name:'',size:0,source:''};
+
+function handleEntryImage(evt, sourceType){
+  const file=evt && evt.target && evt.target.files && evt.target.files[0];
+  if(!file) return;
+  const img=document.getElementById('entryImgPreview');
+  const empty=document.getElementById('entryImgEmpty');
+  const meta=document.getElementById('entryImgMeta');
+  const reader=new FileReader();
+  entryImageState={name:file.name||'image',size:file.size||0,source:sourceType||'upload'};
+  reader.onload=function(e){
+    img.src=e.target.result;
+    img.style.display='block';
+    empty.style.display='none';
+    meta.textContent=`${entryImageState.name} • ${Math.round((entryImageState.size||0)/1024)} KB • ${entryImageState.source}`;
+    showToast('Image preview ready. OCR text ကို right box ထဲ paste/edit လုပ်ပါ။');
+  };
+  reader.readAsDataURL(file);
+  if(evt.target) evt.target.value='';
+}
+
+function clearEntryImage(){
+  const img=document.getElementById('entryImgPreview');
+  const empty=document.getElementById('entryImgEmpty');
+  const meta=document.getElementById('entryImgMeta');
+  if(img){img.src=''; img.style.display='none';}
+  if(empty) empty.style.display='block';
+  if(meta) meta.textContent='No file';
+  entryImageState={name:'',size:0,source:''};
+}
+
+function useOcrTextToEntry(mode){
+  const ocr=(document.getElementById('ocrPreviewText').value||'').trim();
+  if(!ocr){showToast('OCR box ထဲ text မရှိသေးပါ'); return;}
+  const ta=document.getElementById('entryText');
+  if(mode==='append' && (ta.value||'').trim()){
+    ta.value=(ta.value||'').replace(/\s+$/,'')+'\n'+ocr;
+  }else{
+    ta.value=ocr;
+  }
+  showToast('OCR text ကို Entry box ထဲ ထည့်ပြီးပါပြီ');
+}
+
 function parseInput(){
   preview=parseMessage(val('entryText'), val('entryName')||'Default'); renderPreview(); showToast('Preview ပြီးပါပြီ');
 }
