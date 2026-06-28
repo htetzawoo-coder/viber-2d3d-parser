@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.1.1.1 Checkpoint</title>
+  <title>Viber 2D Desk - Stage 3.5.0 UI Polish</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -11,27 +11,27 @@
       --chip:#0b1224; --blue:#38bdf8;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:linear-gradient(135deg,#020617,#0f172a);color:var(--text);}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at top left,#0f1c3a 0%,#07111f 42%,#020617 100%);color:var(--text);}
     .app{max-width:1250px;margin:0 auto;min-height:100vh;padding:12px;}
-    .topbar{position:sticky;top:0;z-index:20;background:rgba(15,23,42,.95);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:12px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+    .topbar{position:sticky;top:0;z-index:20;background:rgba(15,23,42,.94);backdrop-filter:blur(12px);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px;box-shadow:0 16px 40px rgba(0,0,0,.34)}
     .title{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
     h1{font-size:22px;margin:0;color:#fff}.sub{color:var(--muted);font-size:13px;margin-top:4px}
-    .tabs{display:flex;gap:8px;overflow:auto;margin-top:12px;padding-bottom:2px}.tab{white-space:nowrap;border:1px solid #475569;background:#111827;color:#e5e7eb;border-radius:13px;padding:10px 12px;font-weight:700;cursor:pointer;box-shadow:0 4px 0 #020617}.tab.active{background:linear-gradient(135deg,#16a34a,#22c55e);color:#03130a;border-color:#86efac}.tab:active{transform:translateY(2px);box-shadow:0 2px 0 #020617}
+    .tabs{display:flex;gap:10px;overflow:auto;margin-top:12px;padding-bottom:4px}.tab{white-space:nowrap;border:1px solid #475569;background:linear-gradient(180deg,#172033,#0f172a);color:#f8fafc;border-radius:16px;padding:11px 16px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #020617;line-height:1.15;text-align:center;min-width:118px}.tab small{display:block;font-size:11px;color:#94a3b8;font-weight:700;margin-top:3px}.tab.active{background:linear-gradient(135deg,#16a34a,#22c55e);color:#03130a;border-color:#86efac}.tab.active small{color:#0f3d1f}.tab:active{transform:translateY(2px);box-shadow:0 2px 0 #020617}
     .page{display:none}.page.active{display:block}.grid{display:grid;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .card{background:rgba(17,24,39,.96);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .card{background:rgba(17,24,39,.96);border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 12px 34px rgba(0,0,0,.24)}
     .card h2{font-size:18px;margin:0 0 10px}.card h3{font-size:15px;margin:0 0 8px;color:#bfdbfe}.muted{color:var(--muted)}
     label{display:block;font-size:13px;color:#cbd5e1;margin:8px 0 5px}input,select,textarea{width:100%;background:#020617;color:#e5e7eb;border:1px solid #475569;border-radius:12px;padding:10px;font-size:15px;outline:none}textarea{min-height:170px;resize:vertical;line-height:1.5}input:focus,select:focus,textarea:focus{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}
     .btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.btn{border:0;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer;color:#03130a;background:#22c55e}.btn.secondary{background:#38bdf8;color:#031018}.btn.warn{background:#f59e0b;color:#120b01}.btn.danger{background:#ef4444;color:#fff}.btn.gray{background:#334155;color:#e5e7eb}.btn.small{padding:7px 9px;font-size:13px;border-radius:10px}.btn:active{transform:scale(.98)}
-    .stat{background:#020617;border:1px solid #334155;border-radius:16px;padding:13px}.stat .k{font-size:12px;color:#94a3b8}.stat .v{font-size:24px;font-weight:900;margin-top:4px}.good{color:#22c55e}.bad{color:#ef4444}.warnText{color:#f59e0b}.blue{color:#38bdf8}
+    .stat{background:#020617;border:1px solid #334155;border-radius:15px;padding:10px 12px}.stat .k{font-size:11px;color:#94a3b8;white-space:nowrap}.stat .v{font-size:20px;font-weight:900;margin-top:4px}.good{color:#22c55e}.bad{color:#ef4444}.warnText{color:#f59e0b}.blue{color:#38bdf8}
     table{width:100%;border-collapse:collapse;font-size:13px;background:#020617;border-radius:12px;overflow:hidden}th,td{border-bottom:1px solid #1f2937;padding:8px;text-align:left;vertical-align:top}th{background:#111827;color:#cbd5e1;position:sticky;top:0}tr:hover td{background:#0b1224}.right{text-align:right}.nowrap{white-space:nowrap}.scroll{max-height:430px;overflow:auto;border:1px solid #1f2937;border-radius:12px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:#020617;border:1px solid #334155;color:#e5e7eb;border-radius:999px;padding:7px 9px;font-weight:700;cursor:pointer}.chip:hover{border-color:#22c55e;color:#bbf7d0}
     .board{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.cell{background:#03110a;border:1px solid #14532d;border-radius:10px;padding:6px;text-align:center;min-height:54px}.cell .num{font-weight:900;color:#86efac}.cell .amt{font-size:13px;color:#e5e7eb;margin-top:3px}.cell.over{background:#2a0707;border-color:#ef4444}.cell.over .num{color:#fecaca}.cell.over .amt{color:#fff}.cell.zero{background:#020617;border-color:#1e293b}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:800}.badge.good{background:#052e16}.badge.bad{background:#450a0a}.badge.warn{background:#422006;color:#fde68a}
     .kbd{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.key{background:#0b1224;border:1px solid #475569;border-radius:12px;padding:10px 6px;text-align:center;font-weight:900;cursor:pointer}.key:hover{border-color:#22c55e;background:#102a1d}.sharebox{white-space:pre-wrap;background:#020617;border:1px solid #334155;border-radius:12px;padding:12px;min-height:180px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
     .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#052e16;color:#dcfce7;border:1px solid #22c55e;padding:10px 14px;border-radius:999px;display:none;z-index:50;font-weight:800}.toast.show{display:block}
-    .globalBar{display:grid;grid-template-columns:170px 140px 1fr;gap:8px;align-items:end;margin-top:10px}
+    .globalBar{display:grid;grid-template-columns:150px 130px minmax(260px,520px);gap:8px;align-items:end;margin-top:10px;justify-content:start}
     .globalBar .gbox{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px 10px}
     .globalBar .glabel{font-size:12px;color:#94a3b8;margin-bottom:4px}
     .globalBar input,.globalBar select{background:#020617;border:1px solid #475569;color:#e5e7eb;padding:8px 10px;border-radius:10px;width:100%}
-    .globalNote{font-size:12px;color:#94a3b8;display:flex;align-items:center;padding:0 6px}
+    .globalNote{font-size:12px;color:#94a3b8;display:flex;align-items:center;padding:0 6px;max-width:500px}
     .recordTools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .miniBadge{display:inline-block;padding:2px 6px;border-radius:999px;background:#0b1224;border:1px solid #334155;color:#93c5fd;font-size:11px;font-weight:800}
     .modalBack{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100}
@@ -39,7 +39,7 @@
     .modalCard{width:min(920px,96vw);max-height:90vh;overflow:auto;background:#111827;border:1px solid #475569;border-radius:18px;padding:14px;box-shadow:0 16px 50px rgba(0,0,0,.4)}
     .modalGrid{display:grid;grid-template-columns:1fr 140px 120px;gap:8px}
     .modalCard textarea{min-height:240px;font-family:ui-monospace,Consolas,monospace}
-    .writerPick{min-width:150px;max-width:180px}
+    .writerPick{min-width:150px;max-width:180px}.compactStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.compactStats .stat{padding:9px 10px}.compactStats .stat .v{font-size:18px}.boardLimitCombo{display:grid;grid-template-columns:110px repeat(4,minmax(86px,1fr));gap:6px;align-items:stretch}.boardLimitCombo .board-mini{background:#e8f7ef;border:1px solid #a7d9ba;border-radius:12px;padding:6px 8px;text-align:center}.boardLimitCombo .board-mini .k{font-size:10px;color:#475569}.boardLimitCombo .board-mini .v{font-size:16px;font-weight:900;margin-top:2px;color:#0f172a}.pageSectionHead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
     .writerHint{font-size:12px;color:#94a3b8;margin-top:6px}
 
     .issueBox{margin-top:10px;border:1px solid #7f1d1d;background:#1f0a0a;border-radius:14px;padding:10px}
@@ -50,7 +50,7 @@
     .issueInput{width:100%;min-height:56px;background:#2b0b0b !important;color:#fff1f2 !important;border:1px solid #ef4444 !important;border-radius:10px;padding:8px;font-size:15px;line-height:1.45}
     .entryError{border-color:#ef4444 !important;box-shadow:0 0 0 3px rgba(239,68,68,.18) !important}
     .imgToolBox{margin-top:10px;border:1px solid #334155;background:#0b1224;border-radius:14px;padding:10px}
-    .imgToolGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .imgToolGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.imgActionRowSwap{margin-top:10px}
     .imgPreviewPane{border:1px dashed #475569;border-radius:12px;min-height:200px;background:#020617;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
     .imgPreviewPane img{max-width:100%;max-height:280px;display:block}
     .imgPreviewEmpty{color:#94a3b8;font-size:13px;text-align:center;padding:20px}
@@ -77,17 +77,17 @@
 
 
     /* Stage 1.5: Windows-style Limit Board */
-    .app{max-width:100vw;padding:8px 10px;}
+    .app{max-width:1500px;padding:10px 12px;}
     .topbar{border-radius:20px;padding:10px 14px;margin-bottom:8px;}
     .topbar h1{font-size:24px}.topbar .sub{font-size:12px;letter-spacing:.2px}.tabs{margin-top:8px}.tab{padding:8px 12px;border-radius:11px}
     .board-card{background:linear-gradient(180deg,#f8fafc,#eef5f0);color:#0f172a;border-color:#cbd5e1;box-shadow:0 8px 22px rgba(0,0,0,.18);}
     .board-card h2{color:#0f172a;margin:0}.board-card .muted,.board-card label{color:#475569}.board-card input,.board-card select{background:#fff;color:#0f172a;border-color:#94a3b8}.board-card .stat{background:#e8f7ef;border-color:#a7d9ba;color:#0f172a;padding:8px 10px}.board-card .stat .v{font-size:20px}.board-card .stat .k{color:#475569}
     .board-toolbar{grid-template-columns:130px 110px 190px 130px 1fr;gap:8px}.board-stats{gap:6px;margin-top:0}.board-card .btn.secondary{background:#0ea5e9;color:white}
-    .board-wrap{width:100%;overflow:auto;border:2px solid #334155;border-radius:14px;background:#dbe7df;padding:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-    .board-table{display:grid;grid-template-columns:repeat(10,56px minmax(48px,1fr));min-width:1180px;border-top:1px solid #94a3b8;border-left:1px solid #94a3b8;background:#f8fafc;}
-    .numCell,.amtCell{height:38px;border-right:1px solid #94a3b8;border-bottom:1px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;}
-    .numCell{background:linear-gradient(180deg,#55b96f,#2e8e4f);color:#082012;font-size:22px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
-    .amtCell{background:#f8fafc;color:#0f172a;font-size:17px;letter-spacing:.3px}.amtCell.empty{color:#cbd5e1}.numCell.over{background:linear-gradient(180deg,#f87171,#b91c1c);color:#fff}.amtCell.over{background:#fee2e2;color:#991b1b}.numCell.hot{background:linear-gradient(180deg,#22c55e,#15803d)}.amtCell.hot{background:#ecfdf5;color:#065f46}
+    .board-wrap{width:100%;max-width:1120px;margin:0 auto;overflow:auto;border:2px solid #334155;border-radius:14px;background:#dbe7df;padding:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+    .board-table{display:grid;grid-template-columns:repeat(10,48px 64px);min-width:1120px;border-top:1px solid #94a3b8;border-left:1px solid #94a3b8;background:#f8fafc;justify-content:center;}
+    .numCell,.amtCell{height:40px;border-right:1px solid #94a3b8;border-bottom:1px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;}
+    .numCell{background:linear-gradient(180deg,#55b96f,#2e8e4f);color:#082012;font-size:21px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+    .amtCell{background:#f8fafc;color:#0f172a;font-size:19px;font-weight:900;letter-spacing:.2px}.amtCell.empty{color:#cbd5e1}.numCell.over{background:linear-gradient(180deg,#f87171,#b91c1c);color:#fff}.amtCell.over{background:#fee2e2;color:#991b1b}.numCell.hot{background:linear-gradient(180deg,#22c55e,#15803d)}.amtCell.hot{background:#ecfdf5;color:#065f46}
     .desk-columns{grid-template-columns:minmax(360px,.95fr) minmax(390px,1.05fr) minmax(300px,.8fr);gap:10px}.desk-columns .card{border-radius:16px}.entry-card textarea{min-height:225px;font-size:16px}.preview-card .scroll,.over-card .scroll{max-height:360px}.entry-card .stat{padding:9px}.entry-card .stat .v{font-size:20px}
     .wide-board-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.unit-badge{background:#1d4ed8;color:#dbeafe;border-radius:8px;padding:5px 10px;font-weight:900;font-size:12px}
 
@@ -96,15 +96,15 @@
 
 
     /* Stage 1.7: global limit sync + balanced toolbar */
-    .board-toolbar{grid-template-columns:116px 96px 118px 132px minmax(440px,1fr);gap:7px;align-items:end}
+    .board-toolbar{grid-template-columns:108px 92px 116px 126px minmax(430px,1fr);gap:7px;align-items:end}
     .board-toolbar label{font-size:12px;margin:4px 0 4px}.board-toolbar input,.board-toolbar select{padding:8px 9px;font-size:14px;border-radius:10px}
     .board-stats{display:grid;grid-template-columns:repeat(4,minmax(92px,1fr));gap:6px;align-items:stretch;margin-top:0}.board-card .stat{min-height:58px;display:flex;flex-direction:column;justify-content:center}.board-card .stat .v{font-size:18px}.board-card .stat .k{font-size:11px;white-space:nowrap}
 
 
-    .dealerGrid{display:grid;grid-template-columns:1fr 120px 100px;gap:8px;margin-top:8px}.dealerGrid input{padding:8px}.reportActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.summaryLine{display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniCard{background:#020617;border:1px solid #334155;border-radius:12px;padding:10px}.miniCard .k{font-size:12px;color:#94a3b8}.miniCard .v{font-size:20px;font-weight:900}
+    .dealerGrid{display:grid;grid-template-columns:1fr 120px 100px;gap:8px;margin-top:8px}.dealerGrid input{padding:8px}.reportActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.summaryLine{display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniCard{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px 10px}.miniCard .k{font-size:11px;color:#94a3b8}.miniCard .v{font-size:18px;font-weight:900}
 
 
-    .recordFilters{display:grid;grid-template-columns:140px 110px 180px 150px 1fr;gap:8px;align-items:end}
+    .recordFilters{display:grid;grid-template-columns:122px 96px 160px 136px 1fr;gap:8px;align-items:end}
     .recordHeaderRow td{background:#111827;color:#bfdbfe;font-weight:900}
     .actionBtn{border:0;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:800;margin:2px;cursor:pointer}
     .actionBtn.edit{background:#38bdf8;color:#031018}.actionBtn.del{background:#ef4444;color:#fff}
@@ -112,7 +112,7 @@
     @media(max-width:900px){.recordFilters{grid-template-columns:1fr 1fr}.recordFilters .wide{grid-column:1/-1}}
 
     @media(max-width:1100px){.desk-columns{grid-template-columns:1fr}.board-toolbar{grid-template-columns:repeat(2,1fr)}.main-board{grid-template-columns:repeat(10,minmax(52px,1fr))}}
-    @media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.board{gap:4px}.cell{min-height:48px;padding:4px}.cell .amt{font-size:11px}.kbd{grid-template-columns:repeat(4,1fr)}h1{font-size:18px}.app{padding:8px}.card{padding:10px}.tab{padding:9px 10px}}
+    @media(max-width:1100px){.globalBar{grid-template-columns:1fr}.boardLimitCombo{grid-template-columns:1fr 1fr}.board-toolbar{grid-template-columns:repeat(2,1fr)}.board-wrap{max-width:100%}.board-table{min-width:980px}.desk-columns{grid-template-columns:1fr}.recordFilters{grid-template-columns:1fr 1fr}.compactStats{grid-template-columns:repeat(2,1fr)}}@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.board{gap:4px}.cell{min-height:48px;padding:4px}.cell .amt{font-size:11px}.kbd{grid-template-columns:repeat(4,1fr)}h1{font-size:18px}.app{padding:8px}.card{padding:10px}.tab{padding:9px 10px;min-width:98px}.recordFilters{grid-template-columns:1fr}.compactStats{grid-template-columns:1fr 1fr}.imgToolGrid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -120,8 +120,8 @@
   <div class="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.1.1.1 Checkpoint + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.4: Writer selector (Auto / A / B / C / Other) + writer-aware parse/save ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.5.0.1 Checkpoint + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.5: Smart UI Polish + Compact Layout + Myanmar Labels + Writer Profiles ထိ update ထားသည်</div></div>
       </div>
       <div class="btnrow" style="margin-top:0;align-items:center">
         <div class="langbox"><span data-i18n="langLabel">Language</span><select id="langSelect" onchange="setLang(this.value)"><option value="my">မြန်မာ</option><option value="en">English</option></select></div>
@@ -156,7 +156,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.1.1 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records + Stage 3.1.1 Image Entry UI ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.5.0 file က Stage 1.9 UI/Parser ကို မဖျက်ဘဲ Firebase Cloud Sync + Entry Records + Stage 3.5.0 Image Entry UI ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -175,14 +175,17 @@
         <div class="board-toolbar">
           <div><label data-i18n="date">Date</label><input id="entryDate" type="date" onchange="renderEntryLive()"></div>
           <div><label data-i18n="session">Session</label><select id="entrySession" onchange="renderEntryLive()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
-          <div><label>Board View</label><select id="entryBoardMode" class="miniSelect" onchange="renderEntryLive()"><option value="ALL">Total</option><option value="NAME">By Name</option></select></div>
-          <div><label>Board Name</label><select id="entryBoardName" onchange="renderEntryLive()"></select></div>
-          <div><label data-i18n="limitAmount">Limit Amount</label><input id="entryLimitAmount" type="number" oninput="syncLimitFrom(this.value)" placeholder="10000"></div>
-          <div class="board-stats">
-            <div class="stat"><div class="k" data-i18n="total">Total</div><div class="v" id="mainBoardTotal">0</div></div>
-            <div class="stat"><div class="k" data-i18n="overTotal">Over Total</div><div class="v bad" id="mainBoardOverTotal">0</div></div>
-            <div class="stat"><div class="k" data-i18n="overCount">Over Count</div><div class="v warnText" id="mainBoardOverCount">0</div></div>
-            <div class="stat"><div class="k" data-i18n="recordRows">Rows</div><div class="v blue" id="mainBoardRows">0</div></div>
+          <div><label>Board View / ကြည့်ပုံ</label><select id="entryBoardMode" class="miniSelect" onchange="renderEntryLive()"><option value="ALL">Total / အားလုံး</option><option value="NAME">By Name / နာမည်အလိုက်</option></select></div>
+          <div><label>Board Name / ကြည့်မယ့်နာမည်</label><select id="entryBoardName" onchange="renderEntryLive()"></select></div>
+          <div class="boardLimitCombo">
+            <div>
+              <label data-i18n="limitAmount">Limit Amount</label>
+              <input id="entryLimitAmount" type="number" oninput="syncLimitFrom(this.value)" placeholder="10000">
+            </div>
+            <div class="board-mini"><div class="k" data-i18n="total">Total</div><div class="v" id="mainBoardTotal">0</div></div>
+            <div class="board-mini"><div class="k" data-i18n="overTotal">Over Total</div><div class="v bad" id="mainBoardOverTotal">0</div></div>
+            <div class="board-mini"><div class="k" data-i18n="overCount">Over Count</div><div class="v warnText" id="mainBoardOverCount">0</div></div>
+            <div class="board-mini"><div class="k" data-i18n="recordRows">Rows</div><div class="v blue" id="mainBoardRows">0</div></div>
           </div>
         </div>
         <div class="board-wrap"><div class="board-table" id="mainLimitBoard"></div></div>
@@ -193,7 +196,7 @@
           <div class="inline-title">
             <h2 data-i18n="entryTitle">စာရင်းထည့်ရန် / Entry</h2>
             <div class="namepick"><label data-i18n="name">Name / ကော်မရှင်</label><select id="entryName" onchange="renderEntryLive()"></select></div>
-            <div class="writerPick"><label>Writer</label><select id="entryWriter" onchange="saveSettings(); renderWriterHint();"><option value="AUTO">Auto</option><option value="A">A Writer</option><option value="B">B Writer</option><option value="C">C Writer</option><option value="OTHER">Other Writer</option></select></div>
+            <div class="writerPick"><label>Writer / လက်ရေးပိုင်ရှင်</label><select id="entryWriter" onchange="saveSettings(); renderWriterHint();"><option value="AUTO">Auto</option><option value="A">A Writer</option><option value="B">B Writer</option><option value="C">C Writer</option><option value="OTHER">Other Writer</option></select></div>
           </div>
           <div id="writerHint" class="writerHint"></div>
           <textarea id="entryText" placeholder="//-7733=500
@@ -206,14 +209,14 @@
 77=500
 22"></textarea>
           <div class="imgToolBox">
-            <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.1.1</span></h3>
+            <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.5.0</span></h3>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
             <input id="entryImageUpload" type="file" accept="image/*" style="display:none" onchange="handleEntryImage(event,'upload')">
             <input id="entryImageCamera" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleEntryImage(event,'camera')">
             <div class="btnrow">
-              <button class="btn secondary small" onclick="document.getElementById('entryImageUpload').click()">Upload Image</button>
-              <button class="btn warn small" onclick="document.getElementById('entryImageCamera').click()">Camera</button>
-              <button class="btn gray small" onclick="clearEntryImage()">Clear Image</button>
+              <button class="btn small" onclick="parseInput()" data-i18n="parsePreview">Parse Preview</button>
+              <button class="btn secondary small" onclick="savePreview()" data-i18n="confirmSave">Confirm Save</button>
+              <button class="btn gray small" onclick="document.getElementById('entryText').value=''; clearIssueEditor()" data-i18n="clearText">Clear Text</button>
             </div>
             <div class="imgToolGrid" style="margin-top:10px">
               <div>
@@ -224,8 +227,8 @@
                 <div class="imgMeta" id="entryImgMeta">No file</div>
               </div>
               <div>
-                <label>OCR Text Preview / Manual Fix</label>
-                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.1.1 မှာ auto OCR မပါသေးပါ။
+                <label>OCR Text Preview / Manual Fix / စာပြင်ရန်</label>
+                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.5.0 မှာ auto OCR မပါသေးပါ။
 ပုံကြည့်ပြီး ဒီ box ထဲ OCR text ကို paste / edit လုပ်ပါ။
 ပြီးရင် အောက်က Use OCR Text → Entry ကိုနှိပ်ပါ။"></textarea>
                 <div class="btnrow">
@@ -236,10 +239,10 @@
               </div>
             </div>
           </div>
-          <div class="btnrow">
-            <button class="btn" onclick="parseInput()" data-i18n="parsePreview">Parse Preview</button>
-            <button class="btn secondary" onclick="savePreview()" data-i18n="confirmSave">Confirm Save</button>
-            <button class="btn gray" onclick="document.getElementById('entryText').value=''; clearIssueEditor()" data-i18n="clearText">Clear Text</button>
+          <div class="btnrow imgActionRowSwap">
+            <button class="btn secondary" onclick="document.getElementById('entryImageUpload').click()" data-i18n="uploadImage">Upload Image</button>
+            <button class="btn warn" onclick="document.getElementById('entryImageCamera').click()" data-i18n="cameraBtn">Camera</button>
+            <button class="btn gray" onclick="clearEntryImage()" data-i18n="clearImage">Clear Image</button>
           </div>
           <div id="issueEditorWrap" class="issueBox" style="display:none">
             <h3>အနီစာ ပြင်ရန် / Fix Lines</h3>
@@ -277,25 +280,25 @@
 
   <section id="records" class="page">
     <div class="card">
-      <h2>Entry Records / သွင်းပြီးစာရင်း</h2>
+      <h2>Entry Records / သွင်းပြီးစာရင်းမှတ်တမ်း</h2>
       <div class="muted">Entry Page ကိုမပြောင်းဘဲ သီးသန့် Record page အဖြစ် ထည့်ထားပါတယ်။ Time order / Name group / Edit / Group Edit / Delete / Del Batch ပါပါတယ်။</div>
       <div class="recordFilters" style="margin-top:10px">
         <div><label>Date</label><input id="recordDate" type="date" onchange="renderEntryRecords()"></div>
         <div><label>Session</label><select id="recordSession" onchange="renderEntryRecords()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
         <div><label>Name</label><select id="recordName" onchange="renderEntryRecords()"></select></div>
-        <div><label>View</label><select id="recordViewMode" onchange="renderEntryRecords()"><option value="TIME">Time Order</option><option value="NAME">Name Group</option></select></div>
+        <div><label>View / ကြည့်ပုံ</label><select id="recordViewMode" onchange="renderEntryRecords()"><option value="TIME">Time Order / အချိန်လိုက်</option><option value="NAME">Name Group / နာမည်လိုက်</option></select></div>
         <div class="wide"><label>Search</label><input id="recordSearch" placeholder="Name / Number / Source" oninput="renderEntryRecords()"></div>
       </div>
-      <div class="grid3" style="margin-top:12px">
+      <div class="compactStats" style="margin-top:12px">
         <div class="stat"><div class="k">Rows</div><div class="v" id="recordRowsCount">0</div></div>
         <div class="stat"><div class="k">Total Amount</div><div class="v good" id="recordRowsTotal">0</div></div>
         <div class="stat"><div class="k">Names</div><div class="v blue" id="recordNamesCount">0</div></div>
       </div>
       <div class="recordTools">
-        <button class="btn secondary" onclick="renderEntryRecords()">Refresh</button>
-        <button class="btn gray" onclick="copyEntryRecordsText()">Copy Record Text</button>
-        <button class="btn danger" onclick="deleteFilteredNameRows()">Delete Filtered Name</button>
-        <button class="btn warn" onclick="saveCloudSnapshot(false)">Cloud Save</button>
+        <button class="btn secondary" onclick="renderEntryRecords()">Refresh / ပြန်ဖော်ပြ</button>
+        <button class="btn gray" onclick="copyEntryRecordsText()">Copy Record Text / စာကူး</button>
+        <button class="btn danger" onclick="deleteFilteredNameRows()">ရွေးထားသော Name ကိုဖျက်မယ်</button>
+        <button class="btn warn" onclick="saveCloudSnapshot(false)">Cloud Save / Cloud သိမ်း</button>
       </div>
       <div class="cloudNote">မှတ်ချက်: Same Name + Same Number + Same Amount ထပ်ထိုးတာကို မတားပါ။ Row တစ်ကြောင်းချင်း သီးသန့်သိမ်းပါတယ်။</div>
       <div class="scroll" style="margin-top:12px;max-height:620px">
@@ -309,14 +312,14 @@
 
   <section id="limit" class="page">
     <div class="card">
-      <h2>Limit Table Board</h2>
-      <div class="grid3">
-        <div><label>Date</label><input id="limitDate" type="date" onchange="renderLimit()"></div>
+      <h2>Limit Table Board / ကန့်သတ်ဘုတ်</h2>
+      <div class="recordFilters">
+        <div><label>ရက်စွဲ</label><input id="limitDate" type="date" onchange="renderLimit()"></div>
         <div><label>Session</label><select id="limitSession" onchange="renderLimit()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
-        <div><label>Name</label><select id="limitName" onchange="renderLimit()"></select></div>
+        <div><label>All Names / အားလုံး</label><select id="limitName" onchange="renderLimit()"></select></div>
         <div><label>Limit Amount</label><input id="limitAmount" type="number" oninput="syncLimitFrom(this.value)" placeholder="10000"></div>
       </div>
-      <div class="grid3" style="margin-top:12px">
+      <div class="compactStats" style="margin-top:12px">
         <div class="stat"><div class="k">Total</div><div class="v" id="limitTotal">0</div></div>
         <div class="stat"><div class="k">Over Total</div><div class="v bad" id="limitOverTotal">0</div></div>
         <div class="stat"><div class="k">Over Count</div><div class="v warnText" id="limitOverCount">0</div></div>
@@ -327,28 +330,28 @@
 
   <section id="over" class="page">
     <div class="card">
-      <h2>Over Page</h2>
+      <h2>Over Page / ကျော်စာရင်း</h2>
       <div class="grid3">
         <div><label>Date</label><input id="overDate" type="date" onchange="renderOver()"></div>
         <div><label>Session</label><select id="overSession" onchange="renderOver()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
         <div><label>Name</label><select id="overName" onchange="renderOver()"></select></div>
         <div><label>Limit Amount</label><input id="overLimit" type="number" oninput="syncLimitFrom(this.value)"></div>
       </div>
-      <div class="btnrow"><button class="btn secondary" onclick="copyOverText()">Copy Over Text</button><button class="btn warn" onclick="saveOverImage()">Save Image</button></div>
+      <div class="btnrow"><button class="btn secondary" onclick="copyOverText()">Copy Over Text / စာကူး</button><button class="btn warn" onclick="saveOverImage()">Save Image / ပုံသိမ်း</button></div>
       <div class="scroll" style="margin-top:10px"><table><thead><tr><th>No</th><th>Number</th><th class="right">Over</th></tr></thead><tbody id="overRows"></tbody><tfoot><tr><th colspan="2">Total</th><th class="right" id="overSumOver">0</th></tr></tfoot></table></div>
     </div>
   </section>
 
   <section id="reports" class="page">
     <div class="card">
-      <h2>AM / PM / Daily Report</h2>
-      <div class="grid3">
-        <div><label>Date</label><input id="reportDate" type="date" onchange="renderReports()"></div>
+      <h2>AM / PM / Daily Report / အစီရင်ခံစာ</h2>
+      <div class="recordFilters">
+        <div><label>ရက်စွဲ</label><input id="reportDate" type="date" onchange="renderReports()"></div>
         <div><label>Session</label><select id="reportSession" onchange="renderReports()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
-        <div><label>Name</label><select id="reportName" onchange="renderReports()"></select></div>
+        <div><label>All Names / အားလုံး</label><select id="reportName" onchange="renderReports()"></select></div>
         <div><label>P Number</label><input id="pNumber" maxlength="2" placeholder="ဥပမာ 59"></div>
       </div>
-      <div class="grid3" style="margin-top:12px">
+      <div class="compactStats" style="margin-top:12px">
         <div class="stat"><div class="k">Total Amount</div><div class="v" id="rTotal">0</div></div>
         <div class="stat"><div class="k">Commission</div><div class="v blue" id="rCom">0</div></div>
         <div class="stat"><div class="k">Net</div><div class="v good" id="rNet">0</div></div>
@@ -356,13 +359,13 @@
         <div class="stat"><div class="k">Payout</div><div class="v bad" id="rPayout">0</div></div>
         <div class="stat"><div class="k">Final</div><div class="v" id="rFinal">0</div></div>
       </div>
-      <h3 style="margin-top:14px">Name Summary</h3>
+      <h3 style="margin-top:14px">Name Summary / နာမည်အလိုက်</h3>
       <div class="scroll"><table><thead><tr><th>Name</th><th class="right">Total</th><th class="right">P Amount</th><th class="right">Payout</th><th class="right">Cor %</th><th class="right">Cor</th><th class="right">Final</th></tr></thead><tbody id="reportNameRows"></tbody></table></div>
-      <h3 style="margin-top:14px">Number Summary</h3>
+      <h3 style="margin-top:14px">Number Summary / နံပါတ်အလိုက်</h3>
       <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="reportRows"></tbody></table></div>
       <div class="reportActions">
-        <button class="btn secondary" onclick="saveCommissionReportImage()">Save Commission Image</button>
-        <button class="btn warn" onclick="saveDealerReportImage()">Save Dealer Image</button>
+        <button class="btn secondary" onclick="saveCommissionReportImage()">Save Commission Image / ပုံသိမ်း</button>
+        <button class="btn warn" onclick="saveDealerReportImage()">Save Dealer Image / ပုံသိမ်း</button>
       </div>
       <div class="card" style="background:#020617;margin-top:12px">
         <h3>ဒိုင်စာရင်း / Dealer Summary</h3>
@@ -387,7 +390,7 @@
 
   <section id="image" class="page">
     <div class="card">
-      <h2>Image / Share Text Page</h2>
+      <h2>Image / Share Text Page / ပုံနှင့်မျှဝေစာ</h2>
       <div class="grid3">
         <div><label>Date</label><input id="imageDate" type="date" onchange="renderImageText()"></div>
         <div><label>Session</label><select id="imageSession" onchange="renderImageText()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
@@ -418,7 +421,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 3.1.1: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 3.5.0: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -463,7 +466,14 @@ try{
 }catch(e){ console.warn("Firebase init failed", e); }
 
 const pages = [
-  ['dashboard','Dashboard'],['entry','Entry'],['records','Entry Records'],['limit','Limit Board'],['over','Over'],['reports','Reports'],['image','Image'],['settings','Settings']
+  ['dashboard',{en:'Dashboard',my:'ပင်မ'}],
+  ['entry',{en:'Entry',my:'စာရင်းသွင်း'}],
+  ['records',{en:'Entry Records',my:'စာရင်းမှတ်တမ်း'}],
+  ['limit',{en:'Limit Board',my:'ကန့်သတ်ဘုတ်'}],
+  ['over',{en:'Over',my:'ကျော်နေသောစာရင်း'}],
+  ['reports',{en:'Reports',my:'အစီရင်ခံစာ'}],
+  ['image',{en:'Image',my:'ပုံ / မျှဝေ'}],
+  ['settings',{en:'Settings',my:'ဆက်တင်'}]
 ];
 const N2 = Array.from({length:100},(_,i)=>String(i).padStart(2,'0'));
 const FIXED = {
@@ -617,7 +627,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 3.1.1.1 Checkpoint',
+      version:'Stage 3.5.0.1 Checkpoint',
       records,
       overDeductions,
       settings,
@@ -1494,8 +1504,8 @@ function renderEntryOver(){
 }
 function renderEntryLive(){renderMainBoard(); renderEntryOver();}
 const I18N={
-  my:{langLabel:'ဘာသာ',backup:'Backup JSON',clearAll:'အားလုံးဖျက်',liveBoard:'Limit Table Board / Live Desk',boardNote:'Laptop screen အတွက် Board ကို အပေါ်ဆုံးမှာ သေသပ်ကျယ်ပြန့်စွာထားထားသည်။ Amount ကို Unit ဖြင့်ပြသည်။',refresh:'Refresh',date:'ရက်စွဲ',session:'Session',name:'Name / ကော်မရှင်',limitAmount:'Limit Amount',total:'စုစုပေါင်း',overTotal:'Over စုစုပေါင်း',overCount:'Over အရေအတွက်',recordRows:'Rows',entryTitle:'စာရင်းထည့်ရန် / Entry',parsePreview:'Parse Preview',confirmSave:'Confirm Save',clearText:'Clear Text',previewRows:'Preview Rows',previewTotal:'Preview Total',warnings:'Warnings',aggByNumber:'Number အလိုက်ပေါင်း',previewDetail:'Preview Detail',overLive:'Over',overNote:'အပေါ်က ရက်စွဲ / Session / Name အတိုင်း Over တွက်ထားသည်။'},
-  en:{langLabel:'Language',backup:'Backup JSON',clearAll:'Clear All',liveBoard:'Limit Table Board / Live Desk',boardNote:'A clean wide board is placed first for laptop screens. Amounts are displayed in unit format.',refresh:'Refresh',date:'Date',session:'Session',name:'Name / Commission',limitAmount:'Limit Amount',total:'Total',overTotal:'Over Total',overCount:'Over Count',recordRows:'Rows',entryTitle:'Entry',parsePreview:'Parse Preview',confirmSave:'Confirm Save',clearText:'Clear Text',previewRows:'Preview Rows',previewTotal:'Preview Total',warnings:'Warnings',aggByNumber:'Aggregated by Number',previewDetail:'Preview Detail',overLive:'Over',overNote:'Over is calculated using the selected date/session/name above.'}
+  my:{langLabel:'ဘာသာ',backup:'Backup JSON',clearAll:'အားလုံးဖျက်',liveBoard:'Limit Table Board / Live Desk',boardNote:'Laptop screen အတွက် Board ကို အပေါ်ဆုံးမှာ သေသပ်ကျယ်ပြန့်စွာထားထားသည်။ Amount ကို Unit ဖြင့်ပြသည်။',refresh:'Refresh / ပြန်ဖော်ပြ',date:'ရက်စွဲ',session:'Session',name:'Name / ကော်မရှင်',limitAmount:'Limit Amount',total:'စုစုပေါင်း',overTotal:'Over စုစုပေါင်း',overCount:'Over အရေအတွက်',recordRows:'Rows',entryTitle:'စာရင်းထည့်ရန် / Entry',parsePreview:'Parse Preview / စစ်ကြည့်',confirmSave:'Confirm Save / သိမ်းမယ်',clearText:'Clear Text / ဖျက်မယ်',previewRows:'Preview Rows',previewTotal:'Preview Total',warnings:'Warnings / သတိ',aggByNumber:'Number အလိုက်ပေါင်း',previewDetail:'Preview Detail / အသေးစိတ်',overLive:'Over / ကျော်စာရင်း',overNote:'အပေါ်က ရက်စွဲ / Session / Name အတိုင်း Over တွက်ထားသည်။',uploadImage:'Upload Image / ပုံတင်',cameraBtn:'Camera / ကင်မရာ',clearImage:'Clear Image / ပုံဖျက်'},
+  en:{langLabel:'Language',backup:'Backup JSON',clearAll:'Clear All',liveBoard:'Limit Table Board / Live Desk',boardNote:'A clean wide board is placed first for laptop screens. Amounts are displayed in unit format.',refresh:'Refresh',date:'Date',session:'Session',name:'Name / Commission',limitAmount:'Limit Amount',total:'Total',overTotal:'Over Total',overCount:'Over Count',recordRows:'Rows',entryTitle:'Entry',parsePreview:'Parse Preview',confirmSave:'Confirm Save',clearText:'Clear Text',previewRows:'Preview Rows',previewTotal:'Preview Total',warnings:'Warnings',aggByNumber:'Aggregated by Number',previewDetail:'Preview Detail',overLive:'Over',overNote:'Over is calculated using the selected date/session/name above.',uploadImage:'Upload Image',cameraBtn:'Camera',clearImage:'Clear Image'}
 };
 function setLang(lang){settings.lang=lang; localStorage.setItem('v2d_settings',JSON.stringify(settings)); const d=I18N[lang]||I18N.my; document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n; if(d[k]) el.textContent=d[k];}); const sel=document.getElementById('langSelect'); if(sel) sel.value=lang;}
 function renderDashboard(){
@@ -1541,7 +1551,7 @@ function renderEntryRecords(){
 function entryRecordRowHtml(r,no){
   const t=r.ts?new Date(r.ts).toLocaleTimeString(): '-';
   const id=jsArg(r.id||'');
-  return `<tr><td>${no}</td><td>${t}</td><td>${r.date||''}</td><td>${r.session||''}</td><td>${escapeHtml(r.name||'Default')}</td><td>${escapeHtml(normalizeWriterProfile(r.writerProfile||'AUTO'))}</td><td><span class="miniBadge">${escapeHtml(batchLabel(r))}</span></td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.type||'')}</td><td>${escapeHtml(r.source||'')}</td><td class="nowrap"><button class="actionBtn edit" onclick="editEntryRecord('${id}')">Edit</button><button class="actionBtn edit" onclick="openGroupEditByRecord('${id}')">Group</button><button class="actionBtn del" onclick="deleteEntryBatch('${id}')">Del Batch</button><button class="actionBtn del" onclick="deleteEntryRecord('${id}')">Delete</button></td></tr>`;
+  return `<tr><td>${no}</td><td>${t}</td><td>${r.date||''}</td><td>${r.session||''}</td><td>${escapeHtml(r.name||'Default')}</td><td>${escapeHtml(normalizeWriterProfile(r.writerProfile||'AUTO'))}</td><td><span class="miniBadge">${escapeHtml(batchLabel(r))}</span></td><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td><td>${escapeHtml(r.type||'')}</td><td>${escapeHtml(r.source||'')}</td><td class="nowrap"><button class="actionBtn edit" onclick="editEntryRecord('${id}')">Edit / ပြင်</button><button class="actionBtn edit" onclick="openGroupEditByRecord('${id}')">Group / အုပ်စု</button><button class="actionBtn del" onclick="deleteEntryBatch('${id}')">Batch ဖျက်</button><button class="actionBtn del" onclick="deleteEntryRecord('${id}')">Delete / ဖျက်</button></td></tr>`;
 }
 function editEntryRecord(id){
   const i=records.findIndex(r=>r.id===id); if(i<0){showToast('Record မတွေ့ပါ');return;}
@@ -1684,7 +1694,7 @@ function removeName(n){
   settings.names=(settings.names||[]).filter(x=>x!==n); if(settings.nameRates) delete settings.nameRates[n]; saveSettings(); refreshNameSelects(); renderAll();
 }
 function init(){
-  document.getElementById('tabs').innerHTML=pages.map(([id,name])=>`<button class="tab ${id==='dashboard'?'active':''}" data-id="${id}" onclick="go('${id}')">${name}</button>`).join('');
+  document.getElementById('tabs').innerHTML=pages.map(([id,label])=>`<button class="tab ${id==='dashboard'?'active':''}" data-id="${id}" onclick="go('${id}')">${label.en}<small>${label.my}</small></button>`).join('');
   ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>setVal(id,today()));
   settings={shopName:'Viber 2D Desk',commissionRate:20,payoutRate:80,defaultLimit:10000,amClose:'12:00',pmClose:'16:30',names:['Default'],nameRates:{Default:20},lang:'my',...settings}; if(!Array.isArray(settings.names)||!settings.names.length) settings.names=['Default']; if(!settings.nameRates) settings.nameRates={}; settings.names.forEach(n=>{if(settings.nameRates[n]==null) settings.nameRates[n]=settings.commissionRate||20;});
   setVal('shopName',settings.shopName); setVal('commissionRate',settings.commissionRate); setVal('payoutRate',settings.payoutRate); setVal('defaultLimit',settings.defaultLimit); setVal('amClose',settings.amClose); setVal('pmClose',settings.pmClose); syncLimitInputs();
