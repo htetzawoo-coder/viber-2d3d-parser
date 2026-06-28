@@ -35,6 +35,9 @@
     .topToggleWrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
     .topToggleBtn{border:1px solid #475569;background:linear-gradient(180deg,#172033,#0f172a);color:#f8fafc;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 #020617}
     .topToggleBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #020617}
+    .tabs{position:sticky;top:0;z-index:25;background:rgba(2,6,23,.72);backdrop-filter:blur(6px);padding-top:6px}
+    .topStickyRow{display:grid;grid-template-columns:170px 150px 1fr;gap:10px;align-items:end}
+
     .topMiniInfo{display:none;margin-top:10px;padding:10px 12px;border:1px solid #334155;border-radius:14px;background:#020617;color:#cbd5e1;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
     .topMiniInfo .miniStat{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .topMiniInfo .miniBadge{background:#0b1224;border:1px solid #334155;color:#93c5fd}
@@ -143,8 +146,8 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.6.0 Merge Upgrade + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.6.0: Sticky Minimize Layout + Message Block Parser Upgrade + Safe Save Rules ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.6.1 Tabs Fix + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.6.1: Visible page tabs fix + safer minimize layout + merge upgrade ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
         <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
@@ -159,7 +162,7 @@
     </div>
 
     <div class="topCollapseArea">
-      <div class="globalBar">
+      <div class="topStickyRow">
         <div class="gbox">
           <div class="glabel">Global Date</div>
           <input id="globalDate" type="date" onchange="onGlobalDateChange(this.value)">
@@ -172,7 +175,7 @@
             <option>DAILY</option>
           </select>
         </div>
-        <div class="globalNote">တစ်နေရာမှာ Date / Session ပြောင်းလိုက်တာနဲ့ Entry, Records, Limit, Over, Reports, Image page အားလုံးတပြိုင်တည်းပြောင်းမယ်။ 2:00 PM ကျော်ရင် Today ကို PM auto ပြောင်းပေးမယ်။</div>
+        <div class="globalNote">Date / Session ပြောင်းလိုက်တာနဲ့ pages အားလုံးတပြိုင်တည်းပြောင်းမယ်။ 2:00 PM ကျော်ရင် Today ကို PM auto ပြောင်းပေးမယ်။</div>
       </div>
     </div>
 
@@ -185,7 +188,16 @@
       <div class="muted">လိုအပ်ရင် Open လုပ်ပြီး full controls ပြန်ဖွင့်နိုင်တယ်။</div>
     </div>
 
-    <div class="tabs" id="tabs"></div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-id="dashboard" onclick="go('dashboard')">Dashboard<small>ပင်မ</small></button>
+      <button class="tab" data-id="entry" onclick="go('entry')">Entry<small>စာရင်းသွင်း</small></button>
+      <button class="tab" data-id="records" onclick="go('records')">Entry Records<small>စာရင်းမှတ်တမ်း</small></button>
+      <button class="tab" data-id="limit" onclick="go('limit')">Limit Board<small>ကန့်သတ်ဘုတ်</small></button>
+      <button class="tab" data-id="over" onclick="go('over')">Over<small>ကျော်နေသောစာရင်း</small></button>
+      <button class="tab" data-id="reports" onclick="go('reports')">Reports<small>အစီရင်ခံစာ</small></button>
+      <button class="tab" data-id="image" onclick="go('image')">Image<small>ပုံ / မျှဝေ</small></button>
+      <button class="tab" data-id="settings" onclick="go('settings')">Settings<small>ဆက်တင်</small></button>
+    </div>
   </div>
 
   <section id="dashboard" class="page active">
@@ -1244,7 +1256,8 @@ function explicitCarryMetaForLine(line){
   return null;
 }
 function normalizeMessageLines(text){
-  return String(text||'').replace(//g,'').split('
+  return String(text||'').replace(/
+/g,'').split('
 ').map((raw,i)=>({raw:String(raw||''),lineNo:i+1})).filter(x=>x.raw.trim());
 }
 function buildMessageBlocks(text, defaultName){
@@ -1852,7 +1865,7 @@ function removeName(n){
   settings.names=(settings.names||[]).filter(x=>x!==n); if(settings.nameRates) delete settings.nameRates[n]; saveSettings(); refreshNameSelects(); renderAll();
 }
 function init(){
-  document.getElementById('tabs').innerHTML=pages.map(([id,label])=>`<button class="tab ${id==='dashboard'?'active':''}" data-id="${id}" onclick="go('${id}')">${label.en}<small>${label.my}</small></button>`).join('');
+  document.querySelectorAll('#tabs .tab').forEach(t=>t.classList.toggle('active', t.dataset.id==='dashboard'));
   ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>setVal(id,today()));
   settings={shopName:'Viber 2D Desk',commissionRate:20,payoutRate:80,defaultLimit:10000,amClose:'12:00',pmClose:'16:30',names:['Default'],nameRates:{Default:20},lang:'my',...settings}; if(!Array.isArray(settings.names)||!settings.names.length) settings.names=['Default']; if(!settings.nameRates) settings.nameRates={}; settings.names.forEach(n=>{if(settings.nameRates[n]==null) settings.nameRates[n]=settings.commissionRate||20;});
   setVal('shopName',settings.shopName); setVal('commissionRate',settings.commissionRate); setVal('payoutRate',settings.payoutRate); setVal('defaultLimit',settings.defaultLimit); setVal('amClose',settings.amClose); setVal('pmClose',settings.pmClose); syncLimitInputs();
