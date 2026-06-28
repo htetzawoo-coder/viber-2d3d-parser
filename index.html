@@ -146,8 +146,8 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.6.1 Tabs Fix + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.6.1: Visible page tabs fix + safer minimize layout + merge upgrade ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.6.2 Click Fix + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.6.2: Page click + minimize bug fix + merge upgrade ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
         <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
@@ -1256,9 +1256,7 @@ function explicitCarryMetaForLine(line){
   return null;
 }
 function normalizeMessageLines(text){
-  return String(text||'').replace(/
-/g,'').split('
-').map((raw,i)=>({raw:String(raw||''),lineNo:i+1})).filter(x=>x.raw.trim());
+  return String(text||'').replace(/\r/g,'').split('\n').map((raw,i)=>({raw:String(raw||''),lineNo:i+1})).filter(x=>x.raw.trim());
 }
 function buildMessageBlocks(text, defaultName){
   const blocks=[]; let block=null; let activeName=defaultName||'Default';
