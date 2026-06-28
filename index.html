@@ -126,35 +126,51 @@
 </head>
 <body>
 <div class="app">
-  <div class="topbar">
+  <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.5.1 Smart Header + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.5.1: Smart Collapsible Header + Compact Top Area + Quick Open/Minimize ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.5.2 Smart Header Fix + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.5.2: Minimize / Open button visible fix + Smart Collapsible Header ထိ update ထားသည်</div></div>
       </div>
-      <div class="btnrow" style="margin-top:0;align-items:center">
-        <div class="langbox"><span data-i18n="langLabel">Language</span><select id="langSelect" onchange="setLang(this.value)"><option value="my">မြန်မာ</option><option value="en">English</option></select></div>
-        <button class="btn gray small" onclick="exportJSON()" data-i18n="backup">Backup JSON</button>
-        <button class="btn secondary small" onclick="saveCloudSnapshot(false)">Cloud Save</button>
-        <button class="btn warn small" onclick="loadLatestCloudSnapshot()">Load Cloud</button>
-        <button class="btn danger small" onclick="clearAllData()" data-i18n="clearAll">Clear All</button>
+      <div class="topToggleWrap">
+        <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
+        <div class="btnrow" style="margin-top:0;align-items:center">
+          <div class="langbox"><span data-i18n="langLabel">Language</span><select id="langSelect" onchange="setLang(this.value)"><option value="my">မြန်မာ</option><option value="en">English</option></select></div>
+          <button class="btn gray small" onclick="exportJSON()" data-i18n="backup">Backup JSON</button>
+          <button class="btn secondary small" onclick="saveCloudSnapshot(false)">Cloud Save</button>
+          <button class="btn warn small" onclick="loadLatestCloudSnapshot()">Load Cloud</button>
+          <button class="btn danger small" onclick="clearAllData()" data-i18n="clearAll">Clear All</button>
+        </div>
       </div>
     </div>
-    <div class="globalBar">
-      <div class="gbox">
-        <div class="glabel">Global Date</div>
-        <input id="globalDate" type="date" onchange="onGlobalDateChange(this.value)">
+
+    <div class="topCollapseArea">
+      <div class="globalBar">
+        <div class="gbox">
+          <div class="glabel">Global Date</div>
+          <input id="globalDate" type="date" onchange="onGlobalDateChange(this.value)">
+        </div>
+        <div class="gbox">
+          <div class="glabel">Global Session</div>
+          <select id="globalSession" onchange="onGlobalSessionChange(this.value)">
+            <option>AM</option>
+            <option>PM</option>
+            <option>DAILY</option>
+          </select>
+        </div>
+        <div class="globalNote">တစ်နေရာမှာ Date / Session ပြောင်းလိုက်တာနဲ့ Entry, Records, Limit, Over, Reports, Image page အားလုံးတပြိုင်တည်းပြောင်းမယ်။ 2:00 PM ကျော်ရင် Today ကို PM auto ပြောင်းပေးမယ်။</div>
       </div>
-      <div class="gbox">
-        <div class="glabel">Global Session</div>
-        <select id="globalSession" onchange="onGlobalSessionChange(this.value)">
-          <option>AM</option>
-          <option>PM</option>
-          <option>DAILY</option>
-        </select>
-      </div>
-      <div class="globalNote">တစ်နေရာမှာ Date / Session ပြောင်းလိုက်တာနဲ့ Entry, Records, Limit, Over, Reports, Image page အားလုံးတပြိုင်တည်းပြောင်းမယ်။ 2:00 PM ကျော်ရင် Today ကို PM auto ပြောင်းပေးမယ်။</div>
     </div>
+
+    <div class="topMiniInfo" id="topMiniInfo">
+      <div class="miniStat">
+        <span class="miniBadge">Date: <b id="miniGlobalDate">-</b></span>
+        <span class="miniBadge">Session: <b id="miniGlobalSession">AM</b></span>
+        <span class="miniBadge">Page: <b id="miniCurrentPage">Dashboard</b></span>
+      </div>
+      <div class="muted">လိုအပ်ရင် Open လုပ်ပြီး full controls ပြန်ဖွင့်နိုင်တယ်။</div>
+    </div>
+
     <div class="tabs" id="tabs"></div>
   </div>
 
@@ -1676,7 +1692,7 @@ function copyEntryRecordsText(){
 function renderAll(){renderDashboard();renderPreview();renderEntryLive();renderLimit();renderOver();renderReports();renderImageText();renderEntryRecords();}
 function setText(id,v){const el=document.getElementById(id); if(el) el.textContent=v;}
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.id===id));renderAll();}
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.id===id));renderMiniTopInfo();renderAll();}
 function insertKey(k){const ta=document.getElementById('entryText'); const add=(ta.value && !ta.value.endsWith('\n')?'\n':'')+k+' '; ta.value+=add; ta.focus();}
 function copyText(text){navigator.clipboard?.writeText(text).then(()=>showToast('Copied')).catch(()=>showToast('Copy မရပါ'));}
 function copyShareText(){copyText(document.getElementById('shareText').textContent)}
@@ -1738,6 +1754,8 @@ function init(){
   document.getElementById('formulaChips').innerHTML=keys.map(k=>`<span class="chip" onclick="go('entry');insertKey('${k}')">${k}</span>`).join('');
   refreshNameSelects();
   setLang(settings.lang||'my');
+  applyTopbarState();
+  renderMiniTopInfo();
   renderAll();
 }
 init();
