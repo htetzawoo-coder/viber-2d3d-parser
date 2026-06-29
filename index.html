@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.7.1 One-Line Sticky</title>
+  <title>Viber 2D Desk - Stage 3.8.0 Parse Phase 2</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -181,8 +181,8 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.7.1 One-Line Sticky + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.7.1: one-line compact sticky bar + tabs row date/session + clearer session text ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.0 Parse Phase 2 + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.0: Parse Phase 2 + same-block carry upgrade + multi front/back shorthand upgrade ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
         <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
@@ -234,7 +234,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.7.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -288,7 +288,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.7.1</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.0</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -309,7 +309,7 @@
               </div>
               <div>
                 <label>OCR Text Preview / Manual Fix / စာပြင်ရန်</label>
-                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.7.1 မှာ auto OCR မပါသေးပါ။
+                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.8.0 မှာ auto OCR မပါသေးပါ။
 ပုံကြည့်ပြီး ဒီ box ထဲ OCR text ကို paste / edit လုပ်ပါ။
 ပြီးရင် အောက်က Use OCR Text → Entry ကိုနှိပ်ပါ။"></textarea>
                 <div class="btnrow">
@@ -510,7 +510,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 3.7.1: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 3.8.0: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -746,7 +746,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 3.7.1.1 Checkpoint',
+      version:'Stage 3.8.0.1 Checkpoint',
       records,
       overDeductions,
       settings,
@@ -1092,8 +1092,29 @@ function parseSpecialBurmeseLine(line){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
+  // 123ထိပ်500R300 / 123-ထိပ်-500 / 3/4 ထိပ် 500နောက်300
+  // Multiple digits before front/top word; each digit gets front amount and optional back/R amount.
+  m=s.match(/^([\d\s\/]{1,20})\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့|အရှေ့)\s*=?\s*(\d+)\s*(?:[Rr]|(?:နောက်ပိတ်|နောက်|အနောက်|အပိတ်|ပိတ်))\s*=?\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    digitSeqList(m[1]).forEach(d=>{
+      addRowsForList(rows,warnings,parityNums(d,'/'),m[2],source,'multi-front');
+      addRowsForList(rows,warnings,parityNums('/',d),m[3],source,'multi-back-r');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // 123နောက်500R300 / 3/4 နောက် 500 ထိပ် 300
+  m=s.match(/^([\d\s\/]{1,20})\s*=?\s*(?:နောက်ပိတ်|နောက်|အနောက်|အပိတ်|ပိတ်)\s*=?\s*(\d+)\s*(?:[Rr]|(?:ထိပ်စီး|ထိပ်|ရှေ့|အရှေ့))\s*=?\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    digitSeqList(m[1]).forEach(d=>{
+      addRowsForList(rows,warnings,parityNums('/',d),m[2],source,'multi-back');
+      addRowsForList(rows,warnings,parityNums(d,'/'),m[3],source,'multi-front-r');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
   // 2ထိပ် 500 R 200 / 2=ထိပ်700R600: front/top digit at normal amount and reverse/back digit at R amount.
-  m=s.match(/^(\d)\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  m=s.match(/^(\d)\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့|အရှေ့)\s*(\d+)\s*[Rr]\s*(\d+)$/);
   if(m){
     addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'front-digit');
     addRowsForList(rows,warnings,parityNums('/',m[1]),m[3],source,'back-digit-r');
@@ -1101,22 +1122,22 @@ function parseSpecialBurmeseLine(line){
   }
 
   // 2နောက် 500 R 200 / 2=နောက်700R600: back digit at normal amount and front digit at R amount.
-  m=s.match(/^(\d)\s*=?\s*(?:နောက်ပိတ်|နောက်)\s*(\d+)\s*[Rr]\s*(\d+)$/);
+  m=s.match(/^(\d)\s*=?\s*(?:နောက်ပိတ်|နောက်|အနောက်|အပိတ်|ပိတ်)\s*(\d+)\s*[Rr]\s*(\d+)$/);
   if(m){
     addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'back-digit');
     addRowsForList(rows,warnings,parityNums(m[1],'/'),m[3],source,'front-digit-r');
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
-  // 123ထိပ်500 / 123=ထိပ်500 / 123နောက်500: multiple front/back digits.
-  m=s.match(/^(\d{2,})\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့)\s*=?\s*(\d+)$/);
+  // 123ထိပ်500 / 123=ထိပ်500 / 3/4 ထိပ် 500 / 123နောက်500: multiple front/back digits.
+  m=s.match(/^([\d\s\/]{1,20})\s*=?\s*(?:ထိပ်စီး|ထိပ်|ရှေ့|အရှေ့)\s*=?\s*(\d+)$/);
   if(m){
-    uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums(d,'/'),m[2],source,'multi-front'));
+    digitSeqList(m[1]).forEach(d=>addRowsForList(rows,warnings,parityNums(d,'/'),m[2],source,'multi-front'));
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
-  m=s.match(/^(\d{2,})\s*=?\s*(?:နောက်ပိတ်|နောက်)\s*=?\s*(\d+)$/);
+  m=s.match(/^([\d\s\/]{1,20})\s*=?\s*(?:နောက်ပိတ်|နောက်|အနောက်|အပိတ်|ပိတ်)\s*=?\s*(\d+)$/);
   if(m){
-    uniq(m[1].split('')).forEach(d=>addRowsForList(rows,warnings,parityNums('/',d),m[2],source,'multi-back'));
+    digitSeqList(m[1]).forEach(d=>addRowsForList(rows,warnings,parityNums('/',d),m[2],source,'multi-back'));
     return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
   }
 
@@ -1277,6 +1298,9 @@ function cleanNameText(x){
   return String(x||'').replace(/[⁨⁩\u200e\u200f\u202a-\u202e]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
 }
 function matchKnownName(raw){const n=cleanNameText(raw); return (settings.names||[]).find(x=>cleanNameText(x)===n) || null;}
+function digitSeqList(seq){
+  return uniq((String(seq||'').match(/\d/g)||[]).filter(Boolean));
+}
 function parseHeaderLine(line){
   const m=String(line).match(/^\s*\[[^\]]+\]\s*[⁨]?(.+?)[⁩]?\s*:\s*(.*)$/);
   if(!m) return null;
