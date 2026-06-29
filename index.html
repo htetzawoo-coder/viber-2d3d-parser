@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.7.0 Compact Sticky</title>
+  <title>Viber 2D Desk - Stage 3.7.1 One-Line Sticky</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -16,7 +16,7 @@
     .topbar{position:sticky;top:0;z-index:20;background:rgba(15,23,42,.94);backdrop-filter:blur(12px);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px;box-shadow:0 16px 40px rgba(0,0,0,.34)}
     .title{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
     h1{font-size:22px;margin:0;color:#fff}.sub{color:var(--muted);font-size:13px;margin-top:4px}
-    .tabs{display:flex;gap:10px;overflow:auto;margin-top:12px;padding-bottom:4px}.tab{white-space:nowrap;border:1px solid #475569;background:linear-gradient(180deg,#172033,#0f172a);color:#f8fafc;border-radius:16px;padding:11px 16px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #020617;line-height:1.15;text-align:center;min-width:118px}.tab small{display:block;font-size:11px;color:#94a3b8;font-weight:700;margin-top:3px}.tab.active{background:linear-gradient(135deg,#16a34a,#22c55e);color:#03130a;border-color:#86efac}.tab.active small{color:#0f3d1f}.tab:active{transform:translateY(2px);box-shadow:0 2px 0 #020617}
+    .tabs{display:flex;gap:8px;overflow:auto;margin-top:12px;padding-bottom:4px;align-items:flex-end;flex-wrap:wrap}.tab{white-space:nowrap;border:1px solid #475569;background:linear-gradient(180deg,#172033,#0f172a);color:#f8fafc;border-radius:16px;padding:10px 14px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #020617;line-height:1.1;text-align:center;min-width:112px}.tab small{display:block;font-size:11px;color:#94a3b8;font-weight:700;margin-top:3px}.tab.active{background:linear-gradient(135deg,#16a34a,#22c55e);color:#03130a;border-color:#86efac}.tab.active small{color:#0f3d1f}.tab:active{transform:translateY(2px);box-shadow:0 2px 0 #020617}.tabsControls{display:flex;align-items:flex-end;gap:8px;margin-left:auto;flex-wrap:nowrap}.tabsControlBox{background:#020617;border:1px solid #334155;border-radius:12px;padding:6px 8px;min-width:126px}.tabsControlBox .glabel{font-size:11px;color:#94a3b8;margin-bottom:4px}.tabsControlBox input,.tabsControlBox select{background:#020617;border:1px solid #475569;color:#e5e7eb;padding:7px 8px;border-radius:10px;width:100%}.tabsControlBox.session select{font-weight:900}.tabsToggleBtn{display:none;min-width:92px;padding:8px 12px}
     .page{display:none}.page.active{display:block}.grid{display:grid;gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     .card{background:rgba(17,24,39,.96);border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 12px 34px rgba(0,0,0,.24)}
     .card h2{font-size:18px;margin:0 0 10px}.card h3{font-size:15px;margin:0 0 8px;color:#bfdbfe}.muted{color:var(--muted)}
@@ -41,19 +41,15 @@
     .topMiniInfo{display:none;margin-top:10px;padding:10px 12px;border:1px solid #334155;border-radius:14px;background:#020617;color:#cbd5e1;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
     .topMiniInfo .miniStat{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .topMiniInfo .miniBadge{background:#0b1224;border:1px solid #334155;color:#93c5fd}
-    .topbar.collapsed{padding:8px 12px}
-    .topbar.collapsed .title > div:first-child{display:none}
-    .topbar.collapsed .btnrow{display:none}
+    .topbar.collapsed{padding:8px 10px}
+    .topbar.collapsed .title{display:none}
     .topbar.collapsed .topMiniInfo{display:none}
-    .topbar.collapsed .topToggleWrap{width:100%;justify-content:space-between}
-    .topbar.collapsed .topCollapseArea{display:block}
-    .topbar.collapsed .topStickyRow{grid-template-columns:150px 130px 1fr}
-    .topbar.collapsed .globalBar{grid-template-columns:150px 130px;max-width:max-content}
-    .topbar.collapsed .globalNote{display:none}
-    .topbar.collapsed .tabs{margin-top:8px;padding-top:2px}
+    .topbar.collapsed .topCollapseArea{display:none}
+    .topbar.collapsed .tabs{margin-top:0;padding-top:0}
+    .topbar.collapsed .tabsToggleBtn{display:block}
     body.topbar-collapsed .topbar{box-shadow:0 10px 26px rgba(0,0,0,.30)}
-    body.entry-sticky .page#entry .board-card{position:sticky;top:122px;z-index:14}
-    body.entry-sticky.topbar-collapsed .page#entry .board-card{top:76px;max-height:45vh;overflow:auto}
+    body.entry-sticky .page#entry .board-card{position:sticky;top:118px;z-index:14}
+    body.entry-sticky.topbar-collapsed .page#entry .board-card{top:66px;max-height:39vh;overflow:auto}
     body.entry-sticky .page#entry .desk-layout{padding-top:2px}
     body.entry-sticky.topbar-collapsed .page#entry .desk-layout{gap:8px}
     body.entry-sticky.topbar-collapsed .page#entry .board-wrap{max-height:240px}
@@ -77,6 +73,16 @@
     body.entry-sticky.topbar-collapsed .page#entry .over-card .scroll{max-height:205px}
     body.entry-sticky.topbar-collapsed .page#entry .scroll{max-height:200px}
     body.entry-sticky.topbar-collapsed .page#entry .compactStats .stat{padding:7px 8px}
+    body.entry-sticky.topbar-collapsed .page#entry .board-wrap{max-height:210px}
+    body.entry-sticky.topbar-collapsed .page#entry .entry-card textarea{min-height:82px;font-size:14px;line-height:1.35}
+    body.entry-sticky.topbar-collapsed .page#entry .btnrow{gap:6px}
+    body.entry-sticky.topbar-collapsed .page#entry .btn.small,
+    body.entry-sticky.topbar-collapsed .page#entry .btn.secondary.small,
+    body.entry-sticky.topbar-collapsed .page#entry .btn.warn.small,
+    body.entry-sticky.topbar-collapsed .page#entry .btn.gray.small{padding:7px 10px}
+    body.entry-sticky.topbar-collapsed .page#entry .writerPick{max-width:130px;min-width:120px}
+    body.entry-sticky.topbar-collapsed .page#entry .imgPreviewPane{min-height:86px}
+
     .issueOneBox{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;align-items:start}
     .issueLeft,.issueRight{background:#140707;border:1px solid #7f1d1d;border-radius:12px;padding:8px}
     .issueQuickActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
@@ -175,8 +181,8 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.7.0 Compact Sticky + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.7.0: True compact sticky layout + unified issue editor + stable parser merge ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.7.1 One-Line Sticky + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.7.1: one-line compact sticky bar + tabs row date/session + clearer session text ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
         <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
@@ -190,32 +196,9 @@
       </div>
     </div>
 
-    <div class="topCollapseArea">
-      <div class="topStickyRow">
-        <div class="gbox">
-          <div class="glabel">Global Date</div>
-          <input id="globalDate" type="date" onchange="onGlobalDateChange(this.value)">
-        </div>
-        <div class="gbox">
-          <div class="glabel">Global Session</div>
-          <select id="globalSession" onchange="onGlobalSessionChange(this.value)">
-            <option>AM</option>
-            <option>PM</option>
-            <option>DAILY</option>
-          </select>
-        </div>
-        <div class="globalNote">Date / Session ပြောင်းလိုက်တာနဲ့ pages အားလုံးတပြိုင်တည်းပြောင်းမယ်။ 2:00 PM ကျော်ရင် Today ကို PM auto ပြောင်းပေးမယ်။</div>
-      </div>
-    </div>
+    <div class="topCollapseArea"></div>
 
-    <div class="topMiniInfo" id="topMiniInfo">
-      <div class="miniStat">
-        <span class="miniBadge">Date: <b id="miniGlobalDate">-</b></span>
-        <span class="miniBadge">Session: <b id="miniGlobalSession">AM</b></span>
-        <span class="miniBadge">Page: <b id="miniCurrentPage">Dashboard</b></span>
-      </div>
-      <div class="muted">လိုအပ်ရင် Open လုပ်ပြီး full controls ပြန်ဖွင့်နိုင်တယ်။</div>
-    </div>
+    <div class="topMiniInfo" id="topMiniInfo"></div>
 
     <div class="tabs" id="tabs">
       <button class="tab active" data-id="dashboard" onclick="go('dashboard')">Dashboard<small>ပင်မ</small></button>
@@ -226,6 +209,21 @@
       <button class="tab" data-id="reports" onclick="go('reports')">Reports<small>အစီရင်ခံစာ</small></button>
       <button class="tab" data-id="image" onclick="go('image')">Image<small>ပုံ / မျှဝေ</small></button>
       <button class="tab" data-id="settings" onclick="go('settings')">Settings<small>ဆက်တင်</small></button>
+      <div class="tabsControls">
+        <div class="tabsControlBox">
+          <div class="glabel">Global Date</div>
+          <input id="globalDate" type="date" onchange="onGlobalDateChange(this.value)">
+        </div>
+        <div class="tabsControlBox session">
+          <div class="glabel">Global Session</div>
+          <select id="globalSession" onchange="onGlobalSessionChange(this.value)">
+            <option>AM</option>
+            <option>PM</option>
+            <option>DAILY</option>
+          </select>
+        </div>
+        <button class="tab tabsToggleBtn" id="tabsToggleBtn" onclick="toggleTopbar()">Open<small>ထိပ်ပိုင်းဖွင့်</small></button>
+      </div>
     </div>
   </div>
 
@@ -236,7 +234,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.7.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.7.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -290,7 +288,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.7.0</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.7.1</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -311,7 +309,7 @@
               </div>
               <div>
                 <label>OCR Text Preview / Manual Fix / စာပြင်ရန်</label>
-                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.7.0 မှာ auto OCR မပါသေးပါ။
+                <textarea id="ocrPreviewText" class="ocrBox" placeholder="Stage 3.7.1 မှာ auto OCR မပါသေးပါ။
 ပုံကြည့်ပြီး ဒီ box ထဲ OCR text ကို paste / edit လုပ်ပါ။
 ပြီးရင် အောက်က Use OCR Text → Entry ကိုနှိပ်ပါ။"></textarea>
                 <div class="btnrow">
@@ -512,7 +510,7 @@
         </div>
         <div class="nameRateGrid" id="nameList"></div>
       </div>
-      <div class="muted" style="margin-top:12px">Stage 3.7.0: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
+      <div class="muted" style="margin-top:12px">Stage 3.7.1: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
 </div>
@@ -645,20 +643,20 @@ function currentPageLabel(){
   return 'Dashboard';
 }
 function renderMiniTopInfo(){
-  const d = val('globalDate') || globalView.date || today();
-  const s = val('globalSession') || globalView.session || 'AM';
-  setText('miniGlobalDate', d);
-  setText('miniGlobalSession', s);
-  setText('miniCurrentPage', currentPageLabel());
+  return;
 }
 function applyTopbarState(){
   const topbar = document.getElementById('topbar');
   const btn = document.getElementById('topToggleBtn');
+  const tabsBtn = document.getElementById('tabsToggleBtn');
   if(!topbar || !btn) return;
   const collapsed = topbarState === 'collapsed';
   topbar.classList.toggle('collapsed', collapsed);
   document.body.classList.toggle('topbar-collapsed', collapsed);
   btn.textContent = collapsed ? 'Open ▼' : 'Minimize ▲';
+  if(tabsBtn){
+    tabsBtn.innerHTML = collapsed ? 'Open<small>ထိပ်ပိုင်းဖွင့်</small>' : 'Minimize<small>ထိပ်ပိုင်းဖျောက်</small>';
+  }
   renderMiniTopInfo();
 }
 function toggleTopbar(){
@@ -748,7 +746,7 @@ async function saveCloudSnapshot(showMsg=true){
     await db.collection('record').add({
       type:'stage2_full_snapshot',
       app:'Viber 2D Desk',
-      version:'Stage 3.7.0.1 Checkpoint',
+      version:'Stage 3.7.1.1 Checkpoint',
       records,
       overDeductions,
       settings,
