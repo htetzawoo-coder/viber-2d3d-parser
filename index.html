@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.4 Board Fit</title>
+  <title>Viber 2D Desk - Stage 3.8.5 Split Entry Board</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -53,7 +53,7 @@
     .topbar.collapsed .tabsToggleBtn{display:none}
     body.topbar-collapsed .topbar{box-shadow:0 10px 26px rgba(0,0,0,.30)}
     body.entry-sticky .page#entry .board-card{position:sticky;top:118px;z-index:14}
-    body.entry-sticky.topbar-collapsed .page#entry .board-card{top:46px;max-height:29vh;overflow:auto}
+    body.entry-sticky.topbar-collapsed .page#entry .board-card{top:46px;max-height:43vh;overflow:auto}
     body.entry-sticky .page#entry .desk-layout{padding-top:2px}
     body.entry-sticky.topbar-collapsed .page#entry .desk-layout{gap:8px}
     body.entry-sticky.topbar-collapsed .page#entry .board-wrap{max-height:240px}
@@ -77,18 +77,21 @@
     body.entry-sticky.topbar-collapsed .page#entry .over-card .scroll{max-height:205px}
     body.entry-sticky.topbar-collapsed .page#entry .scroll{max-height:200px}
     body.entry-sticky.topbar-collapsed .page#entry .compactStats .stat{padding:7px 8px}
-    body.entry-sticky.topbar-collapsed .page#entry .board-wrap{max-height:145px}
+    body.entry-sticky.topbar-collapsed .page#entry .board-wrap{max-height:248px;overflow:hidden}
     body.entry-sticky.topbar-collapsed .page#entry .entry-card textarea{min-height:92px;font-size:14px;line-height:1.35}
     body.entry-sticky.topbar-collapsed .page#entry .btnrow{gap:6px}
     body.entry-sticky.topbar-collapsed .page#entry .btn.small,
     body.entry-sticky.topbar-collapsed .page#entry .btn.secondary.small,
     body.entry-sticky.topbar-collapsed .page#entry .btn.warn.small,
     body.entry-sticky.topbar-collapsed .page#entry .btn.gray.small{padding:7px 10px}
-    body.entry-sticky.topbar-collapsed .page#entry .writerPick{max-width:130px;min-width:120px}
+    body.entry-sticky.topbar-collapsed .page#entry .writerPick{max-width:124px;min-width:118px}
+    body.entry-sticky.topbar-collapsed .page#entry .inline-title{gap:8px;flex-wrap:nowrap}
+    body.entry-sticky.topbar-collapsed .page#entry .namepick{min-width:210px;max-width:320px}
+    body.entry-sticky.topbar-collapsed .page#entry .entry-card textarea{min-height:118px}
     body.entry-sticky.topbar-collapsed .page#entry .imgPreviewPane{min-height:70px}
     body.entry-sticky.topbar-collapsed .page#entry .preview-card .scroll,
     body.entry-sticky.topbar-collapsed .page#entry .over-card .scroll{max-height:155px}
-    body.entry-sticky.topbar-collapsed .page#entry .board-toolbar{grid-template-columns:84px 74px 92px 96px minmax(280px,1fr);gap:4px}
+    body.entry-sticky.topbar-collapsed .page#entry .board-toolbar{grid-template-columns:78px 70px 82px 88px minmax(250px,1fr);gap:4px}
     body.entry-sticky.topbar-collapsed .page#entry .board-mini{padding:5px 6px}
 
     .issueOneBox{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;align-items:start}
@@ -152,16 +155,16 @@
     .board-card{background:linear-gradient(180deg,#f8fafc,#eef5f0);color:#0f172a;border-color:#cbd5e1;box-shadow:0 8px 22px rgba(0,0,0,.18);}
     .board-card h2{color:#0f172a;margin:0}.board-card .muted,.board-card label{color:#475569}.board-card input,.board-card select{background:#fff;color:#0f172a;border-color:#94a3b8}.board-card .stat{background:#e8f7ef;border-color:#a7d9ba;color:#0f172a;padding:8px 10px}.board-card .stat .v{font-size:20px}.board-card .stat .k{color:#475569}
     .board-toolbar{grid-template-columns:130px 110px 190px 130px 1fr;gap:8px}.board-stats{gap:6px;margin-top:0}.board-card .btn.secondary{background:#0ea5e9;color:white}
-    .board-wrap{width:100%;max-width:1028px;margin:0 auto;overflow:auto;border:2px solid #334155;border-radius:14px;background:#dbe7df;padding:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
-    .board-table{display:grid;grid-template-columns:repeat(10,42px 56px);min-width:980px;border-top:1px solid #94a3b8;border-left:1px solid #94a3b8;background:#f8fafc;justify-content:center;}
-    .numCell,.amtCell{height:38px;border-right:1px solid #94a3b8;border-bottom:1px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;}
-    .numCell{background:linear-gradient(180deg,#55b96f,#2e8e4f);color:#082012;font-size:19px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
-    .amtCell{background:#f8fafc;color:#0f172a;font-size:17px;font-weight:900;letter-spacing:.1px}.amtCell.empty{color:#cbd5e1}.numCell.over{background:linear-gradient(180deg,#f87171,#b91c1c);color:#fff}.amtCell.over{background:#fee2e2;color:#991b1b}.numCell.hot{background:linear-gradient(180deg,#22c55e,#15803d)}.amtCell.hot{background:#ecfdf5;color:#065f46}
+    .board-wrap{width:100%;max-width:960px;margin:0 auto;overflow:auto;border:2px solid #334155;border-radius:14px;background:#dbe7df;padding:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+    .board-table{display:grid;grid-template-columns:repeat(10,36px 48px);min-width:840px;border-top:1px solid #94a3b8;border-left:1px solid #94a3b8;background:#f8fafc;justify-content:center;}
+    .numCell,.amtCell{height:24px;border-right:1px solid #94a3b8;border-bottom:1px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;}
+    .numCell{background:linear-gradient(180deg,#55b96f,#2e8e4f);color:#082012;font-size:16px;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+    .amtCell{background:#f8fafc;color:#0f172a;font-size:13px;font-weight:900;letter-spacing:0}.amtCell.empty{color:#cbd5e1}.numCell.over{background:linear-gradient(180deg,#f87171,#b91c1c);color:#fff}.amtCell.over{background:#fee2e2;color:#991b1b}.numCell.hot{background:linear-gradient(180deg,#22c55e,#15803d)}.amtCell.hot{background:#ecfdf5;color:#065f46}
     .desk-columns{grid-template-columns:minmax(360px,.95fr) minmax(390px,1.05fr) minmax(300px,.8fr);gap:10px}.desk-columns .card{border-radius:16px}.entry-card textarea{min-height:225px;font-size:16px}.preview-card .scroll,.over-card .scroll{max-height:360px}.entry-card .stat{padding:9px}.entry-card .stat .v{font-size:20px}
     .wide-board-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.unit-badge{background:#1d4ed8;color:#dbeafe;border-radius:8px;padding:5px 10px;font-weight:900;font-size:12px}
 
 
-    .inline-title{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap}.inline-title .namepick{min-width:220px;flex:1;max-width:360px}.nameRateGrid{display:grid;gap:8px;margin-top:10px}.nameRateRow{display:grid;grid-template-columns:1fr 120px 78px;gap:8px;align-items:center;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:8px}.nameRateRow input{padding:7px}.miniSelect{padding:8px 10px}.resultPositive{color:#16a34a;font-weight:900}.resultNegative{color:#ef4444;font-weight:900}.board-mode{display:flex;gap:8px;align-items:end}
+    .inline-title{display:flex;align-items:end;justify-content:flex-start;gap:10px;flex-wrap:nowrap}.inline-title h2{display:none}.inline-title .namepick{min-width:220px;flex:1;max-width:360px}.inline-title .writerPick{min-width:150px;max-width:170px}.nameRateGrid{display:grid;gap:8px;margin-top:10px}.nameRateRow{display:grid;grid-template-columns:1fr 120px 78px;gap:8px;align-items:center;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:8px}.nameRateRow input{padding:7px}.miniSelect{padding:8px 10px}.resultPositive{color:#16a34a;font-weight:900}.resultNegative{color:#ef4444;font-weight:900}.board-mode{display:flex;gap:8px;align-items:end}
 
 
     /* Stage 1.7: global limit sync + balanced toolbar */
@@ -181,7 +184,7 @@
     @media(max-width:900px){.recordFilters{grid-template-columns:1fr 1fr}.recordFilters .wide{grid-column:1/-1}}
 
     @media(max-width:1100px){.desk-columns{grid-template-columns:1fr}.board-toolbar{grid-template-columns:repeat(2,1fr)}.main-board{grid-template-columns:repeat(10,minmax(52px,1fr))}}
-    @media(max-width:1100px){.globalBar{grid-template-columns:1fr}.boardLimitCombo{grid-template-columns:1fr 1fr}.board-toolbar{grid-template-columns:repeat(2,1fr)}.board-wrap{max-width:100%}.board-table{min-width:940px;grid-template-columns:repeat(10,40px 54px)}.desk-columns{grid-template-columns:1fr}.recordFilters{grid-template-columns:1fr 1fr}.compactStats{grid-template-columns:repeat(2,1fr)}}@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.board{gap:4px}.cell{min-height:48px;padding:4px}.cell .amt{font-size:11px}.kbd{grid-template-columns:repeat(4,1fr)}h1{font-size:18px}.app{padding:8px}.card{padding:10px}.tab{padding:9px 10px;min-width:98px}.recordFilters{grid-template-columns:1fr}.compactStats{grid-template-columns:1fr 1fr}.imgToolGrid{grid-template-columns:1fr}}
+    @media(max-width:1100px){.globalBar{grid-template-columns:1fr}.boardLimitCombo{grid-template-columns:1fr 1fr}.board-toolbar{grid-template-columns:repeat(2,1fr)}.board-wrap{max-width:100%}.board-table{min-width:800px;grid-template-columns:repeat(10,34px 44px)}.desk-columns{grid-template-columns:1fr}.recordFilters{grid-template-columns:1fr 1fr}.compactStats{grid-template-columns:repeat(2,1fr)}}@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}.board{gap:4px}.cell{min-height:48px;padding:4px}.cell .amt{font-size:11px}.kbd{grid-template-columns:repeat(4,1fr)}h1{font-size:18px}.app{padding:8px}.card{padding:10px}.tab{padding:9px 10px;min-width:98px}.recordFilters{grid-template-columns:1fr}.compactStats{grid-template-columns:1fr 1fr}.imgToolGrid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -189,8 +192,8 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.4 Board Fit + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.4: minimize mode board fit tuning + 00 to 99 full board view laptop adjust ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.5 Split Entry Board + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.5: split-screen board/entry balance + full 00-99 board fit + compact entry row ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
         <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
@@ -246,7 +249,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.4 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.5 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -289,7 +292,9 @@
             <div class="writerPick"><label>Writer / လက်ရေးပိုင်ရှင်</label><select id="entryWriter" onchange="saveSettings(); renderWriterHint();"><option value="AUTO">Auto</option><option value="A">A Writer</option><option value="B">B Writer</option><option value="C">C Writer</option><option value="OTHER">Other Writer</option></select></div>
           </div>
           <div id="writerHint" class="writerHint"></div>
-          <textarea id="entryText" placeholder="//-7733=500
+          <textarea id="entryText" placeholder="စာရင်းထည့်ရန် / Entry
+
+//-7733=500
 42.32,65.21.700r300
 45.65R500,23,53.86.300r200.77,22,00.1000,
 52R500
@@ -300,7 +305,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.4</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.5</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
