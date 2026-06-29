@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.1 Parser Carry Expand</title>
+  <title>Viber 2D Desk - Stage 3.8.2 Header Ignore Fix</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -181,8 +181,8 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.1 Parser Carry Expand + Firebase</span></h1>
-        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.1: parser carry logic ပိုတင်း + bare shorthand carry + old rules safe merge ထိ update ထားသည်</div></div>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.2 Header Ignore Fix + Firebase</span></h1>
+        <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.2: unknown header ignore + carry shorthand fix + parser expand ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
         <button class="topToggleBtn" id="topToggleBtn" onclick="toggleTopbar()">Minimize ▲</button>
@@ -234,7 +234,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.2 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -288,7 +288,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.1</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.2</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -1189,7 +1189,7 @@ function parseSpecialBurmeseLine(line){
   // 1790ခွေ500 / 1790-ခွေ-500 / 1790ခွေပူး500 / 1790အခွေ1000အပူးပါ
   // ခွေ = permutations without doubles
   // ခွေပူး / ခွေအပူး / ခွေအပူးပါ = permutations + doubles from the same digits
-  m=s.match(/^(\d{2,})\s*[-=]?\s*(?:အခွေ|ခွေ)\s*[-=]?\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)\s*)?[-=]?\s*(\d+)(?:\s*[^\d].*)?$/);
+  m=s.match(/^(\d{2,})\s*[-=.:]*\s*(?:အခွေ|ခွေ)\s*[-=.:]*\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)\s*)?[-=.:]*\s*(\d+)(?:\s*[^\d].*)?$/);
   if(m){
     const digits=uniq(m[1].split(''));
     const includeDoubles=!!m[2];
@@ -1275,19 +1275,20 @@ function parseSpecialCarryLine(line, ctx){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount}};
   }
 
-  // 1=8ပါ / 1=8=9ပါ / 7ပါတ်ပူးပါ  => carried amount
-  m=s.match(/^((?:\d\s*=\s*)+\d)\s*(?:ပါ|ပါတ်|ပတ်)\s*(အ?ပူးပါ)?$/);
+  // 1=8ပါ / 1=8=9ပါ / 7ပါတ်ပူးပါ / 7အပူးပါ  => carried amount
+  m=s.match(/^((?:\d\s*=\s*)+\d)\s*(?:(?:ပါ|ပါတ်|ပတ်)\s*)?(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)?$/);
   if(m){
     const digits=uniq((m[1].match(/\d/g)||[]));
+    const includeFamily = /(?:ပါ|ပါတ်|ပတ်)/.test(s) || !!m[2];
     const extraDouble=!!m[2];
     digits.forEach(d=>{
-      addRowsForList(rows,warnings,containsDigit(d),amount,source,'carry-digit-include');
+      if(includeFamily) addRowsForList(rows,warnings,containsDigit(d),amount,source,'carry-digit-include');
       if(extraDouble) addRow(rows,warnings,d+d,amount,source,'carry-extra-double');
     });
     return {handled:true, rows, warnings, meta:{mode:'normal', amount}};
   }
-  m=s.match(/^(\d)\s*=?\s*(?:ပါ|ပါတ်|ပတ်)\s*(အ?ပူးပါ)?$/);
-  if(m){
+  m=s.match(/^(\d)\s*=?\s*(?:(?:ပါ|ပါတ်|ပတ်)\s*)?(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး)?$/);
+  if(m && (/(?:ပါ|ပါတ်|ပတ်)/.test(s) || m[2])){
     addRowsForList(rows,warnings,containsDigit(m[1]),amount,source,'carry-digit-include');
     if(m[2]) addRow(rows,warnings,m[1]+m[1],amount,source,'carry-extra-double');
     return {handled:true, rows, warnings, meta:{mode:'normal', amount}};
@@ -1300,8 +1301,8 @@ function parseSpecialCarryLine(line, ctx){
     return {handled:true, rows, warnings, meta:{mode:'normal', amount}};
   }
 
-  // 12345ခွေ / 12345အခွေ / 12345ခွေအပူးပါ
-  m=s.match(/^(\d{2,})\s*[-=]?\s*(?:အခွေ|ခွေ)\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး))?$/);
+  // 12345ခွေ / 12345အခွေ / 12345ခွေအပူးပါ / 12345-ခွေ-အပူးပါ
+  m=s.match(/^(\d{2,})\s*[-=.:]*\s*(?:အခွေ|ခွေ)\s*[-=.:]*\s*(?:(အ?ပူးပါ|ပူးပါ|အ?ပူး|ပူး))?$/);
   if(m){
     const digits=uniq(m[1].split(''));
     const includeDoubles=!!m[2];
@@ -1478,11 +1479,6 @@ function parseMessageBlock(block, writerProfile){
     const carryCtx = nearestUpperExplicit(idx) || nearestLowerExplicit(idx);
     const upperCtx = nearestUpperExplicit(idx);
 
-    if(item.fromHeader && item.headerName && !item.headerMatched){
-      const msg='Header name not in Name list: '+item.headerName;
-      warnings.push(msg);
-      issues.push({lineNo:item.lineNo, line:item.raw, edited:item.raw, message:msg});
-    }
 
     const eqCarry = /=$/.test(l.trim()) ? l.trim().replace(/=+$/,'').trim() : null;
     if(eqCarry && carryCtx && expandExpression(eqCarry).length){
