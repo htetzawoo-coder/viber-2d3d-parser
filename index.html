@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.7 Paste Parser Branch</title>
+  <title>Viber 2D Desk - Stage 3.8.7.1 Paste Parser Branch Fix</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -192,7 +192,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.7 Paste Parser Branch + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.7.1 Paste Parser Branch Fix + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -249,7 +249,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.7 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.7.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -305,7 +305,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.7</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.7.1</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -996,6 +996,56 @@ function parseComplexLine(line){
 }
 function addRowsForList(rows,warnings,nums,amount,source,type='normal'){
   nums.forEach(n=>addRow(rows,warnings,n,amount,source,type));
+}
+function parsePastePairBranchLine(line){
+  const source=line; const rows=[]; const warnings=[];
+  const s=normalize(line).replace(/\s+/g,' ').trim();
+  let m;
+  const pairList = /^(?:\d{2}(?:\s*[\/.*\-=:;"'{}\[\]()<>]+\s*))+\d{2}$/;
+
+  // 4ထိပ်/1000 | 4နောက်/500
+  m=s.match(/^(\d)\s*(?:ထိပ်စီး|ထိပ်|ရှေ့|အရှေ့)\s*\/\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums(m[1],'/'),m[2],source,'paste-front-slash');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+  m=s.match(/^(\d)\s*(?:နောက်ပိတ်|နောက်|အနောက်|အပိတ်|ပိတ်)\s*\/\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m){
+    addRowsForList(rows,warnings,parityNums('/',m[1]),m[2],source,'paste-back-slash');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // helper: list followed by =normal R reverse
+  m=s.match(/^(.*)\s*=\s*(\d+)\s*[Rr@&]\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m && pairList.test(m[1].trim())){
+    const nums=(m[1].match(/\d{2}/g)||[]);
+    nums.forEach(n=>{
+      addRow(rows,warnings,n,m[2],source,'paste-mixed-normal');
+      addRow(rows,warnings,rev(n),m[3],source,'paste-mixed-reverse');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  // list + reverse shared amount
+  m=s.match(/^(.*)\s*[Rr@&]\s*(\d+)(?:\s*[^\d].*)?$/);
+  if(m && pairList.test(m[1].trim())){
+    const nums=(m[1].match(/\d{2}/g)||[]);
+    nums.forEach(n=>{
+      addRow(rows,warnings,n,m[2],source,'paste-reverse');
+      addRow(rows,warnings,rev(n),m[2],source,'paste-reverse');
+    });
+    return {handled:true, rows, warnings, meta:{mode:'reverse', amount:Number(m[2])}};
+  }
+
+  // plain pair list + trailing amount (no reverse)
+  m=s.match(/^(.*?)(\d{3,})(?:\s*[^\d].*)?$/);
+  if(m && pairList.test(m[1].trim())){
+    const nums=(m[1].match(/\d{2}/g)||[]);
+    addRowsForList(rows,warnings,nums,m[2],source,'paste-plain-list');
+    return {handled:true, rows, warnings, meta:{mode:'normal', amount:Number(m[2])}};
+  }
+
+  return {handled:false, rows, warnings, meta:null};
 }
 function breakByDigit(d){
   const x=Number(d); return N2.filter(n=>[x,x+10].includes(Number(n[0])+Number(n[1])));
