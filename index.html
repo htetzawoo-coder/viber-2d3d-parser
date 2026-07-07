@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.6 Parser Regression Fix</title>
+  <title>Viber 2D Desk - Stage 3.8.7 Paste Parser Branch</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -192,7 +192,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.6 Parser Regression Fix + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.7 Paste Parser Branch + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -249,7 +249,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.6 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.7 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -305,7 +305,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.6</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.7</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -1404,6 +1404,8 @@ function splitExprAmount(line){
 function hasExplicitAmountOnLine(line){
   const s = normalize(line).trim();
   if(!s) return false;
+  const paste = parsePastePairBranchLine(s);
+  if(paste.handled && paste.meta && paste.meta.amount) return true;
   const pair = splitExprAmount(s);
   return !!(pair && pair.amount && expandExpression(pair.expr).length);
 }
@@ -1456,6 +1458,9 @@ function explicitCarryMetaForLine(line){
     const pair = splitExprAmount(s);
     return {mode:'normal', amount:Number(pair.amount)};
   }
+
+  const paste = parsePastePairBranchLine(s);
+  if(paste.handled && paste.meta && paste.meta.amount) return {mode:paste.meta.mode||'normal', amount:Number(paste.meta.amount)};
 
   const sp = parseSpecialBurmeseLine(s);
   if(sp.handled && sp.meta && sp.meta.amount) return {mode:sp.meta.mode||'normal', amount:Number(sp.meta.amount)};
@@ -1520,23 +1525,28 @@ function parseMessageBlock(block, writerProfile){
     if(eqCarry && carryCtx && expandExpression(eqCarry).length){
       r = applyCarryLine(eqCarry, carryCtx);
     }else{
-      const sp = parseSpecialBurmeseLine(l);
-      if(sp.handled){
-        r = sp;
+      const pasteBranch = parsePastePairBranchLine(l);
+      if(pasteBranch.handled){
+        r = pasteBranch;
       }else{
-        const hasOwnExplicit = hasExplicitAmountOnLine(l) || (!!item.explicit && item.explicit.amount);
-        if(hasOwnExplicit){
-          r = /[Rr@]/.test(l) ? parseComplexLine(l) : parseLine(l);
+        const sp = parseSpecialBurmeseLine(l);
+        if(sp.handled){
+          r = sp;
         }else{
-          const carrySpecial = carryCtx ? parseSpecialCarryLine(l, carryCtx) : {handled:false, rows:[], warnings:[]};
-          if(carrySpecial.handled){
-            r = carrySpecial;
-          }else if(isBareCarryCandidate(l) && carryCtx && !/[Rr@]/.test(l)){
-            r = applyCarryLine(l, carryCtx);
-          }else if(/[Rr@]/.test(l)){
-            r = parseComplexLine(l);
+          const hasOwnExplicit = hasExplicitAmountOnLine(l) || (!!item.explicit && item.explicit.amount);
+          if(hasOwnExplicit){
+            r = /[Rr@]/.test(l) ? parseComplexLine(l) : parseLine(l);
           }else{
-            r = parseLine(l);
+            const carrySpecial = carryCtx ? parseSpecialCarryLine(l, carryCtx) : {handled:false, rows:[], warnings:[]};
+            if(carrySpecial.handled){
+              r = carrySpecial;
+            }else if(isBareCarryCandidate(l) && carryCtx && !/[Rr@]/.test(l)){
+              r = applyCarryLine(l, carryCtx);
+            }else if(/[Rr@]/.test(l)){
+              r = parseComplexLine(l);
+            }else{
+              r = parseLine(l);
+            }
           }
         }
       }
