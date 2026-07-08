@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.9 Save Flow</title>
+  <title>Viber 2D Desk - Stage 3.9.0 Block Duplicate Flow</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -122,6 +122,7 @@
     .saveFlowPane{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px}
     .saveFlowPane table{margin-top:6px}
     .dupWarn{margin-top:8px;border:1px solid #7c2d12;background:#1c1209;border-radius:12px;padding:10px;color:#fed7aa}
+    .dupNameWarn{margin-top:8px;border:1px solid #991b1b;background:#220a0a;border-radius:12px;padding:10px;color:#fecaca}
     .dupOk{margin-top:8px;border:1px solid #14532d;background:#052e16;border-radius:12px;padding:10px;color:#bbf7d0}
     .saveTiny{font-size:12px;color:#94a3b8}
     .issueHint{color:#fca5a5;font-size:12px;margin-bottom:8px}
@@ -200,7 +201,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.9 Save Flow + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.9.0 Block Duplicate Flow + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -257,7 +258,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.9 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.9.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -313,7 +314,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.9</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.9.0</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -619,7 +620,8 @@ let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
 let globalView = JSON.parse(localStorage.getItem('v2d_global_view')||'{}');
 let pMemory = JSON.parse(localStorage.getItem('v2d_p_memory')||'{}');
 let sessionManualLock = localStorage.getItem('v2d_session_manual_lock') === '1';
-let pendingDuplicateBatchIds = [];
+let pendingDuplicateBlockKeys = [];
+let pendingDuplicateBlockLabels = [];
 let currentGroupEdit = null;
 let currentIssueIndex = 0;
 let topbarState = localStorage.getItem('v2d_topbar_state') || 'open';
@@ -1587,6 +1589,12 @@ function explicitCarryMetaForLine(line){
 function normalizeMessageLines(text){
   return String(text||'').replace(/\r/g,'').split('\n').map((raw,i)=>({raw:String(raw||''),lineNo:i+1})).filter(x=>x.raw.trim());
 }
+function makeMessageBlockKey(headerStamp, headerName, lines){
+  const body = normalizeDuplicateText((lines||[]).map(x=>x.raw||'').join('\n'));
+  const stamp = normalizeDuplicateText(headerStamp||'');
+  const name = cleanNameText(headerName||'');
+  return `${stamp}__${name}__${body}`;
+}
 function buildMessageBlocks(text, defaultName){
   const blocks=[]; let block=null; let activeName=defaultName||'Default';
   normalizeMessageLines(text).forEach(item=>{
@@ -1605,6 +1613,10 @@ function buildMessageBlocks(text, defaultName){
     }
   });
   if(block && block.lines.length) blocks.push(block);
+  blocks.forEach((b, idx)=>{
+    b.blockKey = makeMessageBlockKey(b.headerStamp||'', b.headerName||b.name||'', b.lines||[]);
+    b.blockLabel = b.headerStamp ? `[${b.headerStamp}] ${b.headerName||b.name||''}` : `Manual Block ${idx+1} / ${b.name||'Default'}`;
+  });
   return blocks;
 }
 function parseMessageBlock(block, writerProfile){
@@ -1674,6 +1686,8 @@ function parseMessageBlock(block, writerProfile){
       if(block.date) row.date = block.date;
       if(block.session) row.session = block.session;
       if(block.headerStamp) row.headerStamp = block.headerStamp;
+      row.duplicateBlockKey = block.blockKey || '';
+      row.duplicateBlockLabel = block.blockLabel || '';
     });
     detailRows.push(...(r?.rows||[]));
     (r?.warnings||[]).forEach(w=>warnings.push(w));
@@ -1772,9 +1786,6 @@ function computePreviewSaveSummary(){
   const selectedSession=(val('entrySession')||'AM').toUpperCase().startsWith('P')?'PM':'AM';
   const selectedName=(val('entryName')||'').trim()||'Default';
   const rows = preview.detailRows || [];
-  const rawText = val('entryText') || '';
-  const normalizedText = normalizeDuplicateText(rawText);
-  const looksLikeHeaderPaste = /\[[^\]]+\]\s*[⁨]?.+?[⁩]?\s*:/.test(rawText);
 
   const targetMap = new Map();
   rows.forEach(r=>{
@@ -1789,20 +1800,41 @@ function computePreviewSaveSummary(){
   });
 
   const targets = [...targetMap.values()].sort((a,b)=>`${a.date}${a.session}${a.name}`.localeCompare(`${b.date}${b.session}${b.name}`));
-  const targetPairs = new Set(targets.map(t=>`${t.date}__${t.session}`));
-  const targetNames = new Set(targets.map(t=>t.name));
-  const dupIds = new Set();
 
-  if(normalizedText){
-    records.forEach(r=>{
-      if((r.batchTextHash||'') !== normalizedText) return;
-      if(!targetPairs.has(`${r.date}__${r.session}`)) return;
-      if(!looksLikeHeaderPaste && !targetNames.has(r.name||'Default')) return;
-      dupIds.add(r.batchId || r.groupId || r.id);
-    });
-  }
+  const previewBlocks = new Map();
+  rows.forEach(r=>{
+    const key = r.duplicateBlockKey || '';
+    if(!key) return;
+    const prev = previewBlocks.get(key) || {
+      blockKey:key,
+      label:r.duplicateBlockLabel || 'Message Block',
+      name:r.name || selectedName,
+      date:r.date || selectedDate,
+      session:(r.session || selectedSession || 'AM').toUpperCase().startsWith('P') ? 'PM' : 'AM',
+      rows:0,
+      amount:0
+    };
+    prev.rows += 1;
+    prev.amount += Number(r.amount||0);
+    previewBlocks.set(key, prev);
+  });
 
-  return {targets, normalizedText, rawText, looksLikeHeaderPaste, duplicateBatchIds:[...dupIds]};
+  const duplicateBlocks = [];
+  previewBlocks.forEach(pb=>{
+    const exists = records.some(r=>
+      (r.duplicateBlockKey||'') === pb.blockKey &&
+      (r.date||'') === pb.date &&
+      (r.session||'') === pb.session
+    );
+    if(exists) duplicateBlocks.push(pb);
+  });
+
+  return {
+    targets,
+    duplicateBlocks,
+    duplicateBlockKeys: duplicateBlocks.map(x=>x.blockKey),
+    duplicateBlockLabels: duplicateBlocks.map(x=>x.label)
+  };
 }
 function renderSaveFlowBox(){
   const left = document.getElementById('saveTargetSummary');
@@ -1811,7 +1843,8 @@ function renderSaveFlowBox(){
   if(!left || !right || !actions) return;
 
   const summary = computePreviewSaveSummary();
-  pendingDuplicateBatchIds = summary.duplicateBatchIds || [];
+  pendingDuplicateBlockKeys = summary.duplicateBlockKeys || [];
+  pendingDuplicateBlockLabels = summary.duplicateBlockLabels || [];
 
   if(!preview.detailRows.length){
     left.innerHTML = '<div class="muted">Parse Preview မလုပ်ရသေးပါ</div>';
@@ -1829,12 +1862,27 @@ function renderSaveFlowBox(){
     </table>
   ` : '<div class="muted">Detected target မရှိသေးပါ</div>';
 
-  if(pendingDuplicateBatchIds.length){
-    right.innerHTML = `<div class="dupWarn"><b>Duplicate notice</b><br>Same Session အတွင်း ထပ်တူညီတဲ့ message batch <b>${pendingDuplicateBatchIds.length}</b> ခု တွေ့ထားပါတယ်။</div>`;
+  if(preview.needsNameSelection){
+    right.innerHTML = `<div class="dupNameWarn"><b>Name မရွေးရသေးပါ</b><br>Typing save လုပ်မယ်ဆို Name ကို အရင်ရွေးပြီးမှ Confirm Save လုပ်ပါ။</div>`;
+    actions.innerHTML = '';
+    return;
+  }
+
+  if(pendingDuplicateBlockKeys.length){
+    right.innerHTML = `
+      <div class="dupWarn"><b>Duplicate message block ${pendingDuplicateBlockKeys.length} ခုတွေ့ပါတယ်</b><br>Same Session ထဲမှာ ထပ်တူ message block ရှိနေပါတယ်။</div>
+      <table style="margin-top:8px">
+        <thead><tr><th>Header</th><th>Date</th><th>Session</th><th class="right">Rows</th></tr></thead>
+        <tbody>
+          ${summary.duplicateBlocks.map(d=>`<tr><td>${escapeHtml(d.label)}</td><td>${d.date}</td><td><b>${d.session}</b></td><td class="right">${d.rows}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    `;
     actions.innerHTML = `
       <div class="btnrow" style="margin-top:8px">
-        <button class="btn warn small" onclick="deleteDuplicatePreviewBatches(true)">Delete Existing + Save</button>
-        <button class="btn secondary small" onclick="savePreview(true)">OK Save Anyway</button>
+        <button class="btn warn small" onclick="deleteDuplicatePreviewBlocks(true)">Delete Existing + Save</button>
+        <button class="btn secondary small" onclick="savePreview(true,'skip')">Skip Duplicate Only</button>
+        <button class="btn small" onclick="savePreview(true,'all')">Save All Anyway</button>
         <button class="btn gray small" onclick="cancelDuplicateFlow()">Cancel</button>
       </div>
     `;
@@ -1844,21 +1892,22 @@ function renderSaveFlowBox(){
   }
 }
 function cancelDuplicateFlow(){
-  showToast('Duplicate warning ကိုပဲပြထားပါတယ်။ ပထမ message ကို ပြန်စစ်နိုင်ပါတယ်');
+  showToast('Duplicate warning ကိုပြထားပါတယ်။ Header line ကို ပြန်စစ်နိုင်ပါတယ်');
 }
-function deleteDuplicatePreviewBatches(saveAfter=false){
-  if(!pendingDuplicateBatchIds.length){
-    showToast('ဖျက်ရန် duplicate batch မရှိပါ');
+function deleteDuplicatePreviewBlocks(saveAfter=false){
+  if(!pendingDuplicateBlockKeys.length){
+    showToast('ဖျက်ရန် duplicate message block မရှိပါ');
     return;
   }
-  records = records.filter(r=>!pendingDuplicateBatchIds.includes(r.batchId || r.groupId || r.id));
+  records = records.filter(r=>!pendingDuplicateBlockKeys.includes(r.duplicateBlockKey || ''));
   saveRecords();
   saveCloudSnapshot(false);
-  pendingDuplicateBatchIds = [];
+  pendingDuplicateBlockKeys = [];
+  pendingDuplicateBlockLabels = [];
   renderAll();
   renderSaveFlowBox();
-  showToast('Existing duplicate batch ကို ဖျက်ပြီးပါပြီ');
-  if(saveAfter) savePreview(true);
+  showToast('Existing duplicate message block ကို ဖျက်ပြီးပါပြီ');
+  if(saveAfter) savePreview(true,'all');
 }
 function renderPreview(){
   setText('pvRows',preview.detailRows.length);
@@ -1973,40 +2022,53 @@ function clearIssueEditor(){
 function normalizeDuplicateText(s){
   return String(s||'').replace(/\s+/g,' ').trim();
 }
-function savePreview(skipDuplicateCheck=false){
+function savePreview(skipDuplicateCheck=false, duplicateMode='warn'){
   if(!preview.detailRows.length){showToast('Save လုပ်ရန် preview မရှိပါ'); return;}
   const selectedDate=val('entryDate')||today(); const selectedSession=val('entrySession')||'AM';
   if(selectedSession==='DAILY'){ showToast('Confirm Save လုပ်ရန် AM သို့မဟုတ် PM ကိုရွေးပါ'); return; }
   const selectedName=(val('entryName')||'').trim()||'Default';
   if(preview.needsNameSelection && selectedName==='Default'){
+    renderSaveFlowBox();
     showToast('Name မရွေးရသေးပါ။ Name ရွေးပြီးမှ Confirm Save လုပ်ပါ');
     go('entry');
     return;
   }
 
   const summary = computePreviewSaveSummary();
-  if(!skipDuplicateCheck && summary.duplicateBatchIds.length){
-    pendingDuplicateBatchIds = summary.duplicateBatchIds;
+  if(!skipDuplicateCheck && summary.duplicateBlockKeys.length){
+    pendingDuplicateBlockKeys = summary.duplicateBlockKeys;
+    pendingDuplicateBlockLabels = summary.duplicateBlockLabels;
     renderSaveFlowBox();
-    showToast('Duplicate တွေ့ပါတယ်။ Delete Existing + Save သို့မဟုတ် OK Save Anyway ရွေးပါ');
+    showToast('Duplicate message block တွေ့ပါတယ်။ Action တစ်ခုရွေးပါ');
     return;
   }
 
-  const rawText = summary.rawText || '';
-  const normalizedText = summary.normalizedText || '';
+  const rawText = val('entryText') || '';
+  const normalizedText = normalizeDuplicateText(rawText);
   const ts=Date.now(); const batchId='B'+ts; const writerProfile=selectedWriterProfile();
 
-  preview.detailRows.forEach(r=>{
+  let rowsToSave = [...preview.detailRows];
+  if(duplicateMode==='skip' && pendingDuplicateBlockKeys.length){
+    rowsToSave = rowsToSave.filter(r=>!pendingDuplicateBlockKeys.includes(r.duplicateBlockKey || ''));
+  }
+
+  if(!rowsToSave.length){
+    showToast('အသစ်သိမ်းရန် row မရှိပါ');
+    return;
+  }
+
+  rowsToSave.forEach(r=>{
     const rowName = r.name || selectedName;
     const rowDate = r.date || selectedDate;
     const rowSession = (r.session || selectedSession || 'AM').toUpperCase().startsWith('P') ? 'PM' : 'AM';
     const groupId = `${batchId}__${rowName}__${String(r.source||'').trim()}__${rowDate}__${rowSession}`;
-    records.push({...r,name:rowName,date:rowDate,session:rowSession,ts,batchId,groupId,writerProfile,batchTextHash:normalizedText,batchRawText:rawText,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()});
+    records.push({...r,name:rowName,date:rowDate,session:rowSession,ts,batchId,groupId,writerProfile,batchTextHash:normalizedText,batchRawText:rawText,duplicateBlockKey:r.duplicateBlockKey||'',duplicateBlockLabel:r.duplicateBlockLabel||'',id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()});
   });
 
   saveRecords();
   saveCloudSnapshot(false);
-  pendingDuplicateBatchIds = [];
+  pendingDuplicateBlockKeys = [];
+  pendingDuplicateBlockLabels = [];
   preview={detailRows:[],totals:[],warnings:[],issues:[]};
   renderAll();
   renderSaveFlowBox();
