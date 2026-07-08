@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.8 Header Time Session</title>
+  <title>Viber 2D Desk - Stage 3.8.9 Save Flow</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -116,6 +116,14 @@
 
     .issueBox{margin-top:10px;border:1px solid #7f1d1d;background:#1f0a0a;border-radius:14px;padding:10px}
     .issueBox h3{margin:0 0 8px;color:#fecaca}
+    .saveFlowBox{margin-top:10px;border:1px solid #334155;background:#07111f;border-radius:14px;padding:10px}
+    .saveFlowBox h3{margin:0 0 8px;color:#dbeafe}
+    .saveFlowGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;align-items:start}
+    .saveFlowPane{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px}
+    .saveFlowPane table{margin-top:6px}
+    .dupWarn{margin-top:8px;border:1px solid #7c2d12;background:#1c1209;border-radius:12px;padding:10px;color:#fed7aa}
+    .dupOk{margin-top:8px;border:1px solid #14532d;background:#052e16;border-radius:12px;padding:10px;color:#bbf7d0}
+    .saveTiny{font-size:12px;color:#94a3b8}
     .issueHint{color:#fca5a5;font-size:12px;margin-bottom:8px}
     .issueRow{border:1px solid #7f1d1d;background:#140707;border-radius:12px;padding:8px;margin-top:8px}
     .issueMsg{color:#fca5a5;font-size:12px;font-weight:700;margin-bottom:6px}
@@ -192,7 +200,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.8 Header Time Session + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.9 Save Flow + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -249,7 +257,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.8 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.9 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -305,7 +313,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.8</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.9</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -359,6 +367,22 @@
               </div>
             </div>
           </div>
+
+          <div id="saveFlowWrap" class="saveFlowBox">
+            <h3>Save Preview / သိမ်းမည့်နေရာ စစ်ကြည့်</h3>
+            <div class="saveFlowGrid">
+              <div class="saveFlowPane">
+                <div class="saveTiny">Detected save targets</div>
+                <div id="saveTargetSummary"></div>
+              </div>
+              <div class="saveFlowPane">
+                <div class="saveTiny">Duplicate action flow</div>
+                <div id="duplicateSummary"></div>
+                <div id="duplicateActionBox"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="grid3" style="margin-top:12px">
             <div class="stat"><div class="k" data-i18n="previewRows">Preview Rows</div><div class="v" id="pvRows">0</div></div>
             <div class="stat"><div class="k" data-i18n="previewTotal">Preview Total</div><div class="v good" id="pvTotal">0</div></div>
@@ -595,6 +619,7 @@ let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
 let globalView = JSON.parse(localStorage.getItem('v2d_global_view')||'{}');
 let pMemory = JSON.parse(localStorage.getItem('v2d_p_memory')||'{}');
 let sessionManualLock = localStorage.getItem('v2d_session_manual_lock') === '1';
+let pendingDuplicateBatchIds = [];
 let currentGroupEdit = null;
 let currentIssueIndex = 0;
 let topbarState = localStorage.getItem('v2d_topbar_state') || 'open';
@@ -1742,6 +1767,99 @@ function parseInput(){
     showToast('Preview ပြီးပါပြီ');
   }
 }
+function computePreviewSaveSummary(){
+  const selectedDate=val('entryDate')||today();
+  const selectedSession=(val('entrySession')||'AM').toUpperCase().startsWith('P')?'PM':'AM';
+  const selectedName=(val('entryName')||'').trim()||'Default';
+  const rows = preview.detailRows || [];
+  const rawText = val('entryText') || '';
+  const normalizedText = normalizeDuplicateText(rawText);
+  const looksLikeHeaderPaste = /\[[^\]]+\]\s*[⁨]?.+?[⁩]?\s*:/.test(rawText);
+
+  const targetMap = new Map();
+  rows.forEach(r=>{
+    const rowDate = r.date || selectedDate;
+    const rowSession = (r.session || selectedSession || 'AM').toUpperCase().startsWith('P') ? 'PM' : 'AM';
+    const rowName = r.name || selectedName;
+    const key = `${rowName}__${rowDate}__${rowSession}`;
+    const prev = targetMap.get(key) || {name:rowName, date:rowDate, session:rowSession, rows:0, amount:0};
+    prev.rows += 1;
+    prev.amount += Number(r.amount||0);
+    targetMap.set(key, prev);
+  });
+
+  const targets = [...targetMap.values()].sort((a,b)=>`${a.date}${a.session}${a.name}`.localeCompare(`${b.date}${b.session}${b.name}`));
+  const targetPairs = new Set(targets.map(t=>`${t.date}__${t.session}`));
+  const targetNames = new Set(targets.map(t=>t.name));
+  const dupIds = new Set();
+
+  if(normalizedText){
+    records.forEach(r=>{
+      if((r.batchTextHash||'') !== normalizedText) return;
+      if(!targetPairs.has(`${r.date}__${r.session}`)) return;
+      if(!looksLikeHeaderPaste && !targetNames.has(r.name||'Default')) return;
+      dupIds.add(r.batchId || r.groupId || r.id);
+    });
+  }
+
+  return {targets, normalizedText, rawText, looksLikeHeaderPaste, duplicateBatchIds:[...dupIds]};
+}
+function renderSaveFlowBox(){
+  const left = document.getElementById('saveTargetSummary');
+  const right = document.getElementById('duplicateSummary');
+  const actions = document.getElementById('duplicateActionBox');
+  if(!left || !right || !actions) return;
+
+  const summary = computePreviewSaveSummary();
+  pendingDuplicateBatchIds = summary.duplicateBatchIds || [];
+
+  if(!preview.detailRows.length){
+    left.innerHTML = '<div class="muted">Parse Preview မလုပ်ရသေးပါ</div>';
+    right.innerHTML = '<div class="muted">Duplicate check မရှိသေးပါ</div>';
+    actions.innerHTML = '';
+    return;
+  }
+
+  left.innerHTML = summary.targets.length ? `
+    <table>
+      <thead><tr><th>Name</th><th>Date</th><th>Session</th><th class="right">Rows</th><th class="right">Amount</th></tr></thead>
+      <tbody>
+        ${summary.targets.map(t=>`<tr><td>${escapeHtml(t.name)}</td><td>${t.date}</td><td><b>${t.session}</b></td><td class="right">${t.rows}</td><td class="right">${money(t.amount)}</td></tr>`).join('')}
+      </tbody>
+    </table>
+  ` : '<div class="muted">Detected target မရှိသေးပါ</div>';
+
+  if(pendingDuplicateBatchIds.length){
+    right.innerHTML = `<div class="dupWarn"><b>Duplicate notice</b><br>Same Session အတွင်း ထပ်တူညီတဲ့ message batch <b>${pendingDuplicateBatchIds.length}</b> ခု တွေ့ထားပါတယ်။</div>`;
+    actions.innerHTML = `
+      <div class="btnrow" style="margin-top:8px">
+        <button class="btn warn small" onclick="deleteDuplicatePreviewBatches(true)">Delete Existing + Save</button>
+        <button class="btn secondary small" onclick="savePreview(true)">OK Save Anyway</button>
+        <button class="btn gray small" onclick="cancelDuplicateFlow()">Cancel</button>
+      </div>
+    `;
+  }else{
+    right.innerHTML = `<div class="dupOk"><b>No duplicate</b><br>ဒီ preview ကို current target ထဲ safe save လုပ်လို့ရပါတယ်။</div>`;
+    actions.innerHTML = '';
+  }
+}
+function cancelDuplicateFlow(){
+  showToast('Duplicate warning ကိုပဲပြထားပါတယ်။ ပထမ message ကို ပြန်စစ်နိုင်ပါတယ်');
+}
+function deleteDuplicatePreviewBatches(saveAfter=false){
+  if(!pendingDuplicateBatchIds.length){
+    showToast('ဖျက်ရန် duplicate batch မရှိပါ');
+    return;
+  }
+  records = records.filter(r=>!pendingDuplicateBatchIds.includes(r.batchId || r.groupId || r.id));
+  saveRecords();
+  saveCloudSnapshot(false);
+  pendingDuplicateBatchIds = [];
+  renderAll();
+  renderSaveFlowBox();
+  showToast('Existing duplicate batch ကို ဖျက်ပြီးပါပြီ');
+  if(saveAfter) savePreview(true);
+}
 function renderPreview(){
   setText('pvRows',preview.detailRows.length);
   setText('pvTotal',money(preview.detailRows.reduce((a,b)=>a+b.amount,0)));
@@ -1750,6 +1868,7 @@ function renderPreview(){
   document.getElementById('previewAgg').innerHTML=preview.totals.map(r=>`<tr><td><b>${r.number}</b></td><td class="right">${money(r.amount)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
   document.getElementById('warnBox').innerHTML=preview.warnings.length? `<div class="bad">${preview.warnings.map(escapeHtml).join('<br>')}</div>` : '<span class="good">Warnings မရှိပါ</span>';
   renderIssueEditor();
+  renderSaveFlowBox();
 }
 function renderIssueEditor(){
   const wrap=document.getElementById('issueEditorWrap');
@@ -1854,7 +1973,7 @@ function clearIssueEditor(){
 function normalizeDuplicateText(s){
   return String(s||'').replace(/\s+/g,' ').trim();
 }
-function savePreview(){
+function savePreview(skipDuplicateCheck=false){
   if(!preview.detailRows.length){showToast('Save လုပ်ရန် preview မရှိပါ'); return;}
   const selectedDate=val('entryDate')||today(); const selectedSession=val('entrySession')||'AM';
   if(selectedSession==='DAILY'){ showToast('Confirm Save လုပ်ရန် AM သို့မဟုတ် PM ကိုရွေးပါ'); return; }
@@ -1864,18 +1983,19 @@ function savePreview(){
     go('entry');
     return;
   }
-  const rawText = val('entryText') || '';
-  const normalizedText = normalizeDuplicateText(rawText);
-  const looksLikeHeaderPaste = /\[[^\]]+\]\s*[⁨]?.+?[⁩]?\s*:/.test(rawText);
-  if(looksLikeHeaderPaste){
-    const sessionPairs = new Set(preview.detailRows.map(r=>`${r.date||selectedDate}__${r.session||selectedSession}`));
-    const duplicate = records.some(r=>sessionPairs.has(`${r.date}__${r.session}`) && (r.batchTextHash||'')===normalizedText);
-    if(duplicate){
-      showToast('Same Session အတွင်း ထပ်တူညီတဲ့ Viber message ကို သိမ်းထားပြီးသားပါ');
-      return;
-    }
+
+  const summary = computePreviewSaveSummary();
+  if(!skipDuplicateCheck && summary.duplicateBatchIds.length){
+    pendingDuplicateBatchIds = summary.duplicateBatchIds;
+    renderSaveFlowBox();
+    showToast('Duplicate တွေ့ပါတယ်။ Delete Existing + Save သို့မဟုတ် OK Save Anyway ရွေးပါ');
+    return;
   }
+
+  const rawText = summary.rawText || '';
+  const normalizedText = summary.normalizedText || '';
   const ts=Date.now(); const batchId='B'+ts; const writerProfile=selectedWriterProfile();
+
   preview.detailRows.forEach(r=>{
     const rowName = r.name || selectedName;
     const rowDate = r.date || selectedDate;
@@ -1883,7 +2003,14 @@ function savePreview(){
     const groupId = `${batchId}__${rowName}__${String(r.source||'').trim()}__${rowDate}__${rowSession}`;
     records.push({...r,name:rowName,date:rowDate,session:rowSession,ts,batchId,groupId,writerProfile,batchTextHash:normalizedText,batchRawText:rawText,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()});
   });
-  saveRecords(); saveCloudSnapshot(false); preview={detailRows:[],totals:[],warnings:[],issues:[]}; renderAll(); showToast('Saved + Cloud Sync');
+
+  saveRecords();
+  saveCloudSnapshot(false);
+  pendingDuplicateBatchIds = [];
+  preview={detailRows:[],totals:[],warnings:[],issues:[]};
+  renderAll();
+  renderSaveFlowBox();
+  showToast('Saved + Cloud Sync');
 }
 function filterRecords(date,session,name='ALL'){
   return records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (name==='ALL' || (r.name||'Default')===name));
