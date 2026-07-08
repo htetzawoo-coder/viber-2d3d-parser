@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.8.7.2 Mixed Carry Fix</title>
+  <title>Viber 2D Desk - Stage 3.8.8 Header Time Session</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -192,7 +192,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.7.2 Mixed Carry Fix + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.8.8 Header Time Session + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -249,7 +249,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.7.2 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.8.8 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -305,7 +305,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.7.2</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.8.8</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -594,6 +594,7 @@ let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
 let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
 let globalView = JSON.parse(localStorage.getItem('v2d_global_view')||'{}');
 let pMemory = JSON.parse(localStorage.getItem('v2d_p_memory')||'{}');
+let sessionManualLock = localStorage.getItem('v2d_session_manual_lock') === '1';
 let currentGroupEdit = null;
 let currentIssueIndex = 0;
 let topbarState = localStorage.getItem('v2d_topbar_state') || 'open';
@@ -643,6 +644,7 @@ function autoSessionForDate(date){
 }
 function saveGlobalView(){ localStorage.setItem('v2d_global_view', JSON.stringify(globalView)); }
 function savePMemory(){ localStorage.setItem('v2d_p_memory', JSON.stringify(pMemory)); }
+function saveSessionLock(){ localStorage.setItem('v2d_session_manual_lock', sessionManualLock ? '1' : '0'); }
 function pKey(date, session){ return `${date||today()}__${session||'AM'}`; }
 function allowedSessionValue(el, value){
   if(!el) return false;
@@ -715,16 +717,24 @@ function applyGlobalDateSession(date, session, rerender=true){
   if(rerender) renderAll();
 }
 function onGlobalDateChange(v){
-  applyGlobalDateSession(v, val('globalSession') || globalView.session || autoSessionForDate(v), true);
+  sessionManualLock = false;
+  saveSessionLock();
+  applyGlobalDateSession(v, autoSessionForDate(v), true);
 }
 function onGlobalSessionChange(v){
+  sessionManualLock = true;
+  saveSessionLock();
   applyGlobalDateSession(val('globalDate') || globalView.date || today(), v, true);
 }
 function setupGlobalSyncListeners(){
   ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
-    el.addEventListener('change', ()=>applyGlobalDateSession(el.value, val('globalSession') || globalView.session || autoSessionForDate(el.value), true));
+    el.addEventListener('change', ()=>{
+      sessionManualLock = false;
+      saveSessionLock();
+      applyGlobalDateSession(el.value, autoSessionForDate(el.value), true);
+    });
   });
   ['entrySession','recordSession','limitSession','overSession','reportSession','imageSession'].forEach(id=>{
     const el=document.getElementById(id);
@@ -732,6 +742,8 @@ function setupGlobalSyncListeners(){
     el.addEventListener('change', ()=>{
       const newSession = el.value || 'AM';
       const date = val('globalDate') || globalView.date || today();
+      sessionManualLock = true;
+      saveSessionLock();
       applyGlobalDateSession(date, newSession, true);
     });
   });
@@ -747,6 +759,7 @@ function startAutoPMSync(){
   setInterval(()=>{
     const currentDate = val('globalDate') || globalView.date || today();
     if(currentDate !== today()) return;
+    if(sessionManualLock) return;
     const autoSession = autoSessionForDate(currentDate);
     const currentSession = val('globalSession') || globalView.session || 'AM';
     if(currentSession !== 'DAILY' && currentSession !== autoSession){
@@ -1494,10 +1507,31 @@ function matchKnownName(raw){const n=cleanNameText(raw); return (settings.names|
 function digitSeqList(seq){
   return uniq((String(seq||'').match(/\d/g)||[]).filter(Boolean));
 }
+function parseHeaderStampMeta(stamp){
+  const s=String(stamp||'').replace(/[\u200e\u200f]/g,'').trim();
+  let m=s.match(/^(?:[A-Za-z]+,\s*)?([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if(m){
+    const monthMap={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+    const mon=monthMap[String(m[1]).toLowerCase()]||0;
+    const day=Number(m[2]||0), year=Number(m[3]||0), h12=Number(m[4]||0), minute=Number(m[5]||0), ap=String(m[6]||'AM').toUpperCase();
+    let hour=h12 % 12;
+    if(ap==='PM') hour += 12;
+    const date=`${year}-${String(mon).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    return {date, session:(hour>=14?'PM':'AM'), hour, minute, stamp:s};
+  }
+  const d=new Date(s);
+  if(!Number.isNaN(d.getTime())){
+    const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const hour=d.getHours();
+    return {date, session:(hour>=14?'PM':'AM'), hour, minute:d.getMinutes(), stamp:s};
+  }
+  return null;
+}
 function parseHeaderLine(line){
-  const m=String(line).match(/^\s*\[[^\]]+\]\s*[⁨]?(.+?)[⁩]?\s*:\s*(.*)$/);
+  const m=String(line).match(/^\s*\[\s*([^\]]+?)\s*\]\s*[⁨]?(.+?)[⁩]?\s*:\s*(.*)$/);
   if(!m) return null;
-  return {rawName:m[1].trim(), content:m[2].trim()};
+  const meta=parseHeaderStampMeta(m[1]);
+  return {rawName:m[2].trim(), content:m[3].trim(), headerStamp:String(m[1]||'').trim(), headerDate:meta?.date||'', headerSession:meta?.session||'', headerHour:meta?.hour, headerMinute:meta?.minute};
 }
 
 function explicitCarryMetaForLine(line){
@@ -1536,7 +1570,7 @@ function buildMessageBlocks(text, defaultName){
     if(header){
       if(block && block.lines.length) blocks.push(block);
       const matched=matchKnownName(header.rawName);
-      block={name:matched||activeName, headerName:header.rawName, headerMatched:!!matched, lines:[], startLine:item.lineNo};
+      block={name:matched||activeName, headerName:header.rawName, headerMatched:!!matched, headerStamp:header.headerStamp||'', date:header.headerDate||'', session:header.headerSession||'', lines:[], startLine:item.lineNo};
       if(matched) activeName=matched;
       if(header.content && header.content.trim()) block.lines.push({raw:header.content.trim(), lineNo:item.lineNo, fromHeader:true, headerName:header.rawName, headerMatched:!!matched});
       else block.lines.push({raw:'', lineNo:item.lineNo, fromHeader:true, headerName:header.rawName, headerMatched:!!matched, emptyHeader:true});
@@ -1610,7 +1644,12 @@ function parseMessageBlock(block, writerProfile){
       return;
     }
 
-    (r?.rows||[]).forEach(row=>row.name=block.name||'Default');
+    (r?.rows||[]).forEach(row=>{
+      row.name=block.name||'Default';
+      if(block.date) row.date = block.date;
+      if(block.session) row.session = block.session;
+      if(block.headerStamp) row.headerStamp = block.headerStamp;
+    });
     detailRows.push(...(r?.rows||[]));
     (r?.warnings||[]).forEach(w=>warnings.push(w));
     if(r?.warnings?.length){
@@ -1639,7 +1678,9 @@ function parseMessage(text, defaultName='Default', writerProfile='AUTO'){
   const totals=[...map.entries()].map(([number,amount])=>({number,amount})).sort((a,b)=>Number(a.number)-Number(b.number));
   const selectedName = String(defaultName||'').trim();
   const needsNameSelection = matchedHeaderCount===0 && (!selectedName || selectedName==='Default');
-  return {detailRows, totals, warnings, issues, matchedHeaderCount, needsNameSelection};
+  const headerDates = [...new Set(blocks.map(b=>b.date).filter(Boolean))];
+  const headerSessions = [...new Set(blocks.map(b=>b.session).filter(Boolean))];
+  return {detailRows, totals, warnings, issues, matchedHeaderCount, needsNameSelection, headerDates, headerSessions};
 }
 
 let entryImageState={name:'',size:0,source:''};
@@ -1693,7 +1734,13 @@ function toggleImageTools(){
 
 function parseInput(){
   const writer = selectedWriterProfile();
-  preview=parseMessage(val('entryText'), val('entryName')||'Default', writer); renderPreview(); showToast('Preview ပြီးပါပြီ');
+  preview=parseMessage(val('entryText'), val('entryName')||'Default', writer);
+  renderPreview();
+  if(preview.matchedHeaderCount && preview.headerDates?.length===1 && preview.headerSessions?.length===1){
+    showToast('Header time အတိုင်း ' + preview.headerDates[0] + ' / ' + preview.headerSessions[0] + ' ဖြင့် သိမ်းပါမယ်');
+  }else{
+    showToast('Preview ပြီးပါပြီ');
+  }
 }
 function renderPreview(){
   setText('pvRows',preview.detailRows.length);
@@ -1809,8 +1856,8 @@ function normalizeDuplicateText(s){
 }
 function savePreview(){
   if(!preview.detailRows.length){showToast('Save လုပ်ရန် preview မရှိပါ'); return;}
-  const date=val('entryDate')||today(); const session=val('entrySession')||'AM';
-  if(session==='DAILY'){ showToast('Confirm Save လုပ်ရန် AM သို့မဟုတ် PM ကိုရွေးပါ'); return; }
+  const selectedDate=val('entryDate')||today(); const selectedSession=val('entrySession')||'AM';
+  if(selectedSession==='DAILY'){ showToast('Confirm Save လုပ်ရန် AM သို့မဟုတ် PM ကိုရွေးပါ'); return; }
   const selectedName=(val('entryName')||'').trim()||'Default';
   if(preview.needsNameSelection && selectedName==='Default'){
     showToast('Name မရွေးရသေးပါ။ Name ရွေးပြီးမှ Confirm Save လုပ်ပါ');
@@ -1821,7 +1868,8 @@ function savePreview(){
   const normalizedText = normalizeDuplicateText(rawText);
   const looksLikeHeaderPaste = /\[[^\]]+\]\s*[⁨]?.+?[⁩]?\s*:/.test(rawText);
   if(looksLikeHeaderPaste){
-    const duplicate = records.some(r=>r.date===date && r.session===session && (r.batchTextHash||'')===normalizedText);
+    const sessionPairs = new Set(preview.detailRows.map(r=>`${r.date||selectedDate}__${r.session||selectedSession}`));
+    const duplicate = records.some(r=>sessionPairs.has(`${r.date}__${r.session}`) && (r.batchTextHash||'')===normalizedText);
     if(duplicate){
       showToast('Same Session အတွင်း ထပ်တူညီတဲ့ Viber message ကို သိမ်းထားပြီးသားပါ');
       return;
@@ -1830,8 +1878,10 @@ function savePreview(){
   const ts=Date.now(); const batchId='B'+ts; const writerProfile=selectedWriterProfile();
   preview.detailRows.forEach(r=>{
     const rowName = r.name || selectedName;
-    const groupId = `${batchId}__${rowName}__${String(r.source||'').trim()}`;
-    records.push({...r,name:rowName,date,session,ts,batchId,groupId,writerProfile,batchTextHash:normalizedText,batchRawText:rawText,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()});
+    const rowDate = r.date || selectedDate;
+    const rowSession = (r.session || selectedSession || 'AM').toUpperCase().startsWith('P') ? 'PM' : 'AM';
+    const groupId = `${batchId}__${rowName}__${String(r.source||'').trim()}__${rowDate}__${rowSession}`;
+    records.push({...r,name:rowName,date:rowDate,session:rowSession,ts,batchId,groupId,writerProfile,batchTextHash:normalizedText,batchRawText:rawText,id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()});
   });
   saveRecords(); saveCloudSnapshot(false); preview={detailRows:[],totals:[],warnings:[],issues:[]}; renderAll(); showToast('Saved + Cloud Sync');
 }
