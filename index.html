@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.9.0 Block Duplicate Flow</title>
+  <title>Viber 2D Desk - Stage 3.9.1 AMPM Save Fix</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -201,7 +201,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.9.0 Block Duplicate Flow + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.9.1 AMPM Save Fix + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -258,7 +258,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.9.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.9.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -314,7 +314,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.9.0</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.9.1</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -1534,6 +1534,9 @@ function matchKnownName(raw){const n=cleanNameText(raw); return (settings.names|
 function digitSeqList(seq){
   return uniq((String(seq||'').match(/\d/g)||[]).filter(Boolean));
 }
+function headerRecordSession(hour24, minute){
+  return (hour24 > 12 || (hour24 === 12 && Number(minute||0) >= 1)) ? 'PM' : 'AM';
+}
 function parseHeaderStampMeta(stamp){
   const s=String(stamp||'').replace(/[\u200e\u200f]/g,'').trim();
   let m=s.match(/^(?:[A-Za-z]+,\s*)?([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -1544,13 +1547,14 @@ function parseHeaderStampMeta(stamp){
     let hour=h12 % 12;
     if(ap==='PM') hour += 12;
     const date=`${year}-${String(mon).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    return {date, session:(hour>=14?'PM':'AM'), hour, minute, stamp:s};
+    return {date, session:headerRecordSession(hour, minute), hour, minute, stamp:s};
   }
   const d=new Date(s);
   if(!Number.isNaN(d.getTime())){
     const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const hour=d.getHours();
-    return {date, session:(hour>=14?'PM':'AM'), hour, minute:d.getMinutes(), stamp:s};
+    const minute=d.getMinutes();
+    return {date, session:headerRecordSession(hour, minute), hour, minute, stamp:s};
   }
   return null;
 }
@@ -1774,6 +1778,18 @@ function toggleImageTools(){
 function parseInput(){
   const writer = selectedWriterProfile();
   preview=parseMessage(val('entryText'), val('entryName')||'Default', writer);
+
+  const summary = computePreviewSaveSummary();
+  const uniquePreviewBlockKeys = [...new Set((preview.detailRows||[]).map(r=>r.duplicateBlockKey).filter(Boolean))];
+  const allDuplicate = uniquePreviewBlockKeys.length > 0 && summary.duplicateBlockKeys.length === uniquePreviewBlockKeys.length;
+
+  if(allDuplicate){
+    preview = {detailRows:[], totals:[], warnings:['All duplicate ဖြစ်နေပါတယ်။ Copy paste အသစ်ထည့်ပါ။'], issues:[]};
+    renderPreview();
+    showToast('All duplicate ဖြစ်နေပါတယ်။ Copy paste အသစ်ထည့်ပါ။');
+    return;
+  }
+
   renderPreview();
   if(preview.matchedHeaderCount && preview.headerDates?.length===1 && preview.headerSessions?.length===1){
     showToast('Header time အတိုင်း ' + preview.headerDates[0] + ' / ' + preview.headerSessions[0] + ' ဖြင့် သိမ်းပါမယ်');
@@ -2072,7 +2088,7 @@ function savePreview(skipDuplicateCheck=false, duplicateMode='warn'){
   preview={detailRows:[],totals:[],warnings:[],issues:[]};
   renderAll();
   renderSaveFlowBox();
-  showToast('Saved + Cloud Sync');
+  showToast('Save ပြီးပါပြီ');
 }
 function filterRecords(date,session,name='ALL'){
   return records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (name==='ALL' || (r.name||'Default')===name));
