@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.9.1 AMPM Save Fix</title>
+  <title>Viber 2D Desk - Stage 3.10.0 Undo Audit Start</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -201,7 +201,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.9.1 AMPM Save Fix + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.10.0 Undo Audit Start + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -233,6 +233,7 @@
       <button class="tab" data-id="reports" onclick="go('reports')">Reports<small>အစီရင်ခံစာ</small></button>
       <button class="tab" data-id="image" onclick="go('image')">Image<small>ပုံ / မျှဝေ</small></button>
       <button class="tab" data-id="settings" onclick="go('settings')">Settings<small>ဆက်တင်</small></button>
+      <button class="tab" data-id="audit" onclick="go('audit')">History<small>မှတ်တမ်း / Undo</small></button>
       <div class="tabsControls">
         <div class="tabsControlBox">
           <div class="glabel">Global Date</div>
@@ -258,7 +259,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.9.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.10.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -314,7 +315,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.9.1</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.10.0</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -426,6 +427,7 @@
         <div class="stat"><div class="k">Names</div><div class="v blue" id="recordNamesCount">0</div></div>
       </div>
       <div class="recordTools">
+        <button class="btn warn" onclick="undoLastAction()">Undo Last Action</button>
         <button class="btn secondary" onclick="renderEntryRecords()">Refresh / ပြန်ဖော်ပြ</button>
         <button class="btn gray" onclick="copyEntryRecordsText()">Copy Record Text / စာကူး</button>
         <button class="btn danger" onclick="deleteFilteredNameRows()">ရွေးထားသော Name ကိုဖျက်မယ်</button>
@@ -555,6 +557,25 @@
       <div class="muted" style="margin-top:12px">Stage 3.8.0: localStorage + Firestore Cloud Snapshot Sync ပါပြီး။ နောက်အဆင့်မှာ Firebase Auth + Owner/Admin role rules ထည့်ပါမယ်။</div>
     </div>
   </section>
+
+  <section id="audit" class="page">
+    <div class="card">
+      <h2>History / Audit Trail / Undo</h2>
+      <div class="muted">Save, edit, delete, batch delete, duplicate delete, clear all လုပ်ဆောင်ချက်တွေကို history အဖြစ်မှတ်ထားမယ်။ Raw pasted text ကိုလည်း ပြန်ကြည့်နိုင်မယ်။</div>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn warn" onclick="undoLastAction()">Undo Last Action</button>
+        <button class="btn secondary" onclick="renderAuditTrail()">Refresh / ပြန်ဖော်ပြ</button>
+        <button class="btn gray" onclick="copyLatestRawHistory()">Copy Latest Raw</button>
+        <button class="btn danger" onclick="clearAuditTrail()">Clear Audit</button>
+      </div>
+      <div class="compactStats" style="margin-top:12px">
+        <div class="stat"><div class="k">Audit Rows</div><div class="v" id="auditRowsCount">0</div></div>
+        <div class="stat"><div class="k">Raw Messages</div><div class="v blue" id="auditRawCount">0</div></div>
+        <div class="stat"><div class="k">Undo Ready</div><div class="v warnText" id="undoReadyCount">0</div></div>
+      </div>
+      <div id="auditTrailList" style="margin-top:12px"></div>
+    </div>
+  </section>
 </div>
 
 <div class="modalBack" id="groupEditModal">
@@ -604,7 +625,8 @@ const pages = [
   ['over',{en:'Over',my:'ကျော်နေသောစာရင်း'}],
   ['reports',{en:'Reports',my:'အစီရင်ခံစာ'}],
   ['image',{en:'Image',my:'ပုံ / မျှဝေ'}],
-  ['settings',{en:'Settings',my:'ဆက်တင်'}]
+  ['settings',{en:'Settings',my:'ဆက်တင်'}],
+  ['audit',{en:'History',my:'မှတ်တမ်း / Undo'}]
 ];
 const N2 = Array.from({length:100},(_,i)=>String(i).padStart(2,'0'));
 const FIXED = {
@@ -615,6 +637,8 @@ const FIXED = {
 };
 let records = JSON.parse(localStorage.getItem('v2d_records')||'[]');
 let overDeductions = JSON.parse(localStorage.getItem('v2d_over_deductions')||'[]');
+let auditTrail = JSON.parse(localStorage.getItem('v2d_audit_trail')||'[]');
+let undoStack = JSON.parse(localStorage.getItem('v2d_undo_stack')||'[]');
 let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
 let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
 let globalView = JSON.parse(localStorage.getItem('v2d_global_view')||'{}');
@@ -672,6 +696,76 @@ function autoSessionForDate(date){
 function saveGlobalView(){ localStorage.setItem('v2d_global_view', JSON.stringify(globalView)); }
 function savePMemory(){ localStorage.setItem('v2d_p_memory', JSON.stringify(pMemory)); }
 function saveSessionLock(){ localStorage.setItem('v2d_session_manual_lock', sessionManualLock ? '1' : '0'); }
+function saveAuditTrail(){ localStorage.setItem('v2d_audit_trail', JSON.stringify((auditTrail||[]).slice(0,300))); }
+function saveUndoStack(){ localStorage.setItem('v2d_undo_stack', JSON.stringify((undoStack||[]).slice(0,30))); }
+function deepCopy(obj){ return JSON.parse(JSON.stringify(obj)); }
+function snapshotBeforeChange(label, meta={}){
+  undoStack.unshift({
+    ts: Date.now(),
+    label,
+    meta,
+    records: deepCopy(records||[]),
+    overDeductions: deepCopy(overDeductions||[])
+  });
+  undoStack = undoStack.slice(0,30);
+  saveUndoStack();
+}
+function pushAudit(action, meta={}){
+  auditTrail.unshift({ts:Date.now(), action, ...meta});
+  auditTrail = auditTrail.slice(0,300);
+  saveAuditTrail();
+}
+function collectNamesFromRows(rows){
+  return [...new Set((rows||[]).map(r=>r.name||'Default').filter(Boolean))].join(', ');
+}
+function copyLatestRawHistory(){
+  const item=(auditTrail||[]).find(x=>x.rawText);
+  if(!item){ showToast('Copy လုပ်ရန် raw history မရှိသေးပါ'); return; }
+  navigator.clipboard.writeText(item.rawText||'').then(()=>showToast('Latest raw history ကို copy လုပ်ပြီးပါပြီ'));
+}
+function clearAuditTrail(){
+  if(!confirm('Audit history ကိုပဲ ဖျက်မလား? Data records မဖျက်ပါ။')) return;
+  auditTrail=[]; undoStack=[]; saveAuditTrail(); saveUndoStack(); renderAuditTrail(); showToast('Audit history cleared');
+}
+function undoLastAction(){
+  if(!undoStack.length){ showToast('Undo ပြန်သွားရန် action မရှိသေးပါ'); return; }
+  const last = undoStack.shift();
+  records = deepCopy(last.records||[]);
+  overDeductions = deepCopy(last.overDeductions||[]);
+  saveUndoStack();
+  saveRecords();
+  saveOverDeductions();
+  pushAudit('UNDO', {label:last.label||'Undo', summary:'Undo ပြန်သွားပါပြီ'});
+  renderAll();
+  showToast('Undo ပြန်သွားပါပြီ');
+}
+function auditCardHtml(a, idx){
+  const time = a.ts ? new Date(a.ts).toLocaleString() : '-';
+  const raw = a.rawText ? `
+    <div class="saveTiny" style="margin-top:8px">Raw Message</div>
+    <textarea readonly style="width:100%;min-height:100px;background:#020617;color:#e5e7eb;border:1px solid #334155;border-radius:10px;padding:8px">${String(a.rawText||'')}</textarea>
+    <div class="btnrow" style="margin-top:6px"><button class="btn gray small" onclick="navigator.clipboard.writeText(auditTrail[${idx}].rawText||'').then(()=>showToast('Raw text copied'))">Copy Raw</button></div>
+  ` : '';
+  return `
+    <div class="card" style="margin-top:10px;background:#020617">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+        <div><b>${escapeHtml(a.action||'ACTION')}</b> <span class="miniBadge">${escapeHtml(a.label||'')}</span></div>
+        <div class="muted">${escapeHtml(time)}</div>
+      </div>
+      <div class="muted" style="margin-top:6px">${escapeHtml(a.summary||'')}</div>
+      ${(a.name||a.names||a.date||a.session) ? `<div class="saveTiny" style="margin-top:6px">Name: ${escapeHtml(a.name||a.names||'-')} | Date: ${escapeHtml(a.date||'-')} | Session: ${escapeHtml(a.session||'-')}</div>` : ''}
+      ${raw}
+    </div>
+  `;
+}
+function renderAuditTrail(){
+  const box = document.getElementById('auditTrailList');
+  if(!box) return;
+  setText('auditRowsCount', (auditTrail||[]).length);
+  setText('auditRawCount', (auditTrail||[]).filter(x=>x.rawText).length);
+  setText('undoReadyCount', (undoStack||[]).length);
+  box.innerHTML = (auditTrail||[]).length ? auditTrail.slice(0,60).map((a,i)=>auditCardHtml(a,i)).join('') : '<div class="muted">History မရှိသေးပါ</div>';
+}
 function pKey(date, session){ return `${date||today()}__${session||'AM'}`; }
 function allowedSessionValue(el, value){
   if(!el) return false;
@@ -1915,9 +2009,19 @@ function deleteDuplicatePreviewBlocks(saveAfter=false){
     showToast('ဖျက်ရန် duplicate message block မရှိပါ');
     return;
   }
+  snapshotBeforeChange('Delete Duplicate Blocks', {count:pendingDuplicateBlockKeys.length});
+  const deleted = records.filter(r=>pendingDuplicateBlockKeys.includes(r.duplicateBlockKey || ''));
   records = records.filter(r=>!pendingDuplicateBlockKeys.includes(r.duplicateBlockKey || ''));
   saveRecords();
   saveCloudSnapshot(false);
+  pushAudit('DELETE_DUPLICATE_BLOCKS', {
+    label:`Deleted ${pendingDuplicateBlockKeys.length} duplicate blocks`,
+    summary:'Duplicate message block ကို ဖျက်ပြီးပါပြီ',
+    names: collectNamesFromRows(deleted),
+    date: deleted[0]?.date || '',
+    session: deleted[0]?.session || '',
+    rawText: deleted[0]?.batchRawText || ''
+  });
   pendingDuplicateBlockKeys = [];
   pendingDuplicateBlockLabels = [];
   renderAll();
@@ -2073,6 +2177,8 @@ function savePreview(skipDuplicateCheck=false, duplicateMode='warn'){
     return;
   }
 
+  snapshotBeforeChange('Save Preview', {rows:rowsToSave.length, names:collectNamesFromRows(rowsToSave)});
+
   rowsToSave.forEach(r=>{
     const rowName = r.name || selectedName;
     const rowDate = r.date || selectedDate;
@@ -2083,6 +2189,14 @@ function savePreview(skipDuplicateCheck=false, duplicateMode='warn'){
 
   saveRecords();
   saveCloudSnapshot(false);
+  pushAudit('SAVE', {
+    label: `Saved ${rowsToSave.length} rows`,
+    summary: `Batch ${batchId} | ${rowsToSave.length} rows သိမ်းပြီး`,
+    names: collectNamesFromRows(rowsToSave),
+    date: rowsToSave[0]?.date || selectedDate,
+    session: rowsToSave[0]?.session || selectedSession,
+    rawText
+  });
   pendingDuplicateBlockKeys = [];
   pendingDuplicateBlockLabels = [];
   preview={detailRows:[],totals:[],warnings:[],issues:[]};
@@ -2277,8 +2391,9 @@ function editEntryRecord(id){
   const session=prompt('Session ပြင်ရန် AM / PM', r.session||'AM'); if(session===null) return;
   if(!/^\d{2}$/.test(String(number).padStart(2,'0').slice(-2))){showToast('Number မမှန်ပါ'); return;}
   const amt=Number(String(amount).replace(/[^\d]/g,'')); if(!amt){showToast('Amount မမှန်ပါ'); return;}
+  snapshotBeforeChange('Edit Entry Record', {name:r.name||'Default', number:r.number});
   records[i]={...r,name:name.trim()||'Default',number:String(number).padStart(2,'0').slice(-2),amount:amt,date:date.trim()||today(),session:(session.toUpperCase().startsWith('P')?'PM':'AM'),editedAt:Date.now()};
-  saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Edited + Cloud Sync');
+  saveRecords(); saveCloudSnapshot(false); pushAudit('EDIT_ROW',{label:`${r.number} → ${String(number).padStart(2,'0').slice(-2)}`,summary:'Row edit ပြီးပါပြီ',name:name.trim()||'Default',date:date.trim()||today(),session:(session.toUpperCase().startsWith('P')?'PM':'AM'),rawText:r.batchRawText||''}); renderAll(); showToast('Edited + Cloud Sync');
 }
 function openGroupEditByRecord(id){
   const row = records.find(r=>r.id===id);
@@ -2312,35 +2427,41 @@ function applyGroupEdit(){
   const parsed = parseMessage(text, name, writerProfile);
   if(!parsed.detailRows.length){ showToast('Group text ကို parse မလုပ်နိုင်ပါ'); return; }
 
+  snapshotBeforeChange('Group Edit', {name:currentGroupEdit.oldName, date:currentGroupEdit.oldDate, session:currentGroupEdit.oldSession});
   records = records.filter(r=>!(getBatchId(r)===currentGroupEdit.batchId && (r.name||'Default')===currentGroupEdit.oldName && r.date===currentGroupEdit.oldDate && r.session===currentGroupEdit.oldSession));
   parsed.detailRows.forEach(r=>{
     const rowName = r.name || name;
     const groupId = `${currentGroupEdit.batchId}__${rowName}__${String(r.source||'').trim()}`;
     records.push({...r, name:rowName, date, session, ts:currentGroupEdit.ts, batchId:currentGroupEdit.batchId, groupId, writerProfile, id:crypto.randomUUID?crypto.randomUUID():String(currentGroupEdit.ts)+Math.random(), editedAt:Date.now()});
   });
-  saveRecords(); saveCloudSnapshot(false); closeGroupEditModal(); renderAll(); showToast('Group Edit + Cloud Sync');
+  saveRecords(); saveCloudSnapshot(false); pushAudit('GROUP_EDIT',{label:`${name} ${date} ${session}`,summary:`Group Edit ${parsed.detailRows.length} rows`,name,date,session,rawText:text}); closeGroupEditModal(); renderAll(); showToast('Group Edit + Cloud Sync');
 }
 function deleteEntryRecord(id){
   const i=records.findIndex(r=>r.id===id); if(i<0){showToast('Record မတွေ့ပါ');return;}
   const r=records[i]; if(!confirm(`${r.name||'Default'} | ${r.number} | ${money(r.amount)} ကို ဖျက်မလား?`)) return;
-  records.splice(i,1); saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Deleted + Cloud Sync');
+  snapshotBeforeChange('Delete Entry Record', {name:r.name||'Default', number:r.number});
+  records.splice(i,1); saveRecords(); saveCloudSnapshot(false); pushAudit('DELETE_ROW',{label:`${r.name||'Default'} ${r.number}`,summary:`${money(r.amount)} ဖျက်ပြီး`,name:r.name||'Default',date:r.date||'',session:r.session||'',rawText:r.batchRawText||''}); renderAll(); showToast('Deleted + Cloud Sync');
 }
 function deleteEntryBatch(id){
   const row = records.find(r=>r.id===id); if(!row){showToast('Batch မတွေ့ပါ'); return;}
   const batchId=getBatchId(row);
-  const count = records.filter(r=>getBatchId(r)===batchId && r.date===row.date && r.session===row.session).length;
+  const sameRows = records.filter(r=>getBatchId(r)===batchId && r.date===row.date && r.session===row.session);
+  const count = sameRows.length;
   if(!confirm(`Batch ${batchLabel(row)} မှာ ${count} rows ရှိတယ်။ တစ်ခါတည်းဖျက်မလား?`)) return;
+  snapshotBeforeChange('Delete Entry Batch', {batch:batchLabel(row), count});
   records = records.filter(r=>!(getBatchId(r)===batchId && r.date===row.date && r.session===row.session));
-  saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Batch Deleted + Cloud Sync');
+  saveRecords(); saveCloudSnapshot(false); pushAudit('DELETE_BATCH',{label:batchLabel(row),summary:`Batch ${count} rows ဖျက်ပြီး`,names:collectNamesFromRows(sameRows),date:row.date||'',session:row.session||'',rawText:row.batchRawText||''}); renderAll(); showToast('Batch Deleted + Cloud Sync');
 }
 function deleteFilteredNameRows(){
   const date=val('recordDate')||today(), session=val('recordSession')||'AM', name=val('recordName')||'ALL';
   if(name==='ALL'){ showToast('Name တစ်ခုရွေးပြီးမှ Delete Filtered Name လုပ်ပါ'); return; }
-  const count = records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (r.name||'Default')===name).length;
+  const deletedRows = records.filter(r=>r.date===date && (session==='DAILY' || r.session===session) && (r.name||'Default')===name);
+  const count = deletedRows.length;
   if(!count){ showToast('ဖျက်ရန် row မရှိပါ'); return; }
   if(!confirm(`${date} ${session} ${name} rows ${count} ကြောင်းကို ဖျက်မလား?`)) return;
+  snapshotBeforeChange('Delete Filtered Name Rows', {name, date, session, count});
   records = records.filter(r=>!(r.date===date && (session==='DAILY' || r.session===session) && (r.name||'Default')===name));
-  saveRecords(); saveCloudSnapshot(false); renderAll(); showToast('Filtered Name Rows Deleted + Cloud Sync');
+  saveRecords(); saveCloudSnapshot(false); pushAudit('DELETE_FILTERED_NAME',{label:`${name} ${date} ${session}`,summary:`Filtered rows ${count} ကြောင်းဖျက်ပြီး`,name,date,session,rawText:deletedRows[0]?.batchRawText||''}); renderAll(); showToast('Filtered Name Rows Deleted + Cloud Sync');
 }
 function copyEntryRecordsText(){
   const rows=recordFilteredRows();
@@ -2351,7 +2472,7 @@ function copyEntryRecordsText(){
   copyText(lines.join('\n'));
 }
 
-function renderAll(){renderDashboard();renderPreview();renderEntryLive();renderLimit();renderOver();renderReports();renderImageText();renderEntryRecords();}
+function renderAll(){renderDashboard();renderPreview();renderEntryLive();renderLimit();renderOver();renderReports();renderImageText();renderEntryRecords();renderAuditTrail();}
 function setText(id,v){const el=document.getElementById(id); if(el) el.textContent=v;}
 function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function go(id){
@@ -2394,7 +2515,7 @@ function saveOverImage(){
   applyOverDeduction(date,session,name,rows,'saveImage');
 }
 function exportJSON(){const data={settings,records,overDeductions,exportedAt:new Date().toISOString()}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viber-2d-desk-backup.json';a.click();}
-function clearAllData(){if(confirm('Data အကုန်ဖျက်မှာ သေချာလား?')){records=[];overDeductions=[];saveRecords();saveOverDeductions();renderAll();showToast('Cleared');}}
+function clearAllData(){if(confirm('Data အကုန်ဖျက်မှာ သေချာလား?')){snapshotBeforeChange('Clear All Data'); records=[];overDeductions=[];saveRecords();saveOverDeductions(); pushAudit('CLEAR_ALL',{label:'All data cleared',summary:'records နှင့် over data အကုန်ဖျက်ပြီး'}); renderAll();showToast('Cleared');}}
 function syncLimitInputs(){const v=settings.defaultLimit||val('defaultLimit')||10000; ['defaultLimit','limitAmount','overLimit','entryLimitAmount'].forEach(id=>setVal(id,v)); renderLimit(); renderOver(); renderEntryLive();}
 function syncLimitFrom(v){
   const n=Number(v||0); settings.defaultLimit=n; ['defaultLimit','limitAmount','overLimit','entryLimitAmount'].forEach(id=>setVal(id,n)); saveSettings(); renderLimit(); renderOver(); renderEntryLive();
