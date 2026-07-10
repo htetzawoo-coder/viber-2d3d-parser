@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.10.0 Undo Audit Start</title>
+  <title>Viber 2D Desk - Stage 3.10.1 Confirm Save Fix</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -201,7 +201,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.10.0 Undo Audit Start + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.10.1 Confirm Save Fix + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -259,7 +259,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.10.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.10.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -315,7 +315,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.10.0</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.10.1</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -323,7 +323,7 @@
             <input id="entryImageCamera" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleEntryImage(event,'camera')">
             <div class="btnrow">
               <button class="btn small" onclick="parseInput()" data-i18n="parsePreview">Parse Preview</button>
-              <button class="btn secondary small" onclick="savePreview()" data-i18n="confirmSave">Confirm Save</button>
+              <button class="btn secondary small" onclick="confirmSaveAction()" data-i18n="confirmSave">Confirm Save</button>
               <button class="btn gray small" onclick="document.getElementById('entryText').value=''; clearIssueEditor()" data-i18n="clearText">Clear Text</button>
             </div>
             <div class="imgToolGrid" style="margin-top:10px">
@@ -696,8 +696,22 @@ function autoSessionForDate(date){
 function saveGlobalView(){ localStorage.setItem('v2d_global_view', JSON.stringify(globalView)); }
 function savePMemory(){ localStorage.setItem('v2d_p_memory', JSON.stringify(pMemory)); }
 function saveSessionLock(){ localStorage.setItem('v2d_session_manual_lock', sessionManualLock ? '1' : '0'); }
-function saveAuditTrail(){ localStorage.setItem('v2d_audit_trail', JSON.stringify((auditTrail||[]).slice(0,300))); }
-function saveUndoStack(){ localStorage.setItem('v2d_undo_stack', JSON.stringify((undoStack||[]).slice(0,30))); }
+function saveAuditTrail(){
+  try{
+    localStorage.setItem('v2d_audit_trail', JSON.stringify((auditTrail||[]).slice(0,120)));
+  }catch(e){
+    auditTrail = (auditTrail||[]).slice(0,40).map(x=>({...x, rawText:''}));
+    try{ localStorage.setItem('v2d_audit_trail', JSON.stringify(auditTrail)); }catch(_e){}
+  }
+}
+function saveUndoStack(){
+  try{
+    localStorage.setItem('v2d_undo_stack', JSON.stringify((undoStack||[]).slice(0,8)));
+  }catch(e){
+    undoStack = (undoStack||[]).slice(0,3);
+    try{ localStorage.setItem('v2d_undo_stack', JSON.stringify(undoStack)); }catch(_e){}
+  }
+}
 function deepCopy(obj){ return JSON.parse(JSON.stringify(obj)); }
 function snapshotBeforeChange(label, meta={}){
   undoStack.unshift({
@@ -707,12 +721,14 @@ function snapshotBeforeChange(label, meta={}){
     records: deepCopy(records||[]),
     overDeductions: deepCopy(overDeductions||[])
   });
-  undoStack = undoStack.slice(0,30);
+  undoStack = undoStack.slice(0,8);
   saveUndoStack();
 }
 function pushAudit(action, meta={}){
-  auditTrail.unshift({ts:Date.now(), action, ...meta});
-  auditTrail = auditTrail.slice(0,300);
+  const safeMeta = {...meta};
+  if(safeMeta.rawText && String(safeMeta.rawText).length > 4000) safeMeta.rawText = String(safeMeta.rawText).slice(0,4000);
+  auditTrail.unshift({ts:Date.now(), action, ...safeMeta});
+  auditTrail = auditTrail.slice(0,120);
   saveAuditTrail();
 }
 function collectNamesFromRows(rows){
@@ -892,7 +908,14 @@ function startAutoPMSync(){
 function money(n){return Number(n||0).toLocaleString('en-US')}
 function unit(n){let v=Number(n||0)/100; return Number.isInteger(v)? String(v): String(parseFloat(v.toFixed(2)))}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-function saveRecords(){localStorage.setItem('v2d_records',JSON.stringify(records));}
+function saveRecords(){
+  try{
+    localStorage.setItem('v2d_records',JSON.stringify(records));
+  }catch(e){
+    showToast('Save storage ပြည့်နေပါတယ်။ Audit history ကို လျှော့ပြီး ထပ်သိမ်းပါ');
+    throw e;
+  }
+}
 
 async function saveCloudSnapshot(showMsg=true){
   if(!db){ if(showMsg) showToast('Firebase မချိတ်မိသေးပါ'); return; }
@@ -1869,6 +1892,14 @@ function toggleImageTools(){
   box.classList.toggle('compact-open');
 }
 
+function confirmSaveAction(){
+  try{
+    savePreview();
+  }catch(err){
+    console.error(err);
+    showToast('Confirm Save error: ' + (err?.message || err));
+  }
+}
 function parseInput(){
   const writer = selectedWriterProfile();
   preview=parseMessage(val('entryText'), val('entryName')||'Default', writer);
@@ -2187,7 +2218,11 @@ function savePreview(skipDuplicateCheck=false, duplicateMode='warn'){
     records.push({...r,name:rowName,date:rowDate,session:rowSession,ts,batchId,groupId,writerProfile,batchTextHash:normalizedText,batchRawText:rawText,duplicateBlockKey:r.duplicateBlockKey||'',duplicateBlockLabel:r.duplicateBlockLabel||'',id:crypto.randomUUID?crypto.randomUUID():String(ts)+Math.random()});
   });
 
-  saveRecords();
+  try{
+    saveRecords();
+  }catch(err){
+    return;
+  }
   saveCloudSnapshot(false);
   pushAudit('SAVE', {
     label: `Saved ${rowsToSave.length} rows`,
