@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Viber 2D Desk - Stage 3.10.1 Confirm Save Fix</title>
+  <title>Viber 2D Desk - Stage 3.11.0 P Settings Dealer Results</title>
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --panel2:#1f2937; --text:#e5e7eb; --muted:#94a3b8;
@@ -182,7 +182,16 @@
     .board-stats{display:grid;grid-template-columns:repeat(4,minmax(92px,1fr));gap:6px;align-items:stretch;margin-top:0}.board-card .stat{min-height:58px;display:flex;flex-direction:column;justify-content:center}.board-card .stat .v{font-size:18px}.board-card .stat .k{font-size:11px;white-space:nowrap}
 
 
-    .dealerGrid{display:grid;grid-template-columns:1fr 120px 100px;gap:8px;margin-top:8px}.dealerGrid input{padding:8px}.reportActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.summaryLine{display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniCard{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px 10px}.miniCard .k{font-size:11px;color:#94a3b8}.miniCard .v{font-size:18px;font-weight:900}
+    .dealerGrid{display:grid;grid-template-columns:minmax(140px,1fr) 120px 110px 90px 110px 110px 120px;gap:8px;margin-top:8px;align-items:center}.dealerGrid input{padding:8px}.dealerGrid .dealerHead{font-size:12px;color:#94a3b8;font-weight:800;padding:0 4px}.dealerAuto{background:#020617;border:1px solid #334155;border-radius:10px;padding:9px 8px;text-align:right;font-weight:900}.reportActions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.summaryLine{display:grid;grid-template-columns:1fr 1fr;gap:8px}.miniCard{background:#020617;border:1px solid #334155;border-radius:12px;padding:8px 10px}.miniCard .k{font-size:11px;color:#94a3b8}.miniCard .v{font-size:18px;font-weight:900}
+    #reportNameRows td{font-size:17px;padding-top:10px;padding-bottom:10px}
+    #reportNameRows td:first-child{font-size:18px}
+    #reportNameRowsTable thead th{font-size:14px}
+    .dealerFinalNegative{color:#22c55e!important;font-weight:900}
+    .dealerFinalPositive{color:#ef4444!important;font-weight:900}
+    .pSettingsGrid{display:grid;grid-template-columns:1fr 140px 140px auto auto;gap:8px;align-items:end}
+    .pSavedBadge{display:inline-flex;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #334155;border-radius:12px;background:#020617;color:#93c5fd;font-weight:900}
+    @media(max-width:1100px){.dealerGrid{grid-template-columns:1fr 110px 100px 80px 100px 100px 110px}.pSettingsGrid{grid-template-columns:1fr 1fr 1fr}}
+
 
 
     .recordFilters{display:grid;grid-template-columns:122px 96px 160px 136px 1fr;gap:8px;align-items:end}
@@ -201,7 +210,7 @@
   <div class="topbar" id="topbar">
     <div class="title">
       <div>
-        <h1>Viber 2D Desk <span class="badge good">Stage 3.10.1 Confirm Save Fix + Firebase</span></h1>
+        <h1>Viber 2D Desk <span class="badge good">Stage 3.11.0 P Settings Dealer Results + Firebase</span></h1>
         <div class="sub">Owner/Admin only · Entry Copy/Paste Parser · Entry Records · Firebase Sync · Image Reports · Dealer Summary<div class="muted" style="margin-top:6px">Stage 3.8.6: explicit amount priority fix + old parser regression safe merge + split UI ထိ update ထားသည်</div></div>
       </div>
       <div class="topToggleWrap">
@@ -259,7 +268,7 @@
       <div class="stat"><div class="k">PM Total</div><div class="v warnText" id="dashPM">0</div></div>
     </div>
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.10.1 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
+      <div class="card"><h2>လုပ်ထားပြီးသော Stage 1</h2><div class="muted">ဒီ Stage 3.11.0 file က အရင် stable UI/Parser/Firebase logic မပျက်ဘဲ Sticky Minimize Layout + Message Block Parser Upgrade + Duplicate/Name Safety ထည့်ထားပါတယ်။ Browser localStorage ထဲလည်း ဆက်သိမ်းပါတယ်။</div><div class="btnrow"><button class="btn" onclick="go('entry')">Entry စတင်မယ်</button><button class="btn secondary" onclick="go('limit')">Limit Board ကြည့်မယ်</button></div></div>
       <div class="card"><h2>Formula Engine ပါပြီးသော Key များ</h2><div class="chips" id="formulaChips"></div></div>
     </div>
     <div class="card" style="margin-top:12px"><h2>Latest Records</h2><div class="scroll"><table><thead><tr><th>Date</th><th>Session</th><th>Name</th><th>Writer</th><th>Number</th><th class="right">Amount</th><th>Source</th></tr></thead><tbody id="latestRows"></tbody></table></div></div>
@@ -315,7 +324,7 @@
 22"></textarea>
           <div class="imgToolBox" id="imgToolBox">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.10.1</span></h3>
+              <h3 style="margin:0 0 8px">Image Entry <span class="stageBadge">Stage 3.11.0</span></h3>
               <button class="btn gray small" type="button" onclick="toggleImageTools()">Image Tools ▼</button>
             </div>
             <div class="muted">Upload Image / Camera preview + OCR Text Preview box ထည့်ထားပါတယ်။ Auto OCR extraction ကို next stage မှာ ထပ်ချိတ်မယ်။ ဒီအဆင့်မှာ OCR text ကို manual paste/edit လုပ်ပြီး Entry box ထဲထည့်နိုင်ပါတယ်။</div>
@@ -479,10 +488,10 @@
     <div class="card">
       <h2>AM / PM / Daily Report / အစီရင်ခံစာ</h2>
       <div class="recordFilters">
-        <div><label>ရက်စွဲ</label><input id="reportDate" type="date" onchange="renderReports()"></div>
-        <div><label>Session</label><select id="reportSession" onchange="renderReports()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
+        <div><label>ရက်စွဲ</label><input id="reportDate" type="date" onchange="onReportViewChange()"></div>
+        <div><label>Session</label><select id="reportSession" onchange="onReportViewChange()"><option>AM</option><option>PM</option><option>DAILY</option></select></div>
         <div><label>All Names / အားလုံး</label><select id="reportName" onchange="renderReports()"></select></div>
-        <div><label>P Number</label><input id="pNumber" maxlength="2" placeholder="ဥပမာ 59"></div>
+        <div><label>P Number (Settings မှ)</label><input id="pNumber" readonly placeholder="Settings မှ သတ်မှတ်ပါ"></div>
       </div>
       <div class="compactStats" style="margin-top:12px">
         <div class="stat"><div class="k">Total Amount</div><div class="v" id="rTotal">0</div></div>
@@ -493,7 +502,7 @@
         <div class="stat"><div class="k">Final</div><div class="v" id="rFinal">0</div></div>
       </div>
       <h3 style="margin-top:14px">Name Summary / နာမည်အလိုက်</h3>
-      <div class="scroll"><table><thead><tr><th>Name</th><th class="right">Total</th><th class="right">P Amount</th><th class="right">Payout</th><th class="right">Cor %</th><th class="right">Cor</th><th class="right">Final</th></tr></thead><tbody id="reportNameRows"></tbody></table></div>
+      <div class="scroll"><table id="reportNameRowsTable"><thead><tr><th>Name</th><th class="right">Total</th><th class="right">P Amount</th><th class="right">Payout</th><th class="right">Cor %</th><th class="right">Cor</th><th class="right">Final</th></tr></thead><tbody id="reportNameRows"></tbody></table></div>
       <h3 style="margin-top:14px">Number Summary / နံပါတ်အလိုက်</h3>
       <div class="scroll"><table><thead><tr><th>Number</th><th class="right">Amount</th></tr></thead><tbody id="reportRows"></tbody></table></div>
       <div class="reportActions">
@@ -502,20 +511,23 @@
       </div>
       <div class="card" style="background:#020617;margin-top:12px">
         <h3>ဒိုင်စာရင်း / Dealer Summary</h3>
-        <div class="muted">Manual Over Dealer Split: Name / Amount / Cor %</div>
+        <div class="muted">Manual Dealer Split — Total Amount, P Amount နှင့် Cor % ကိုသာရိုက်ပါ။ Cor, Payout နှင့် Final Results ကို အော်တိုတွက်မယ်။ Payout Rate ကို Settings မှယူမယ်။</div>
         <div class="dealerGrid">
-          <input id="odName1" placeholder="Over ဒိုင် 1" oninput="renderReports()"><input id="odAmt1" type="number" placeholder="Amount" oninput="renderReports()"><input id="odCor1" type="number" placeholder="Cor %" oninput="renderReports()">
-          <input id="odName2" placeholder="Over ဒိုင် 2" oninput="renderReports()"><input id="odAmt2" type="number" placeholder="Amount" oninput="renderReports()"><input id="odCor2" type="number" placeholder="Cor %" oninput="renderReports()">
-          <input id="odName3" placeholder="Over ဒိုင် 3" oninput="renderReports()"><input id="odAmt3" type="number" placeholder="Amount" oninput="renderReports()"><input id="odCor3" type="number" placeholder="Cor %" oninput="renderReports()">
+          <div class="dealerHead">Dealer Name</div><div class="dealerHead">Total Amount</div><div class="dealerHead">P Amount</div><div class="dealerHead">Cor %</div><div class="dealerHead">Cor</div><div class="dealerHead">Payout</div><div class="dealerHead">Final Results</div>
+          <input id="odName1" placeholder="Over ဒိုင် 1" oninput="saveManualDealerInputs();renderReports()"><input id="odAmt1" type="number" placeholder="Total" oninput="saveManualDealerInputs();renderReports()"><input id="odPamt1" type="number" placeholder="P Amount" oninput="saveManualDealerInputs();renderReports()"><input id="odCor1" type="number" placeholder="Cor %" oninput="saveManualDealerInputs();renderReports()"><div class="dealerAuto" id="odCorAmt1">0</div><div class="dealerAuto" id="odPayout1">0</div><div class="dealerAuto" id="odFinal1">0</div>
+          <input id="odName2" placeholder="Over ဒိုင် 2" oninput="saveManualDealerInputs();renderReports()"><input id="odAmt2" type="number" placeholder="Total" oninput="saveManualDealerInputs();renderReports()"><input id="odPamt2" type="number" placeholder="P Amount" oninput="saveManualDealerInputs();renderReports()"><input id="odCor2" type="number" placeholder="Cor %" oninput="saveManualDealerInputs();renderReports()"><div class="dealerAuto" id="odCorAmt2">0</div><div class="dealerAuto" id="odPayout2">0</div><div class="dealerAuto" id="odFinal2">0</div>
+          <input id="odName3" placeholder="Over ဒိုင် 3" oninput="saveManualDealerInputs();renderReports()"><input id="odAmt3" type="number" placeholder="Total" oninput="saveManualDealerInputs();renderReports()"><input id="odPamt3" type="number" placeholder="P Amount" oninput="saveManualDealerInputs();renderReports()"><input id="odCor3" type="number" placeholder="Cor %" oninput="saveManualDealerInputs();renderReports()"><div class="dealerAuto" id="odCorAmt3">0</div><div class="dealerAuto" id="odPayout3">0</div><div class="dealerAuto" id="odFinal3">0</div>
         </div>
         <div class="grid3" style="margin-top:12px">
           <div class="miniCard"><div class="k">All Total</div><div class="v" id="dealerTotal">0</div></div>
+          <div class="miniCard"><div class="k">All P Amount</div><div class="v warnText" id="dealerPAmount">0</div></div>
           <div class="miniCard"><div class="k">All Payout</div><div class="v bad" id="dealerPayout">0</div></div>
           <div class="miniCard"><div class="k">All Cor</div><div class="v blue" id="dealerCor">0</div></div>
-          <div class="miniCard"><div class="k">Manual Over</div><div class="v warnText" id="dealerOverAmt">0</div></div>
-          <div class="miniCard"><div class="k">Over P Payout</div><div class="v good" id="dealerOverPayout">0</div></div>
-          <div class="miniCard"><div class="k">Over Cor</div><div class="v blue" id="dealerOverCor">0</div></div>
-          <div class="miniCard"><div class="k">Dealer Final</div><div class="v" id="dealerFinal">0</div></div>
+          <div class="miniCard"><div class="k">Manual Dealer Total</div><div class="v warnText" id="dealerOverAmt">0</div></div>
+          <div class="miniCard"><div class="k">Manual P Amount</div><div class="v warnText" id="dealerOverPAmount">0</div></div>
+          <div class="miniCard"><div class="k">Manual Payout</div><div class="v good" id="dealerOverPayout">0</div></div>
+          <div class="miniCard"><div class="k">Manual Cor</div><div class="v blue" id="dealerOverCor">0</div></div>
+          <div class="miniCard"><div class="k">Final Results</div><div class="v" id="dealerFinal">0</div></div>
         </div>
       </div>
     </div>
@@ -546,6 +558,19 @@
         <div><label>AM Close</label><input id="amClose" type="time" oninput="saveSettings()"></div>
         <div><label>PM Close</label><input id="pmClose" type="time" oninput="saveSettings()"></div>
       </div>
+      <div class="card" style="margin-top:12px;background:#020617">
+        <h3>P Number Settings / Date နှင့် Session အလိုက်</h3>
+        <div class="muted">AM နှင့် PM အတွက် P Number ကို ဒီနေရာမှာ တစ်ကြိမ်သတ်မှတ်ပါ။ Report က Date/Session အလိုက် အော်တိုယူတွက်မယ်။ Daily report မှာ AM P နှင့် PM P နှစ်ခုလုံးကို သီးခြားတွက်ပြီး စုပေါင်းမယ်။</div>
+        <div class="pSettingsGrid" style="margin-top:10px">
+          <div><label>Date</label><input id="settingsPDate" type="date" onchange="loadSettingsPNumber()"></div>
+          <div><label>Session</label><select id="settingsPSession" onchange="loadSettingsPNumber()"><option>AM</option><option>PM</option></select></div>
+          <div><label>P Number</label><input id="settingsPNumber" maxlength="2" inputmode="numeric" placeholder="ဥပမာ 59" oninput="sanitizeSettingsPNumber()"></div>
+          <button class="btn" onclick="saveSettingsPNumber()">Save P Number</button>
+          <button class="btn danger" onclick="clearSettingsPNumber()">Clear</button>
+        </div>
+        <div class="pSavedBadge" id="settingsPStatus" style="margin-top:10px">Not saved</div>
+      </div>
+
       <div class="card" style="margin-top:12px;background:#020617">
         <h3>Commission Names / နာမည်စာရင်း</h3>
         <div class="grid2">
@@ -643,6 +668,7 @@ let settings = JSON.parse(localStorage.getItem('v2d_settings')||'{}');
 let preview = {detailRows:[], totals:[], warnings:[], issues:[]};
 let globalView = JSON.parse(localStorage.getItem('v2d_global_view')||'{}');
 let pMemory = JSON.parse(localStorage.getItem('v2d_p_memory')||'{}');
+let dealerManualMemory = JSON.parse(localStorage.getItem('v2d_dealer_manual_memory')||'{}');
 let sessionManualLock = localStorage.getItem('v2d_session_manual_lock') === '1';
 let pendingDuplicateBlockKeys = [];
 let pendingDuplicateBlockLabels = [];
@@ -824,18 +850,61 @@ function toggleTopbar(){
   localStorage.setItem('v2d_topbar_state', topbarState);
   applyTopbarState();
 }
+function getStoredPNumber(date, session){
+  const raw = String(pMemory[pKey(date, session)] || '').trim();
+  return /^\d{1,2}$/.test(raw) ? raw.padStart(2,'0') : '';
+}
 function restorePNumber(){
   const date = val('reportDate') || (globalView.date || today());
   const session = val('reportSession') || (globalView.session || 'AM');
-  if(session === 'AM' || session === 'PM') setVal('pNumber', pMemory[pKey(date, session)] || '');
-  else setVal('pNumber', '');
+  if(session === 'AM' || session === 'PM'){
+    setVal('pNumber', getStoredPNumber(date, session));
+  }else{
+    const am=getStoredPNumber(date,'AM')||'-';
+    const pm=getStoredPNumber(date,'PM')||'-';
+    setVal('pNumber', `AM ${am} | PM ${pm}`);
+  }
 }
 function rememberPNumber(){
-  const date = val('reportDate') || (globalView.date || today());
-  const session = val('reportSession') || (globalView.session || 'AM');
-  if(session !== 'AM' && session !== 'PM') return;
-  pMemory[pKey(date, session)] = val('pNumber') || '';
+  // Report input is read-only. P Number is saved from Settings.
+  restorePNumber();
+}
+function sanitizeSettingsPNumber(){
+  const el=document.getElementById('settingsPNumber');
+  if(!el) return;
+  el.value=String(el.value||'').replace(/\D/g,'').slice(0,2);
+}
+function loadSettingsPNumber(){
+  const date=val('settingsPDate')||today();
+  const session=val('settingsPSession')||'AM';
+  const p=getStoredPNumber(date,session);
+  setVal('settingsPNumber',p);
+  setText('settingsPStatus', p ? `${date} / ${session} / P = ${p}` : `${date} / ${session} / P Number မသတ်မှတ်ရသေးပါ`);
+}
+function saveSettingsPNumber(){
+  const date=val('settingsPDate')||today();
+  const session=val('settingsPSession')||'AM';
+  const raw=String(val('settingsPNumber')||'').replace(/\D/g,'');
+  if(!/^\d{1,2}$/.test(raw)){showToast('P Number ကို 00 မှ 99 အတွင်း ရိုက်ပါ'); return;}
+  const p=raw.padStart(2,'0');
+  pMemory[pKey(date,session)]=p;
   savePMemory();
+  setVal('settingsPNumber',p);
+  loadSettingsPNumber();
+  restorePNumber();
+  renderReports();
+  showToast(`${date} ${session} P Number ${p} သိမ်းပြီးပါပြီ`);
+}
+function clearSettingsPNumber(){
+  const date=val('settingsPDate')||today();
+  const session=val('settingsPSession')||'AM';
+  delete pMemory[pKey(date,session)];
+  savePMemory();
+  setVal('settingsPNumber','');
+  loadSettingsPNumber();
+  restorePNumber();
+  renderReports();
+  showToast(`${date} ${session} P Number ဖျက်ပြီးပါပြီ`);
 }
 function applyGlobalDateSession(date, session, rerender=true){
   const d = date || today();
@@ -850,6 +919,12 @@ function applyGlobalDateSession(date, session, rerender=true){
   ['entrySession','recordSession','limitSession','overSession','reportSession','imageSession'].forEach(id => setValueIfExists(id, s));
 
   restorePNumber();
+  if(document.getElementById('settingsPDate')){
+    setVal('settingsPDate', d);
+    if(s==='AM' || s==='PM') setVal('settingsPSession', s);
+    loadSettingsPNumber();
+  }
+  loadManualDealerInputs();
   renderMiniTopInfo();
   if(rerender) renderAll();
 }
@@ -885,12 +960,7 @@ function setupGlobalSyncListeners(){
     });
   });
   const pEl = document.getElementById('pNumber');
-  if(pEl){
-    pEl.addEventListener('input', ()=>{
-      rememberPNumber();
-      renderReports();
-    });
-  }
+  if(pEl) pEl.readOnly = true;
 }
 function startAutoPMSync(){
   setInterval(()=>{
@@ -2281,39 +2351,128 @@ function renderOver(){
   document.getElementById('overRows').innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${r.number}</b></td><td class="right bad">${money(r.over)}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">Over မရှိပါ</td></tr>';
   setText('overSumOver',money(rows.reduce((a,b)=>a+b.over,0)));
 }
+function dealerManualKey(date,session){return `${date||today()}__${session||'AM'}`;}
+function saveDealerManualMemory(){localStorage.setItem('v2d_dealer_manual_memory',JSON.stringify(dealerManualMemory||{}));}
+function saveManualDealerInputs(){
+  const date=val('reportDate')||today();
+  const session=val('reportSession')||'AM';
+  if(session==='DAILY') return;
+  dealerManualMemory[dealerManualKey(date,session)] = [1,2,3].map(i=>({
+    name:val('odName'+i)||'',
+    amount:Number(val('odAmt'+i)||0),
+    pAmount:Number(val('odPamt'+i)||0),
+    cor:Number(val('odCor'+i)||0)
+  }));
+  saveDealerManualMemory();
+}
+function loadManualDealerInputs(){
+  const date=val('reportDate')||today();
+  const session=val('reportSession')||'AM';
+  const rows = session==='DAILY' ? [] : (dealerManualMemory[dealerManualKey(date,session)]||[]);
+  [1,2,3].forEach((i,idx)=>{
+    const r=rows[idx]||{};
+    setVal('odName'+i,r.name||'');
+    setVal('odAmt'+i,r.amount||'');
+    setVal('odPamt'+i,r.pAmount||'');
+    setVal('odCor'+i,r.cor||'');
+  });
+}
+function onReportViewChange(){
+  restorePNumber();
+  loadManualDealerInputs();
+  renderReports();
+}
 function getRate(name){return Number((settings.nameRates&&settings.nameRates[name]!=null)?settings.nameRates[name]:(settings.commissionRate||0));}
+function sessionPData(date,session,name='ALL'){
+  const rate=Number(settings.payoutRate||80);
+  if(session==='DAILY'){
+    const pAM=getStoredPNumber(date,'AM');
+    const pPM=getStoredPNumber(date,'PM');
+    const amTotals=totalsByNumber(date,'AM',name);
+    const pmTotals=totalsByNumber(date,'PM',name);
+    const pamtAM=pAM?(amTotals[pAM]||0):0;
+    const pamtPM=pPM?(pmTotals[pPM]||0):0;
+    return {
+      p:`AM ${pAM||'-'} | PM ${pPM||'-'}`,
+      pAM,pPM,
+      pamtAM,pamtPM,
+      pamt:pamtAM+pamtPM,
+      payout:(pamtAM+pamtPM)*rate
+    };
+  }
+  const p=getStoredPNumber(date,session);
+  const totals=totalsByNumber(date,session,name);
+  const pamt=p?(totals[p]||0):0;
+  return {p,pamt,payout:pamt*rate};
+}
 function reportCalc(){
   const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const name=val('reportName')||'ALL';
-  const key = pKey(date, session);
-  if((session==='AM' || session==='PM') && !val('pNumber') && pMemory[key]) setVal('pNumber', pMemory[key]);
+  restorePNumber();
   const totals=totalsByNumber(date,session,name); const nameTotals=totalsByName(date,session); const total=Object.values(totals).reduce((a,b)=>a+b,0);
-  const pRaw = (val('pNumber')||'').trim();
-  const p=/^\d{1,2}$/.test(pRaw)?String(pRaw).padStart(2,'0'):'';
-  const com=total*(Number(settings.commissionRate||0)/100); const net=total-com; const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*(Number(settings.payoutRate||80)); const final=net-payout;
-  return {date,session,name,totals,nameTotals,total,com,net,p,pamt,payout,final};
+  const pData=sessionPData(date,session,name);
+  const com=total*(Number(settings.commissionRate||0)/100); const net=total-com; const pamt=pData.pamt; const payout=pData.payout; const final=net-payout;
+  return {date,session,name,totals,nameTotals,total,com,net,p:pData.p,pData,pamt,payout,final};
 }
-function commissionSummary(name,date,session,p){
+function commissionSummary(name,date,session){
   const totals=totalsByNumber(date,session,name); const total=Object.values(totals).reduce((a,b)=>a+b,0);
-  const pamt=/^\d{2}$/.test(p)?(totals[p]||0):0; const payout=pamt*Number(settings.payoutRate||80);
+  const pData=sessionPData(date,session,name); const pamt=pData.pamt; const payout=pData.payout;
   const rate=getRate(name); const cor=total*rate/100; const final=total-payout-cor;
-  return {name,date,session,p,total,pamt,payout,rate,cor,final,status: final<0?'ဒိုင်မှ ပေးရန်':'ဒိုင်မှ ရရန်'};
+  return {name,date,session,p:pData.p,pData,total,pamt,payout,rate,cor,final,status: final<0?'ဒိုင်မှ ပေးရန်':'ဒိုင်မှ ရရန်'};
 }
 function signedMoney(v){return v<0?'('+money(Math.abs(Math.round(v)))+')':money(Math.round(v));}
 function manualOverDealerRows(){
-  return [1,2,3].map(i=>({name:val('odName'+i)||('Over '+i), amount:Number(val('odAmt'+i)||0), cor:Number(val('odCor'+i)||0)})).filter(x=>x.amount>0);
+  const payoutRate=Number(settings.payoutRate||80);
+  return [1,2,3].map(i=>{
+    const name=val('odName'+i)||('Over '+i);
+    const amount=Number(val('odAmt'+i)||0);
+    const pAmount=Number(val('odPamt'+i)||0);
+    const cor=Number(val('odCor'+i)||0);
+    const corAmount=amount*cor/100;
+    const payout=pAmount*payoutRate;
+    const final=amount-corAmount-payout;
+    return {index:i,name,amount,pAmount,cor,corAmount,payout,final};
+  }).filter(x=>x.amount>0 || x.pAmount>0 || x.cor>0 || (x.name && !/^Over \d+$/.test(x.name)));
 }
-function dealerSummary(date,session,p){
-  const names=settings.names||[]; const sums=names.map(n=>commissionSummary(n,date,session,p));
-  const allTotal=sums.reduce((a,b)=>a+b.total,0); const allPayout=sums.reduce((a,b)=>a+b.payout,0); const allCor=sums.reduce((a,b)=>a+b.cor,0);
-  const overRows=manualOverDealerRows(); const overAmount=overRows.reduce((a,b)=>a+b.amount,0); const overCor=overRows.reduce((a,b)=>a+(b.amount*b.cor/100),0);
-  const overPAmount=/^\d{2}$/.test(p)?deductionsFor(date,session,'ALL').filter(d=>d.number===p).reduce((a,b)=>a+Number(b.amount||0),0):0;
-  const overPayout=overPAmount*Number(settings.payoutRate||80); const final=allTotal-allPayout-allCor-overAmount+overPayout+overCor;
-  return {allTotal,allPayout,allCor,overAmount,overCor,overPAmount,overPayout,final,overRows,sums};
+function dealerSummary(date,session){
+  const names=settings.names||[]; const sums=names.map(n=>commissionSummary(n,date,session));
+  const allTotal=sums.reduce((a,b)=>a+b.total,0);
+  const allPAmount=sums.reduce((a,b)=>a+b.pamt,0);
+  const allPayout=sums.reduce((a,b)=>a+b.payout,0);
+  const allCor=sums.reduce((a,b)=>a+b.cor,0);
+  const overRows=manualOverDealerRows();
+  const overAmount=overRows.reduce((a,b)=>a+b.amount,0);
+  const overPAmount=overRows.reduce((a,b)=>a+b.pAmount,0);
+  const overCor=overRows.reduce((a,b)=>a+b.corAmount,0);
+  const overPayout=overRows.reduce((a,b)=>a+b.payout,0);
+  const final=allTotal-allPayout-allCor-overAmount+overPayout+overCor;
+  return {allTotal,allPAmount,allPayout,allCor,overAmount,overPAmount,overCor,overPayout,final,overRows,sums};
 }
 function renderDealerSummary(r){
-  if(!document.getElementById('dealerTotal')) return; const d=dealerSummary(r.date,r.session,r.p);
-  setText('dealerTotal',money(d.allTotal)); setText('dealerPayout',money(d.allPayout)); setText('dealerCor',money(Math.round(d.allCor))); setText('dealerOverAmt',money(d.overAmount)); setText('dealerOverPayout',money(d.overPayout)); setText('dealerOverCor',money(Math.round(d.overCor))); setText('dealerFinal',signedMoney(d.final));
-  document.getElementById('dealerFinal').className='v '+(d.final<0?'resultNegative':'resultPositive');
+  if(!document.getElementById('dealerTotal')) return;
+  const d=dealerSummary(r.date,r.session);
+  d.overRows.forEach(x=>{
+    setText('odCorAmt'+x.index,money(Math.round(x.corAmount)));
+    setText('odPayout'+x.index,money(Math.round(x.payout)));
+    setText('odFinal'+x.index,signedMoney(x.final));
+    const el=document.getElementById('odFinal'+x.index);
+    if(el) el.className='dealerAuto '+(x.final<0?'dealerFinalNegative':'dealerFinalPositive');
+  });
+  [1,2,3].forEach(i=>{
+    if(!d.overRows.some(x=>x.index===i)){
+      setText('odCorAmt'+i,'0'); setText('odPayout'+i,'0'); setText('odFinal'+i,'0');
+      const el=document.getElementById('odFinal'+i); if(el) el.className='dealerAuto';
+    }
+  });
+  setText('dealerTotal',money(d.allTotal));
+  setText('dealerPAmount',money(d.allPAmount));
+  setText('dealerPayout',money(d.allPayout));
+  setText('dealerCor',money(Math.round(d.allCor)));
+  setText('dealerOverAmt',money(d.overAmount));
+  setText('dealerOverPAmount',money(d.overPAmount));
+  setText('dealerOverPayout',money(d.overPayout));
+  setText('dealerOverCor',money(Math.round(d.overCor)));
+  setText('dealerFinal',signedMoney(d.final));
+  document.getElementById('dealerFinal').className='v '+(d.final<0?'dealerFinalNegative':'dealerFinalPositive');
 }
 function drawReportImage(title, lines, filename){
   const canvas=document.createElement('canvas'); canvas.width=900; canvas.height=Math.max(500,120+lines.length*36); const c=canvas.getContext('2d');
@@ -2323,25 +2482,25 @@ function drawReportImage(title, lines, filename){
   const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=filename; a.click();
 }
 function saveCommissionReportImage(){
-  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const selected=val('reportName')||'ALL'; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2);
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const selected=val('reportName')||'ALL';
   const names=selected==='ALL'?(settings.names||[]): [selected];
   names.forEach(name=>{
-    const s=commissionSummary(name,date,session,p); const neg=s.final<0;
+    const s=commissionSummary(name,date,session); const neg=s.final<0;
     drawReportImage(`${name} ${session} စာရင်း`,[
-      {text:`Date: ${date}`,bold:true},{text:`P Number: ${p}`,bold:true},{text:`Total Amount: ${money(s.total)}`},{text:`P Amount: ${money(s.pamt)}`},{text:`Payout: ${money(s.payout)}`},{text:`Cor ${s.rate}%: ${money(Math.round(s.cor))}`},{text:`Final: ${signedMoney(s.final)}`,bold:true,color:neg?'#dc2626':'#16a34a'},{text:s.status,bold:true,color:neg?'#dc2626':'#16a34a'}
+      {text:`Date: ${date}`,bold:true},{text:`P Number: ${s.p}`,bold:true},{text:`Total Amount: ${money(s.total)}`},{text:`P Amount: ${money(s.pamt)}`},{text:`Payout: ${money(s.payout)}`},{text:`Cor ${s.rate}%: ${money(Math.round(s.cor))}`},{text:`Final: ${signedMoney(s.final)}`,bold:true,color:neg?'#dc2626':'#16a34a'},{text:s.status,bold:true,color:neg?'#dc2626':'#16a34a'}
     ],`commission-${name}-${date}-${session}.png`);
   });
 }
 function saveDealerReportImage(){
-  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const p=String(val('pNumber')||'').padStart(2,'0').slice(-2); const d=dealerSummary(date,session,p); const neg=d.final<0;
-  const lines=[{text:`Date: ${date} | Session: ${session} | P: ${p}`,bold:true},{text:`All Total: ${money(d.allTotal)}`},{text:`All Payout: ${money(d.allPayout)}`},{text:`All Cor: ${money(Math.round(d.allCor))}`},{text:`Manual Over Amount: ${money(d.overAmount)}`},{text:`Over P Payout: ${money(d.overPayout)}`},{text:`Over Amount Cor: ${money(Math.round(d.overCor))}`},{text:`Dealer Final: ${signedMoney(d.final)}`,bold:true,color:neg?'#dc2626':'#16a34a'}];
-  d.overRows.forEach(x=>lines.push({text:`${x.name}: ${money(x.amount)} × ${x.cor}% = ${money(Math.round(x.amount*x.cor/100))}`}));
+  const date=val('reportDate')||today(); const session=val('reportSession')||'AM'; const p=sessionPData(date,session,'ALL').p; const d=dealerSummary(date,session); const neg=d.final<0;
+  const lines=[{text:`Date: ${date} | Session: ${session} | P: ${p}`,bold:true},{text:`All Total: ${money(d.allTotal)}`},{text:`All P Amount: ${money(d.allPAmount)}`},{text:`All Payout: ${money(d.allPayout)}`},{text:`All Cor: ${money(Math.round(d.allCor))}`},{text:`Manual Dealer Total: ${money(d.overAmount)}`},{text:`Manual P Amount: ${money(d.overPAmount)}`},{text:`Manual Payout: ${money(d.overPayout)}`},{text:`Manual Cor: ${money(Math.round(d.overCor))}`},{text:`Final Results: ${signedMoney(d.final)}`,bold:true,color:neg?'#16a34a':'#dc2626'}];
+  d.overRows.forEach(x=>lines.push({text:`${x.name}: Total ${money(x.amount)} | P ${money(x.pAmount)} | Cor ${x.cor}%=${money(Math.round(x.corAmount))} | Payout ${money(x.payout)} | Final ${signedMoney(x.final)}`,color:x.final<0?'#16a34a':'#dc2626'}));
   drawReportImage('ဒိုင်စာရင်း / Dealer Summary',lines,`dealer-${date}-${session}.png`);
 }
 function renderReports(){
   const r=reportCalc(); setText('rTotal',money(r.total)); setText('rCom',money(Math.round(r.com))); setText('rNet',money(Math.round(r.net))); setText('rPamt',money(r.pamt)); setText('rPayout',money(r.payout)); setText('rFinal',money(Math.round(r.final)));
   document.getElementById('rFinal').className='v '+(r.final>=0?'good':'bad');
-  document.getElementById('reportNameRows').innerHTML=(settings.names||[]).map(n=>{const a=r.nameTotals[n]||0; const nt=totalsByNumber(r.date,r.session,n); const pamt=/^\d{2}$/.test(r.p)?(nt[r.p]||0):0; const payout=pamt*Number(settings.payoutRate||80); const rate=getRate(n); const cor=a*rate/100; const final=a-payout-cor; const cls=final<0?'resultNegative':'resultPositive'; const f=final<0?'('+money(Math.abs(Math.round(final)))+')':money(Math.round(final)); return `<tr><td><b>${escapeHtml(n)}</b></td><td class="right">${money(a)}</td><td class="right">${money(pamt)}</td><td class="right">${money(payout)}</td><td class="right">${rate}%</td><td class="right">${money(Math.round(cor))}</td><td class="right ${cls}">${f}</td></tr>`}).join('') || '<tr><td colspan="7" class="muted">No data</td></tr>';
+  document.getElementById('reportNameRows').innerHTML=(settings.names||[]).map(n=>{const s=commissionSummary(n,r.date,r.session); const cls=s.final<0?'resultNegative':'resultPositive'; const f=s.final<0?'('+money(Math.abs(Math.round(s.final)))+')':money(Math.round(s.final)); return `<tr><td><b>${escapeHtml(n)}</b></td><td class="right">${money(s.total)}</td><td class="right">${money(s.pamt)}</td><td class="right">${money(s.payout)}</td><td class="right">${s.rate}%</td><td class="right">${money(Math.round(s.cor))}</td><td class="right ${cls}">${f}</td></tr>`}).join('') || '<tr><td colspan="7" class="muted">No data</td></tr>';
   document.getElementById('reportRows').innerHTML=Object.entries(r.totals).map(([n,a])=>`<tr><td><b>${n}</b></td><td class="right">${money(a)}</td></tr>`).join('') || '<tr><td colspan="2" class="muted">No data</td></tr>';
   renderDealerSummary(r);
 }
@@ -2549,7 +2708,7 @@ function saveOverImage(){
   const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=`over-${date}-${session}-${name}.png`; a.click();
   applyOverDeduction(date,session,name,rows,'saveImage');
 }
-function exportJSON(){const data={settings,records,overDeductions,exportedAt:new Date().toISOString()}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viber-2d-desk-backup.json';a.click();}
+function exportJSON(){const data={settings,records,overDeductions,pMemory,dealerManualMemory,exportedAt:new Date().toISOString()}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='viber-2d-desk-backup.json';a.click();}
 function clearAllData(){if(confirm('Data အကုန်ဖျက်မှာ သေချာလား?')){snapshotBeforeChange('Clear All Data'); records=[];overDeductions=[];saveRecords();saveOverDeductions(); pushAudit('CLEAR_ALL',{label:'All data cleared',summary:'records နှင့် over data အကုန်ဖျက်ပြီး'}); renderAll();showToast('Cleared');}}
 function syncLimitInputs(){const v=settings.defaultLimit||val('defaultLimit')||10000; ['defaultLimit','limitAmount','overLimit','entryLimitAmount'].forEach(id=>setVal(id,v)); renderLimit(); renderOver(); renderEntryLive();}
 function syncLimitFrom(v){
@@ -2579,6 +2738,7 @@ function init(){
   ['entryDate','recordDate','limitDate','overDate','reportDate','imageDate'].forEach(id=>setVal(id,today()));
   settings={shopName:'Viber 2D Desk',commissionRate:20,payoutRate:80,defaultLimit:10000,amClose:'12:00',pmClose:'16:30',names:['Default'],nameRates:{Default:20},lang:'my',...settings}; if(!Array.isArray(settings.names)||!settings.names.length) settings.names=['Default']; if(!settings.nameRates) settings.nameRates={}; settings.names.forEach(n=>{if(settings.nameRates[n]==null) settings.nameRates[n]=settings.commissionRate||20;});
   setVal('shopName',settings.shopName); setVal('commissionRate',settings.commissionRate); setVal('payoutRate',settings.payoutRate); setVal('defaultLimit',settings.defaultLimit); setVal('amClose',settings.amClose); setVal('pmClose',settings.pmClose); syncLimitInputs();
+  setVal('settingsPDate', today()); setVal('settingsPSession', 'AM'); loadSettingsPNumber(); loadManualDealerInputs();
   const keys=['A','Z','B','//','//-3355','*2','*12','1*','1ပါ','7ပါတ်ပူးပါ','12*','1234**','12345 အခွေ','3/8ဘရိတ်','2ထိပ် 500 R 200','++','--','+-','-+','/9','9/','+/','-/','/+','/-','+1','-1','1+','1-'];
   document.getElementById('formulaChips').innerHTML=keys.map(k=>`<span class="chip" onclick="go('entry');insertKey('${k}')">${k}</span>`).join('');
   refreshNameSelects();
